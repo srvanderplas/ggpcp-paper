@@ -1,0 +1,27 @@
+## Paper Title
+
+A short description of the goals and objectives of the paper
+
+### Structure
+Each folder listed here contains a manifest unless otherwise noted.
+
+- code/ contains any dependent code scripts necessary to compile the paper and/or fit the model
+- model/ contains any saved models and/or weights
+- data/ contains any saved data needed to fit the model (or a description of how to obtain said data in the event it is too large for github)
+- images/ contains any images needed for the paper; this folder does not contain a manifest and is purely a paper dependency.
+
+
+### To Download this Repository
+
+Download instructions
+
+#### Other requirements: 
+
+Describe other downloads necessary for the paper to run
+
+#### To Run the code:
+
+Describe steps and dependent packages necessary to run the project
+
+
+

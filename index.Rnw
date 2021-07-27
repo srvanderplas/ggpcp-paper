@@ -1,0 +1,90 @@
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass{article}
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+\usepackage{amsmath,amssymb,array}
+
+\usepackage[english]{babel} % Language hyphenation and typographical rules
+
+\usepackage[margin=1in,columnsep=20pt]{geometry} % Document margins
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{subfig} % Sub figures
+\usepackage{graphicx} % better graphics
+\usepackage[dvipsnames]{xcolor} % colors
+
+\usepackage{enumitem} % Customized lists
+\setlist[itemize]{noitemsep} % Make itemize lists more compact
+
+\usepackage{hyperref} % For hyperlinks in the PDF
+\usepackage{nameref} % \Cref command automatically handles figure/table/etc refs
+
+\usepackage{natbib}
+\bibliographystyle{abbrvnat}
+
+% Commands for editing
+\newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
+\newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{Article Title} % Article title
+\author{%
+\textsc{Author 1}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
+\textsc{Author 2}$^2$\hspace{2em}
+\textsc{Author 3}$^3$\\[1ex] % Your name
+{\footnotesize
+$^1$ University 1;
+$^2$ University 2;
+$^3$ University 3
+} %
+}
+\date{} % Leave empty to omit a date
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+% Print the title
+\maketitle
+\begin{abstract}
+\noindent something vaguely descriptive goes here
+% Dummy abstract text - replace \blindtext with your abstract text
+\end{abstract}
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\section{Introduction}
+
+%------------------------------------------------
+
+\section{Methods}
+
+
+%------------------------------------------------
+
+\section{Results}
+
+%------------------------------------------------
+
+\section{Discussion}
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+
+\bibliography{refs.bib}
+
+%----------------------------------------------------------------------------------------
+
+\end{document}
+
