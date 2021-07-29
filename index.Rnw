@@ -85,7 +85,7 @@ The origins of parallel coordinate plots date back to the 19th century and are, 
 Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often critized for the amount of clutter they produce, resembling a game of mikado rather than organized data.
 This clutter is sometimes combatted by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
-However, parallel coordinate plots have some shortcomings. \hh{XXXX after bachsing clutter, some shortcomings feels like rubbing it in :)} The biggest challenge comes when working with categorical variables. In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces a lot of ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows lines from each level of one variable to all levels of the next variable.
+However, parallel coordinate plots have some shortcomings. \hh{XXXX after bashing clutter in pcps, `some shortcomings' feels like rubbing it in :)} The biggest challenge comes when working with categorical variables. In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces a lot of ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows lines from each level of one variable to all levels of the next variable.
 Some versions of parallel coordinate plots have been  specifically developed to deal with categorical data, e.g. parallel set plots \citep{Kosara:2006}, Hammock plots [@Schonlau:2003], and common angle plots [@Hofmann:2013]. These solutions all have in common that they work with tabularized data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots provide solutions to mitigate the sine-illusion's effects \citep{sine, susan:2015} on  parallel sets plots.
 An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp}. These plots provide an extension to parallel sets that allows numeric variables to be included in the plot. Similar to parallel sets, this approach is also based on marginal frequencies for the categorical variables. Categorical parallel coordinate plots are the closest of these variations to our solution,  but they are not implemented in the \pkg{ggplot2} framework and can therefore not be further extended.
 
@@ -96,12 +96,12 @@ The function "cpcp" in package \pkg{iplots} implements the parallel coordinate p
 And there are some more recent packages developed based on ggplot2(\cite{ggplot2}). GGally provides a function "ggparcoord" for numeric variables to generate parallel coordinate plot(\cite{GGally}). For categorical variables, package ggparallel provides hammock plot, common angle plot and two-dimension focused parallel set plot(\cite{ggparallel}).-->
 Those packages based on \pkg{ggplot2} make use of \pkg{ggplot2}, but are actually wrapper of existing functions for highly specialized plots with tens of parameters, which do not allow the full flexibility of \pkg{ggplot2} and do not make use of \pkg{ggplot2}'s  layer framework. <!--We will also propose a new package for generalized parallel coordinate plots, which is intended to make use of full flexibility of ggplot2 and fit in to the layer design better.-->
 
-<<r sketch, warning=FALSE, fig.height = 2.5, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next. ">>=
+<<r sketch, warning=FALSE, fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next. ">>=
 df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
 df %>%
   pcp_gather(x1:x4) %>%
-  mutate(value = parse_number(value)) %>%
-#  pcp_scale() %>%
+#  mutate(value = parse_number(as.character(value))) %>%
+  pcp_scale(method="globalminmax") %>%
   ggplot(aes(x = name, y = value, class=class, group = id__))  +
   geom_pcp_axes() +
   geom_pcp(aes(colour = factor(id__)), size=1) +
@@ -113,7 +113,7 @@ df %>%
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.75, 1.5,2.25, 3))
+                     breaks=c(0,0.25, .5,.75, 1))
 @
 
 \hh{XXX We will have to rewrite this paragraph once the paper settles back into a structure}
