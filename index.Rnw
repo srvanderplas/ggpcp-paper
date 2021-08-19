@@ -157,6 +157,8 @@ The order in which variables are selected determines the order in which the corr
 
 \hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.}
 
+\hh{XXX univariate transformations, such as reversing an axis for a variable can be done using a mutate statement before the variable selection. example? changing order of levels on a categorical variable or a log transform or square root transformation work the same. }
+
 \subsection{Scaling}
 
 \code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other.
@@ -241,8 +243,12 @@ dt %>%
 
 \code{pcp\_arrange(data, method, space)} provides a rescaling of values on categorical axes to break ties. \code{method} is a parameter specifying which variables to use to break ties. The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering using variables' values from the left or the right, respectively. The parameter \code{scale} specifies the amount of the `y` axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
 
-
-<<alignment, fig.height = 3.5, fig.align="center", fig.cap="Sketch of different ways of transforming categorical variables">>=
+\autoref{fig:alignment} shows several approaches of dealing with categorical variables in parallel coordinate plots.
+The left-most panel shows two categorical variables and the typical net of lines that forms between them in an original parallel coordinate plot. The other three panels show three different approaches of breaking the ties resulting from the categorical variables, with our favored solution shown on the right: all observations are spaced out evenly. This results in a natural visualization of the marginal frequencies along each axis (additionally enhanced by the lightly greyed boxes grouping observations in the same category). The ordering of the observations within the level is such that a minimal number of line crossings occurs between the axes. This method of dealing with categorical variables is the one we propose in the generalized parallel coordinate plot. While it is aesthetically pleasing, it also allows us in the
+ spirit of the original parallel coordinate plots to follow an individual observation from left to right through the plot even for  categorical variables.
+The other two solutions in the middle panels of \autoref{fig:alignment} show
+two intermediary solutions of breaking ties in categorical variables: jittering and equi-spaced (unordered) values.
+<<alignment, fig.height = 3.5, fig.align="center", fig.cap="Four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels ties in categorical levels are broken using different approaches: from left to right, jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
 set.seed(20200924)
 x1 <- c(rep(1, 5), rep(2, 3), rep(3, 4))
 x2 <- c(1,2,1,2,1,1,1,1,2,2,2,1)
@@ -267,7 +273,7 @@ p1 <- dfnew %>%
   theme_bw() +
   scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen")) +
   xlab("") + ylab("") +
-  facet_grid(.~"Integers") +
+  facet_grid(.~"Original PCP") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   theme(legend.position="none")
 
@@ -324,8 +330,9 @@ grid.arrange(p1, p3, p4, p2, nrow=1)
 
 \section{The Generalized Parallel Coordinate Plot}
 
+\hh{XXX We need to include some code somewhere to also show the 'how'.}
 
-\autoref{fig:penguins} shows a first generalized parallel coordinate plot of the Palmer penguins data [@penguins]. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
+\autoref{fig:penguins} shows a first generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
  The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained [@penguins2]. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows body measurements of penguins  in generalized parallel coordinate plots facetted by species. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
 The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male).
 For Adelie penguins the situation is not quite as clear-cut, but based on body weight and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements.
