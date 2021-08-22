@@ -332,6 +332,9 @@ grid.arrange(p1, p3, p4, p2, nrow=1)
 
 \hh{XXX We need to include some code somewhere to also show the 'how'.}
 
+\section{Examples}
+\subsection{Penguins}
+%
 \autoref{fig:penguins} shows a first generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
  The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained [@penguins2]. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows body measurements of penguins  in generalized parallel coordinate plots facetted by species. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
 The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male).
@@ -376,10 +379,10 @@ penguins_pcp <- penguins %>%
   pcp_select(3:4, 5:7) %>%
   group_by(species) %>%
   pcp_scale() %>%
-  ungroup() %>%
   pcp_arrange()
 
 # recalculate position by group
+# XXXX pcp_arrange has to also do the tie-breaking by group.
 penguins_pcp %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
@@ -394,6 +397,31 @@ penguins_pcp %>%
     facet_grid(species~.)
 @
 
+\subsection{Getting a second, third, ... and seventh opinion}
+
+\autoref{fig:carcinoma} shows data from \citet{agresti} published as part of the \code{poLCA} package \citep{polca}. Seven pathologists were asked to assess the same 118 slides for the presence or absence of carcinoma in the uterine cervix. Binary responses for each slide were recorded (yes/no).  Pathologists all agreed on about 25\% of slides, which they  considered to be carcinoma free, and a further 12.5\% of slides, which were considered to show carcinoma by all pathologists.
+For the remaining 62.5\% of slides there was some disagreement. However, we see that this disagreement is not random. When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis  from left to right.
+<<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a polyline.">>=
+data("carcinoma", package = "poLCA")
+carcinoma$numdiag <- rowSums(carcinoma) - 7
+carcinoma$any <- carcinoma$numdiag > 0
+
+carcinoma[,1:7] <- carcinoma[,1:7] %>%
+  purrr::map(.f = function(x) factor(x, labels =c("no", "yes"))) %>%
+  data.frame()
+
+carcinoma %>%
+  pcp_select(6,4,3,1,7,5,2) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp_boxes() +
+    geom_pcp(aes(colour = factor(numdiag))) +
+    geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
+    scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette ="Dark2") +
+    theme_bw()
+@
 
 
 
