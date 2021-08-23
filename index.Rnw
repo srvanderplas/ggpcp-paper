@@ -132,6 +132,9 @@ One of the biggest strengths of the Grammar of Graphics is its mapping between d
 In standard plots any mapping is a function between one aesthetic and one data variable.
 In a parallel coordinate plot, this one-to-one mapping between data and plot aesthetics is seemingly turned into a one-to-many mapping between arbitrarily many data variables to the x axis . However, by transforming the wide form of the data set into a long form \citep{reshape, dplyr, jss.tidy, hadley.tidy}, we get to a form of the dataset in which we achieve a one-to-one mapping to a now discrete x axis consisting of the (names of the) original data variables.
 
+\hh{The modularization of the data wrangling process has the additional advantage to lay out the necessary elements in successive steps. Some of these steps are even optional - e.g. scaling variables might not be necessary, if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if there are any factor variables, and if we actively want to spread these observations out. }
+
+
 
 \subsection{Variable selection and data wrangling}
 
@@ -151,6 +154,9 @@ The order in which variables are selected determines the order in which the corr
 \item \code{pcp\_x}: discrete variable consisting of the names of the selected variables in the order that they were selected - this is the order in which the variables will be included in the plot.
 \item \code{pcp\_y}: numeric variable containing the values of all of the selected variables. In case a selected variable is not numeric, it is converted to a factor variable and the (numeric) factor levels are saved in \code{pcp\_y}.
 \item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form).
+\hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
+  What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels. Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise. This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
+\hh{This might lead to a visual insonsistency between the orderings in the levels of a categorical variable and an accompanying color legend. In those situations we suggest to reverse the order in the legend by using the command \code{guides(color = guide\_legend(reverse=TRUE))} as shown in the example in \autoref{sec:carcinoma}.}
 \item \code{pcp\_class}: character variable containing the class information of a selected variable.
 \item \code{pcp\_id}: integer variable identifying each observation in the original dataset. This variable will be used as grouping variable to identify which values should be connected by a line segment in the parallel coordinate plot.
 \end{itemize}
@@ -163,8 +169,11 @@ The order in which variables are selected determines the order in which the corr
 
 \code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other.
 
-\code{method} is a character string specifying the method to be used when transforming the values of each variable into a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable into a range of [0,1] with a minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes into a an interval of [0,1]. The method \code{raw} leaves all values unscaled. Both of these methods should only be used if the values across all variables are comparable.
+\code{method} is a character string specifying the method to be used when transforming the values of each variable into a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable into a range of [0,1] with a minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes into a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
 The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and a robust 95\% confidence interval (based on the median absolute deviation) to an interval of 0 to 1.
+
+\hh{Does the method 'raw' do anything? I think we could have the same effect by simply skipping this part of the processing. It's a nice example, where something that needed para metrization in another implementation is automatically implemented here by not doing anything. }
+
 
 <<colorscheme>>=
 #####  Color Palette by Paletton.com
@@ -340,7 +349,7 @@ grid.arrange(p1, p3, p4, p2, nrow=1)
 The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male).
 For Adelie penguins the situation is not quite as clear-cut, but based on body weight and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements.
 
-<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=5, figwidth=8>>=
+<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, figwidth=8>>=
 library(palmerpenguins)
 
 penguins_pcp <- penguins %>%
@@ -369,7 +378,7 @@ penguins_pcp %>%
 
 
 
-<<penguins2, fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species.">>=
+<<penguins2, fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species.", fig.height = 6, fig.width = 8>>=
 penguins_pcp <- penguins %>%
     filter(species != "Chinstrap") %>%
     mutate(
@@ -397,11 +406,11 @@ penguins_pcp %>%
     facet_grid(species~.)
 @
 
-\subsection{Getting a second, third, ... and seventh opinion}
+\subsection{Getting a second, third, ... and seventh opinion}\label{sec:carcinoma}
 
 \autoref{fig:carcinoma} shows data from \citet{agresti} published as part of the \code{poLCA} package \citep{polca}. Seven pathologists were asked to assess the same 118 slides for the presence or absence of carcinoma in the uterine cervix. Binary responses for each slide were recorded (yes/no).  Pathologists all agreed on about 25\% of slides, which they  considered to be carcinoma free, and a further 12.5\% of slides, which were considered to show carcinoma by all pathologists.
 For the remaining 62.5\% of slides there was some disagreement. However, we see that this disagreement is not random. When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis  from left to right.
-<<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a polyline.">>=
+<<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a polyline.", fig.height = 4, fig.width = 8>>=
 data("carcinoma", package = "poLCA")
 carcinoma$numdiag <- rowSums(carcinoma) - 7
 carcinoma$any <- carcinoma$numdiag > 0
@@ -412,7 +421,7 @@ carcinoma[,1:7] <- carcinoma[,1:7] %>%
 
 carcinoma %>%
   pcp_select(6,4,3,1,7,5,2) %>%
-  pcp_scale() %>%
+  pcp_scale(method="raw") %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
     geom_pcp_axes() +
@@ -420,10 +429,11 @@ carcinoma %>%
     geom_pcp(aes(colour = factor(numdiag))) +
     geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
     scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette ="Dark2") +
-    theme_bw()
+    theme_bw() +
+    guides(color = guide_legend(reverse=TRUE))
 @
 
-
+\hh{note: in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way. }
 
 \section{Results}
 
