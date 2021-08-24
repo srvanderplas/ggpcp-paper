@@ -30,6 +30,7 @@
 % Commands for editing
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
+\newcommand{\au}[1]{{\textcolor{ForestGreen}{#1}}}
 
 \newcommand{\code}[1]{\texttt{{#1}}}
 %----------------------------------------------------------------------------------------
@@ -127,16 +128,26 @@ The remainder of the paper is organized as follows: \autoref{sec:wrangling} desc
 %------------------------------------------------
 
 The idea behind this re-implementation of parallel coordinate plots is to expose parallel coordinate plots at a functional level. Rather than using a single function with parameters controlling every aspect, we separate the data management from the visual rendering.
+\hh{In particular, we separate out the data management into three parts:}
+\begin{enumerate}
+\item Variable selection and reshaping data,
+\item Scaling of axes, both at the individual level and in the relationship of the axes to each other, and
+\item Treatment of ties in categorical axes. \hh{The treatment of ties is an aspect not generally addressed in the original parallel coordinate plots of \citet{Inselberg:1985} and \citet{Wegman:1990}. We have found a need to deal with ties, because ties are visually the main obstacle of allowing the viewer to follow an observation from axis to axis through the high-dimensional space. Once this assessment is broken for the individual observation, the  we cannot reasonably expect to gain much more information by plotting more data in the plot. XXX this is clumsy - what I am really aiming for needs a bit more: the way plots should be used in order to make sense of complicated situations is  to provide (1) a visual summary of the main trends and (2) allow us to identify observations that do not follow those trends. By mapping all plots that have the same value on one dimension into a single point on an axis, we hinder any higher-dimensional insights.}
+\end{enumerate}
 
-One of the biggest strengths of the Grammar of Graphics is its mapping between data variables and visual aesthetics.
-In standard plots any mapping is a function between one aesthetic and one data variable.
-In a parallel coordinate plot, this one-to-one mapping between data and plot aesthetics is seemingly turned into a one-to-many mapping between arbitrarily many data variables to the x axis . However, by transforming the wide form of the data set into a long form \citep{reshape, dplyr, jss.tidy, hadley.tidy}, we get to a form of the dataset in which we achieve a one-to-one mapping to a now discrete x axis consisting of the (names of the) original data variables.
+\au{XXX test test}
 
 \hh{The modularization of the data wrangling process has the additional advantage to lay out the necessary elements in successive steps. Some of these steps are even optional - e.g. scaling variables might not be necessary, if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if there are any factor variables, and if we actively want to spread these observations out. }
 
 
 
-\subsection{Variable selection and data wrangling}
+\subsection{Variable selection}
+
+One of the biggest strengths of the Grammar of Graphics is its mapping between data variables and visual aesthetics.
+In standard plots any mapping is a function between one aesthetic and one data variable.
+In a parallel coordinate plot, this one-to-one mapping between data and plot aesthetics is seemingly turned into a one-to-many mapping between arbitrarily many data variables to the x axis . However, by transforming the wide form of the data set into a long form \citep{reshape, dplyr, jss.tidy, hadley.tidy}, we get to a form of the dataset in which we achieve a one-to-one mapping to a now discrete x axis consisting of the (names of the) original data variables.
+
+\hh{From the user's perspective this data reshaping has purely the form of a data selection, while the data wrangling is going on behind the scenes in this function.}
 
 \code{pcp\_select(data, ...)} allows a selection of variables to be included in the parallel coordinate plot.
 Variables can be specified by
