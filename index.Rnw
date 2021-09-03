@@ -507,7 +507,8 @@ wide %>% separate(id, into=c("y", "x"), remove = FALSE) %>%
 
 
 <<clusters, fig.height = 4, fig.width = 8, fig.pos="H", fig.cap="Overview of all variables involved in the clustering. ", out.width='\\textwidth'>>=
-wide %>% mutate(elevation = `elevation-Jan`) %>%
+wide %>%
+  mutate(elevation = `elevation-1997-Jan`) %>%
   pcp_select(53:59) %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
