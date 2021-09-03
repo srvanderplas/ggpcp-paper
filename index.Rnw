@@ -16,6 +16,7 @@
 \usepackage{booktabs} % Horizontal rules in tables
 \usepackage{subfig} % Sub figures
 \usepackage{graphicx} % better graphics
+\usepackage{float}
 \usepackage[dvipsnames]{xcolor} % colors
 
 \usepackage{enumitem} % Customized lists
