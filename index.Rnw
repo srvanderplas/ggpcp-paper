@@ -16,6 +16,7 @@
 \usepackage{booktabs} % Horizontal rules in tables
 \usepackage{subfig} % Sub figures
 \usepackage{graphicx} % better graphics
+\usepackage{float}
 \usepackage[dvipsnames]{xcolor} % colors
 
 \usepackage{enumitem} % Customized lists
@@ -33,6 +34,7 @@
 \newcommand{\au}[1]{{\textcolor{ForestGreen}{#1}}}
 
 \newcommand{\code}[1]{\texttt{{#1}}}
+\newcommand{\pkg}[1]{\texttt{{#1}}}
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
@@ -381,7 +383,7 @@ Two methods to control this order are implemented and are regulated by the param
 \subsection{Penguins}
 %
 \autoref{fig:penguins} shows a first generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
- The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained [@penguins2]. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows body measurements of penguins  in generalized parallel coordinate plots facetted by species. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
+ The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows body measurements of penguins  in generalized parallel coordinate plots facetted by species. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
 The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male).
 For Adelie penguins the situation is not quite as clear-cut, but based on body weight and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements.
 
@@ -514,40 +516,57 @@ wide <- wide %>% left_join(wide.sum, by="id")
 @
 
 <<spatial, fig.align="center", out.width=".7\\linewidth", fig.cap="Tile plot of the (gridded) geographic area underlying the data. Each tile is colored by its cluster membership.">>=
-wide %>% separate(id, into=c("y", "x"), remove = FALSE) %>%
+means <- wide %>%
+  mutate(elevation = `elevation-1997-Jan`) %>%
+  group_by(cl8) %>%
+  summarize(across(52:59, .fns = mean))
+means$type <- "cluster-means"
+
+nasa_pcp <- wide %>%
+  mutate(
+    elevation = `elevation-1997-Jan`,
+    type = "observed") %>%
+  bind_rows(means) %>%
+  pcp_select(53:59) %>%
+  pcp_scale()
+
+
+gg1 <- wide %>% separate(id, into=c("y", "x"), remove = FALSE) %>%
   mutate(x = as.numeric(x), y = as.numeric(y)) %>%
-  ggplot(aes(x = x, y=y, fill=factor(cl6))) +
+  ggplot(aes(x = x, y=y, fill=factor(cl8))) +
   geom_tile(alpha = 0.7, colour = "grey90", size=0.1) + scale_fill_brewer("Cluster", palette = "Paired") +
   xlab("Latitude") + ylab("Longitude") +
   coord_equal() +
   ggthemes::theme_map()
+
+gg2 <- nasa_pcp %>%
+  filter(type == "cluster-means") %>%
+  ggplot(aes_pcp()) +
+  geom_pcp(aes(colour=factor(cl8)), size = 1.25) +
+  scale_colour_brewer("Cluster", palette = "Paired") +
+  theme(legend.position = "none") +
+  theme_bw() +
+  ylab("") + xlab("") +
+  guides(colour=guide_legend(override.aes = list(alpha=1, size = 2)))
+
+gridExtra::grid.arrange(gg1, gg2)
 @
 
 
-<<clusters, fig.height = 4, fig.width = 8, fig.cap="Overview of all variables involved in the clustering. ", out.width='\\textwidth'>>=
-wide <- wide %>% mutate(elevation = `elevation-Jan`)
-
-means <- wide %>%
-  pcp_select(53:59) %>%
-  select(starts_with("pcp_"), starts_with("cl")) %>%
-  select(-starts_with("cloud")) %>%
-  pivot_longer(cols = starts_with("cl"), names_to="cluster", values_to = "levels") %>%
-  group_by(pcp_x, cluster, levels) %>%
-  summarize(value = mean(pcp_y)) %>%
-  pivot_wider(names_from = "cluster", values_from="levels") %>%
-  pivot_wider(names_from = "pcp_x", values_from = "value")
-
-#names(means)
-
-wide %>%
-  pcp_select(53:59) %>%
-  pcp_scale() %>%
+<<clusters, fig.height = 5, fig.width = 8, fig.pos="H", fig.cap="Overview of all variables involved in the clustering. ", out.width='\\textwidth'>>=
+nasa_pcp %>%
+  filter(type == "observed") %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(colour=factor(cl10)), alpha = 0.8) +
-  facet_grid(.~cl6, labeller="label_both") +
-  coord_flip() + scale_colour_brewer("Cluster", palette = "Paired") +
+  geom_pcp(aes(colour=factor(cl8)), alpha = 0.3) +
+  geom_pcp(#aes(colour=factor(cl8)),
+    size=1, alpha = 0.6,
+           data = nasa_pcp %>% filter(type == "cluster-means")) +
+  facet_wrap(.~cl8, labeller="label_both", ncol=2) +
+  scale_colour_brewer("Cluster", palette = "Paired") +
   theme(legend.position = "none") +
-  ylab("") + xlab("")
+  theme_bw() +
+  ylab("") + xlab("") +
+  guides(colour=guide_legend(override.aes = list(alpha=1, size = 2)))
 @
 
 \hh{XXX changed the data for the clustering - need to adjust the description}
