@@ -183,7 +183,7 @@ The order in which variables are selected determines the order in which the corr
 
 \code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other.
 
-\code{method} is a character string specifying the method to be used when transforming the values of each variable into a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable into a range of [0,1] with a minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes into a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
+\code{method} is a character string specifying the method to be used when transforming the values of each variable into a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable into a range of [0,1] with a minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes into a an interval of [0,1]. This method should only be used if the values across all variables are comparable. \svp{XXX Need to discuss \code{std} here if you're going to use it in \autoref{fig:scale}.}
 The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and a robust 95\% confidence interval (based on the median absolute deviation) to an interval of 0 to 1.
 
 %\hh{Does the method 'raw' do anything? I think we could have the same effect by simply skipping this part of the processing. It's a nice example, where something that needed para metrization in another implementation is automatically implemented here by not doing anything. }
