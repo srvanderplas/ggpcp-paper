@@ -267,6 +267,8 @@ dt %>%
 
 \code{pcp\_arrange(data, method, space)} provides a rescaling of values on categorical axes to break ties. \code{method} is a parameter specifying which variables to use to break ties. The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering using variables' values from the left or the right, respectively. The parameter \code{scale} specifies the amount of the `y` axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
 
+\hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}
+
 \autoref{fig:alignment} shows several approaches of dealing with categorical variables in parallel coordinate plots.
 The left-most panel shows two categorical variables and the typical net of lines that forms between them in an original parallel coordinate plot. The other three panels show three different approaches of breaking the ties resulting from the categorical variables, with our favored solution shown on the right: all observations are spaced out evenly. This results in a natural visualization of the marginal frequencies along each axis (additionally enhanced by the lightly greyed boxes grouping observations in the same category). The ordering of the observations within the level is such that a minimal number of line crossings occurs between the axes. This method of dealing with categorical variables is the one we propose in the generalized parallel coordinate plot. While it is aesthetically pleasing, it also allows us in the
  spirit of the original parallel coordinate plots to follow an individual observation from left to right through the plot even for  categorical variables.
@@ -382,11 +384,6 @@ Two methods to control this order are implemented and are regulated by the param
 \section{Examples}
 \subsection{Penguins}
 %
-\autoref{fig:penguins} shows a first generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
- The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows body measurements of penguins  in generalized parallel coordinate plots facetted by species. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
-The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male).
-For Adelie penguins the situation is not quite as clear-cut, but based on body weight and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements.
-
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, fig.width=8>>=
 library(palmerpenguins)
 
@@ -413,6 +410,15 @@ penguins_pcp %>%
   ylab("") +
   xlab("Variable")
 @
+
+\autoref{fig:penguins} shows a first generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
+
+
+
+ The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows a facetted version of the previous generalized parallel coordinate plots. Facetted is done by species, note that the axes are re-scaled within each facet to make use of the full range in $y$. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
+The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male - assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships. However, in all three studies only nests with breeding successes have been considered. More details can be found in \citet{penguins2}).
+For Adelie penguins the situation is not quite as clear-cut, but based on body weight and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements. \hh{XXX check nests for Adelies}
+
 
 
 
@@ -444,6 +450,168 @@ penguins_pcp %>%
     facet_grid(species~.) +
   scale_x_discrete(expand = expansion(add=0.25))
 @
+
+\subsubsection{Ordering levels in variables and variables along the x axis}
+
+<<prep-raw-penguin, warning = FALSE>>=
+p1 <- penguins_raw
+p1 <- p1 %>% separate(col=`Individual ID`, into=c("Nest", "Individ"), remove=FALSE, sep=-2)
+names(p1)[12:15] <- c("CulmenL", "CulmenD", "FlipperL", "BodyMass")
+p1 <- p1 %>% separate(Species, into=c("species", "foo2", "foo3", "foo4"), sep=" ") %>% select(-starts_with("foo")) # foos make R happy, because it doesn't throw away anything unexpected
+@
+
+\autoref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variable in the generalized parallel coordinate plots.
+
+<<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island.", fig.height=6, fig.width=8>>=
+library(scales)
+#cols <- hue_pal()(3)
+cols <- rev(c("#535993", "#C5D068", "#D4856A"))
+
+# #####  Color Palette by Paletton.com
+# #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
+#
+#
+# *** Primary color:
+#
+#    shade 0 = #323875 = rgb( 50, 56,117) = rgba( 50, 56,117,1) = rgb0(0.196,0.22,0.459)
+#    shade 1 = #7D82B0 = rgb(125,130,176) = rgba(125,130,176,1) = rgb0(0.49,0.51,0.69)
+#    shade 2 = #535993 = rgb( 83, 89,147) = rgba( 83, 89,147,1) = rgb0(0.325,0.349,0.576)
+#    shade 3 = #191F58 = rgb( 25, 31, 88) = rgba( 25, 31, 88,1) = rgb0(0.098,0.122,0.345)
+#    shade 4 = #080D3B = rgb(  8, 13, 59) = rgba(  8, 13, 59,1) = rgb0(0.031,0.051,0.231)
+#
+# *** Secondary color (1):
+#
+#    shade 0 = #9AA637 = rgb(154,166, 55) = rgba(154,166, 55,1) = rgb0(0.604,0.651,0.216)
+#    shade 1 = #F1FAA6 = rgb(241,250,166) = rgba(241,250,166,1) = rgb0(0.945,0.98,0.651)
+#    shade 2 = #C5D068 = rgb(197,208,104) = rgba(197,208,104,1) = rgb0(0.773,0.816,0.408)
+#    shade 3 = #727D15 = rgb(114,125, 21) = rgba(114,125, 21,1) = rgb0(0.447,0.49,0.082)
+#    shade 4 = #4A5300 = rgb( 74, 83,  0) = rgba( 74, 83,  0,1) = rgb0(0.29,0.325,0)
+#
+# *** Secondary color (2):
+#
+#    shade 0 = #AA5639 = rgb(170, 86, 57) = rgba(170, 86, 57,1) = rgb0(0.667,0.337,0.224)
+#    shade 1 = #FFC0AA = rgb(255,192,170) = rgba(255,192,170,1) = rgb0(1,0.753,0.667)
+#    shade 2 = #D4856A = rgb(212,133,106) = rgba(212,133,106,1) = rgb0(0.831,0.522,0.416)
+#    shade 3 = #803015 = rgb(128, 48, 21) = rgba(128, 48, 21,1) = rgb0(0.502,0.188,0.082)
+#    shade 4 = #551600 = rgb( 85, 22,  0) = rgba( 85, 22,  0,1) = rgb0(0.333,0.086,0)
+
+
+
+# First pcp
+pp1 <- p1 %>% pcp_select(studyName, species, Island, CulmenL:Sex) %>%
+  pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
+  geom_pcp_axes(colour="white") +
+  geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
+  geom_pcp_boxes(fill="white") +
+  geom_pcp_labels(fill="white", alpha=1) +
+  theme_bw() +
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none") +
+  ggtitle("Original order of levels and variables") +
+  scale_colour_manual(values=c(cols[1], cols[2], cols[3]))
+
+p1 <- p1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adelie", "Gentoo"))) %>%
+  mutate(island=factor(Island, levels=c("Dream", "Torgersen", "Biscoe")))
+
+
+# Fourth pcp
+pp2 <- p1 %>%
+  pcp_select(studyName, species, island, CulmenL:Sex) %>%
+#pp2 <- p1 %>% pcp_select(studyName, speciesC, islandC, CulmenL, `-CulmenD`, FlipperL:Sex) %>%
+  pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
+  geom_pcp_axes() +
+  geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
+  geom_pcp_boxes(fill="white") +
+  geom_pcp_labels(alpha=1) +
+  theme_bw() +
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none") +
+  scale_colour_manual(values=c(cols[2], cols[1], cols[3])) +
+  ggtitle("Levels reordered to emphasize relationship between islands and species")
+
+library(patchwork)
+pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
+@
+
+The variables in \autoref{fig:penguins-variable-order} have been re-ordered
+to allow the viewer to see what body measurements distinguish the species. Note that besides the re-ordering, the axes for Culmen depth is also reversed.
+The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, that Adelie and Chinstrap are distinguished by Culmen Length.
+The plot does not show anything about the differences between male and female penguins.  Given the greater size of the males in general it may be better to split by male and female, ignoring the missing values.  The results are the same for both sexes and stand out more.  Interestingly,  some potential outliers that were not visible previously, now stand out.
+
+\au{XXX Possible ordering approaches would be to use some kind of association measure or a matrix reordering algorithm for two categorical variables, medians by category or R2 from a linear model for continuous and categorical, correlations for two continuous variables.}
+
+\au{XXX
+Drawing pcps depends on what your goal might be.  It reminds me of rotating plots and all the optimisation criteria that were suggested for a variety of purposes.  They did not necessarily work well, but they suggested some ways to proceed and generally improved things a bit.  What criteria might be similarly helpful for pcps?
+}
+
+<<penguins-variable-order, fig.cap="Changing the order of the variables along the x-axis emphasizes the differences in body measurements between the species.", fig.height=6, fig.width=8>>=
+# Reorder the variables, moving CulmenL to the right, and do case ordering from the left
+# Invert the CulmenD variable (and use your minus notation :-))
+p1 <- p1 %>% mutate(`-CulmenD`=-CulmenD)
+
+# Fifth pcp
+# p1 %>% pcp_select(studyName, speciesC, islandC, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+#   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
+#   geom_pcp_axes(colour="white") +
+#   geom_pcp(aes(colour=speciesC)) +
+#   geom_pcp_boxes(fill="white") +
+#   geom_pcp_labels(fill="white", alpha=1) +
+#   xlab(NULL) + ylab(NULL) +
+#   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+#         legend.position="none") +
+#   scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
+
+# Change the order of printing the colours to make Chinstrap stand out better
+# Requires rearranging of dataset case order and using overplot="none"
+p1 <- p1 %>% arrange(fct_rev(species))
+
+# # Sixth pcp
+# p1 %>% pcp_select(studyName, speciesC, islandC, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+#   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
+#   geom_pcp_axes(colour="white") +
+#   geom_pcp(aes(colour=speciesC), overplot="none") +
+#   geom_pcp_boxes(fill="white") +
+#   geom_pcp_labels(fill="white", alpha=1) +
+#   xlab(NULL) + ylab(NULL) +
+#   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+#         legend.position="none") +
+#   scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
+#
+
+
+
+# Splitting by sex (not faceting so that NAs are excluded and scales are individual)
+# Seventh pcp
+m1 <- p1 %>% filter(Sex=="MALE") %>% pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
+geom_pcp_axes() +
+geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
+geom_pcp_boxes(fill="white") +
+geom_pcp_labels(fill="white", alpha=1) +
+  theme_bw() +
+xlab(NULL) + ylab(NULL) +
+theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+legend.position="none") +
+scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
+
+f1 <- p1 %>% filter(Sex=="FEMALE") %>% pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
+geom_pcp_axes() +
+geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
+geom_pcp_boxes(fill="white") +
+geom_pcp_labels(fill="white", alpha=1) +
+  theme_bw() +
+xlab(NULL) + ylab(NULL) +
+theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+legend.position="none") +
+scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
+
+#library(patchwork)
+f1 + m1 + plot_layout(nrow = 2, byrow = FALSE)
+@
+
 
 \subsection{Getting a second, third, ... and seventh opinion}\label{sec:carcinoma}
 
@@ -515,7 +683,7 @@ wide.sum <- nasa %>% dplyr::select(id, month, year, starts_with("cloud"), ozone,
 wide <- wide %>% left_join(wide.sum, by="id")
 @
 
-<<spatial, fig.align="center", out.width=".7\\linewidth", fig.cap="Tile plot of the (gridded) geographic area underlying the data. Each tile is colored by its cluster membership.">>=
+<<spatial, fig.align="center", out.width="\\linewidth", fig.cap="Tile plot of the (gridded) geographic area underlying the data. Each tile is colored by its cluster membership.">>=
 means <- wide %>%
   mutate(elevation = `elevation-1997-Jan`) %>%
   group_by(cl8) %>%
@@ -549,7 +717,7 @@ gg2 <- nasa_pcp %>%
   ylab("") + xlab("") +
   guides(colour=guide_legend(override.aes = list(alpha=1, size = 2)))
 
-gridExtra::grid.arrange(gg1, gg2)
+gg1+gg2
 @
 
 
