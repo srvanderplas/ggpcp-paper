@@ -609,7 +609,25 @@ legend.position="none") +
 scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
 
 #library(patchwork)
-f1 + m1 + plot_layout(nrow = 2, byrow = FALSE)
+#f1 + m1 + plot_layout(nrow = 2, byrow = FALSE)
+
+p1 %>%
+  filter(!is.na(Sex)) %>%
+  pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+  group_by(Sex) %>%
+  pcp_scale(.by_group = TRUE) %>%
+  pcp_arrange(method="from-left", .by_group = TRUE) %>%
+  ggplot(aes_pcp()) +
+  geom_pcp_axes() +
+  geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
+  geom_pcp_boxes(fill="white") +
+  geom_pcp_labels(fill="white", alpha=1) +
+  theme_bw() +
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none") +
+  scale_colour_manual(values=c(cols[2], cols[1], cols[3])) +
+  facet_grid(Sex~.)
 @
 
 
