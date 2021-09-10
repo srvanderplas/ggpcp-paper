@@ -62,6 +62,8 @@ $^3$ University 3
 \noindent Parallel coordinate plots (PCP) are a useful tool in exploratory data analysis of high-dimensional numerical data. The use of PCPs is limited when working with categorical variables or a mix of categorical and continuous  variables. In this paper, we propose generalized parallel coordinate plots (GPCP) to extend the ability of PCPs from just numeric variables to dealing seamlessly with a mix of categorical and numeric variables in a single plot. In this process we find that existing solutions for categorical values only, such as hammock plots or parsets become edge cases in the new framework. By focusing on individual observations rather than a marginal frequency we gain additional flexibility. The resulting approach is implemented in the R package ggpcp.
 % Dummy abstract text - replace \blindtext with your abstract text
 \end{abstract}
+
+\tableofcontents
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
@@ -263,7 +265,17 @@ dt %>%
   scale_x_discrete(expand = expansion(add=0.3))
 @
 
+\section{Visual Rendering}\label{sec:visual}
+
+
 \subsection{Breaking ties on categorical axes}
+
+\hh{XXX How to deal with ties has a huge visual impact. In order to get to that we need to do some more data wrangling. This subsection is somewhere between data management and visualization. }
+
+\hh{XXX it might be good to separate the section into 'how' (data) and 'why' (visual aspects).}
+
+
+
 
 \code{pcp\_arrange(data, method, space)} provides a rescaling of values on categorical axes to break ties. \code{method} is a parameter specifying which variables to use to break ties. The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering using variables' values from the left or the right, respectively. The parameter \code{scale} specifies the amount of the `y` axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
 
@@ -357,12 +369,12 @@ p4 <- dfnew %>%
 grid.arrange(p1, p3, p4, p2, nrow=1)
 @
 
-
-\section{The Generalized Parallel Coordinate Plot}
+\subsection{Plotting Order of line segments}
 
 \hh{XXX We need to include some code somewhere to also show the 'how'.}
 
-\subsection{Plotting Order of line segments}
+\hh{XXX Order of levels and order of variables are important. } \au{Drawing pcps depends on what your goal might be.}
+
 
 One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot. As the number of observations increase, this becomes less feasible because of overplotting of line segments, particularly for slightly larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a polyline from one side of the plot to the other. \hh{XXX the order in which crossing lines are drawn is only visible when the lines have different colors.}
 As a countermeasure we carefully control the order in which line segments are plotted.
@@ -382,7 +394,12 @@ Two methods to control this order are implemented and are regulated by the param
 
 
 \section{Examples}
-\subsection{Penguins}
+\subsection{Palmers Penguins}
+
+\hh{Several aspects in Parallel Coordinate Plots depend on orderings: order of variables along the $x$ axis, order of levels in a categorical variable, and order in which  lines are drawn.
+Different orders emphasize different aspects of the data. Changing orders should therefore  (a) have good defaults, and (b) be easily changeable.}
+
+\subsubsection{Determining sex}
 %
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, fig.width=8>>=
 library(palmerpenguins)
@@ -451,7 +468,7 @@ penguins_pcp %>%
   scale_x_discrete(expand = expansion(add=0.25))
 @
 
-\subsubsection{Ordering levels in variables and variables along the x axis}
+\subsubsection{Distinguishing species}
 
 <<prep-raw-penguin, warning = FALSE>>=
 p1 <- penguins_raw
@@ -816,8 +833,6 @@ wide %>%
 @
 
 Along the x-axis the number of clusters are plotted with one PCP axis each, from two clusters (left) to 10 clusters (right most PCP axis). Each line corresponds to one location, lines are colored by cluster assignment in the ten-cluster solution. This essentially replicates  the dendrogram while providing information about the number of observations in each cluster as well as the relationship between successive clustering steps.
-
-\section{Results}
 
 %------------------------------------------------
 
