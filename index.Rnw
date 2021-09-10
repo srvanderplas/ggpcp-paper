@@ -71,7 +71,7 @@ library(knitr)
 knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
 @
 
-<<packages, echo=FALSE, warning=FALSE, message=FALSE>>=
+<<packages, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE>>=
 library(tidyverse)
 library(ggpcp)
 library(gridExtra)
@@ -613,7 +613,7 @@ scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
 
 p1 %>%
   filter(!is.na(Sex)) %>%
-  pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+  pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL) %>%
   group_by(Sex) %>%
   pcp_scale(.by_group = TRUE) %>%
   pcp_arrange(method="from-left", .by_group = TRUE) %>%
@@ -701,19 +701,24 @@ wide.sum <- nasa %>% dplyr::select(id, month, year, starts_with("cloud"), ozone,
 wide <- wide %>% left_join(wide.sum, by="id")
 @
 
-<<spatial, fig.align="center", out.width="\\linewidth", fig.cap="Tile plot of the (gridded) geographic area underlying the data. Each tile is colored by its cluster membership.">>=
+
+<<spatial-cropped, fig.align="center", out.width="\\linewidth", fig.cap="(Left) Tile plot of the (gridded) geographic area underlying the data. Each tile is colored by its cluster membership. (Right) Generalized Parallel Coordinate Plot of the cluster means for atmospheric variables.">>=
+knitr::include_graphics("figures/spatial-1-cropped.pdf")
+@
+
+
+<<spatial, fig.align="center", eval=FALSE, out.width="\\linewidth", fig.cap="Tile plot of the (gridded) geographic area underlying the data. Each tile is colored by its cluster membership.">>=
+names(wide)[56] <- "elevation"
 means <- wide %>%
-  mutate(elevation = `elevation-1997-Jan`) %>%
   group_by(cl8) %>%
-  summarize(across(52:59, .fns = mean))
+  summarize(across(`cloudhigh-Jan`:`surftemp-Jan`, .fns = mean))
 means$type <- "cluster-means"
 
 nasa_pcp <- wide %>%
   mutate(
-    elevation = `elevation-1997-Jan`,
     type = "observed") %>%
   bind_rows(means) %>%
-  pcp_select(53:59) %>%
+  pcp_select(`cloudhigh-Jan`:`surftemp-Jan`) %>%
   pcp_scale()
 
 
@@ -723,19 +728,31 @@ gg1 <- wide %>% separate(id, into=c("y", "x"), remove = FALSE) %>%
   geom_tile(alpha = 0.7, colour = "grey90", size=0.1) + scale_fill_brewer("Cluster", palette = "Paired") +
   xlab("Latitude") + ylab("Longitude") +
   coord_equal() +
-  ggthemes::theme_map()
+  ggthemes::theme_map() +
+  theme(legend.position = "none") +
+     theme(panel.grid = element_blank(),
+        #   panel.background = element_rect(fill = "#FFFFFF"),
+       #    plot.background = element_rect(fill = "#FFFFFF"),
+           plot.margin = rep(unit(0,"null"),4),
+           panel.spacing = unit(0,"null"),
+           panel.border     = element_blank())
+
+
 
 gg2 <- nasa_pcp %>%
   filter(type == "cluster-means") %>%
   ggplot(aes_pcp()) +
   geom_pcp(aes(colour=factor(cl8)), size = 1.25) +
   scale_colour_brewer("Cluster", palette = "Paired") +
-  theme(legend.position = "none") +
   theme_bw() +
+    theme(legend.position = "bottom") +
   ylab("") + xlab("") +
-  guides(colour=guide_legend(override.aes = list(alpha=1, size = 2)))
+  guides(colour=guide_legend(override.aes = list(alpha=1, size = 2))) +
+  theme(axis.text.x = element_text(angle = 60, vjust = 0.5, hjust=0.5)) +
+  coord_equal()
 
-gg1+gg2
+
+gg1+gg2 + plot_layout(widths=c(1,2))
 @
 
 
@@ -761,12 +778,13 @@ The connection between the US gulf coast line and the upper region of the Amazon
 
 A parallel coordinate plot allows us to visualize a part of the dendrogram corresponding to the hierarchical clustering.
 
-<<old,fig.height = 3.5, fig.cap="Dendrogram showing number of clusters at each step of the hierarchical process using the old-style parallel coordinate plot.">>=
+<<old,fig.height = 3.5, out.width='.85\\linewidth', fig.cap="Dendrogram showing number of clusters at each step of the hierarchical process using the old-style parallel coordinate plot.">>=
 wide %>%
   pcp_select(cl2:cl10) %>%
   pcp_scale %>%
   ggplot(aes_pcp()) +
   geom_pcp() +
+  theme_bw() +
   xlab("Number of clusters") +
   ylab("")
 @
@@ -789,8 +807,8 @@ wide %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp_boxes( boxwidth=0.1, fill=NA) +
   geom_pcp(alpha = 0.5, aes(colour = factor(cl10))) +
+  geom_pcp_boxes( boxwidth=0.1, fill="white", alpha = 0.3) +
   xlab("Number of clusters") +
   scale_colour_brewer("Cluster", palette="Paired") +
   ylab("") +
