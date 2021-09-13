@@ -477,6 +477,8 @@ names(p1)[12:15] <- c("CulmenL", "CulmenD", "FlipperL", "BodyMass")
 p1 <- p1 %>% separate(Species, into=c("species", "foo2", "foo3", "foo4"), sep=" ") %>% select(-starts_with("foo")) # foos make R happy, because it doesn't throw away anything unexpected
 @
 
+\hh{some changes}
+
 \autoref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variable in the generalized parallel coordinate plots.
 
 <<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island.", fig.height=6, fig.width=8>>=
