@@ -92,7 +92,7 @@ Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \cit
 This clutter is sometimes \svp{mitigated} by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
 % However, parallel coordinate plots have some shortcomings. \hh{XXXX after bashing clutter in pcps, `some shortcomings' feels like rubbing it in :)} The biggest challenge comes when working with categorical variables.
-\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions\svp{XXX cite XXX}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This \svp{almost invariable} introduces
+\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions\svp{XXX cite XXX}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This \svp{almost invariably} introduces
 %a lot of
 ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows lines from each level of one variable to all levels of the next variable.
 Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}. These solutions \svp{are intended for use with}
