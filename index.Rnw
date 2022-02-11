@@ -31,7 +31,7 @@
 % Commands for editing
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
-\newcommand{\au}[1]{{\textcolor{ForestGreen}{#1}}}
+\newcommand{\jz}[1]{{\textcolor{ForestGreen}{#1}}}
 
 \newcommand{\code}[1]{\texttt{{#1}}}
 \newcommand{\pkg}[1]{\texttt{{#1}}}
