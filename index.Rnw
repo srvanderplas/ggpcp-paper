@@ -31,7 +31,7 @@
 % Commands for editing
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
-\newcommand{\jz}[1]{{\textcolor{ForestGreen}{#1}}}
+\newcommand{\au}[1]{{\textcolor{ForestGreen}{#1}}}
 
 \newcommand{\code}[1]{\texttt{{#1}}}
 \newcommand{\pkg}[1]{\texttt{{#1}}}
@@ -39,11 +39,11 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{Visual Diagnostics: assessing similarity of breech face impressions} % Article title
+\title{A grammar of graphics framework for generalized parallel coordinate plots} % Article title
 \author{%
-\textsc{Joseph Zemmels}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
-\textsc{Susan Vander Plas}$^2$\hspace{2em}
-\textsc{Heike Hofmann}$^3$\\[1ex] % Your name
+\textsc{Author 1}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
+\textsc{Author 2}$^2$\hspace{2em}
+\textsc{Author 3}$^3$\\[1ex] % Your name
 {\footnotesize
 $^1$ University 1;
 $^2$ University 2;
@@ -60,8 +60,8 @@ $^3$ University 3
 \maketitle
 \begin{abstract}
 \noindent
-Come back to later
-% Dummy abstract text - replace \blindtext with your abstract text
+\noindent Parallel coordinate plots (PCP) are a useful tool in exploratory data analysis of high-dimensional numerical data. The use of PCPs is limited when working with categorical variables or a mix of categorical and continuous  variables. In this paper, we propose generalized parallel coordinate plots (GPCP) to extend the ability of PCPs from just numeric variables to dealing seamlessly with a mix of categorical and numeric variables in a single plot. In this process we find that existing solutions for categorical values only, such as hammock plots or parsets become edge cases in the new framework. By focusing on individual observations rather than a marginal frequency we gain additional flexibility. The resulting approach is implemented in the R package ggpcp.
+
 \end{abstract}
 
 \tableofcontents
@@ -85,7 +85,7 @@ theme_set(theme_bw())
 \section{Introduction}
 
 Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by \svp{facetting or} additional mappings to plot aesthetics, such as point size and color.
-Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis a cross all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
+Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
 
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
