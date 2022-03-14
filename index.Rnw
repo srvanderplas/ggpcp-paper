@@ -133,6 +133,27 @@ The remainder of the paper is organized as follows: \autoref{sec:wrangling} desc
 
 % Section 3  presents the conceptual framework of  generalized parallel coordinate plots and general principles informing their construction. Section 4 describes the connection between generalized parallel coordinates and the grammar of graphics. Section 5 provides three examples highlighting different aspects of the use of  generalized parallel coordinate plots in an exploratory setting.
 
+\section{Motivation and Package Usage}\label{sec:usage}
+\hh{Why yet another pcp package? }
+
+
+<<eval = FALSE>>=
+flea %>%
+  pcp_select(species, 2:7, species) %>%   # variable selection, see section 3.1
+  pcp_scale(method="uniminmax") %>%       # setting scaling method, see section 3.2
+  pcp_arrange() %>%                       #
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = species))
+@
+
+\begin{itemize}
+- tidy syntax
+- layers, ggplot2 style
+- facets
+- data wrangling separated from visual rendering
+\end{itemize}
+
 %------------------------------------------------
 
 \section{Data management}\label{sec:wrangling}
@@ -465,7 +486,7 @@ pp1 <- p1 %>% pcp_select(studyName, species, Island, CulmenL:Sex) %>%
   pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
   geom_pcp_axes(colour="white") +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
-  geom_pcp_boxes(fill="white") +
+  geom_pcp_boxes(fill="white", alpha = 0.5) +
   geom_pcp_labels(fill="white", alpha=1) +
   theme_bw() +
   xlab(NULL) + ylab(NULL) +
@@ -485,7 +506,7 @@ pp2 <- p1 %>%
   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
-  geom_pcp_boxes(fill="white") +
+  geom_pcp_boxes(fill="white", alpha = 0.5) +
   geom_pcp_labels(alpha=1) +
   theme_bw() +
   xlab(NULL) + ylab(NULL) +
@@ -846,6 +867,16 @@ wide %>%
 Along the x-axis the number of clusters are plotted with one PCP axis each, from two clusters (left) to 10 clusters (right most PCP axis). Each line corresponds to one location, lines are colored by cluster assignment in the ten-cluster solution. This essentially replicates  the dendrogram while providing information about the number of observations in each cluster as well as the relationship between successive clustering steps.
 
 %------------------------------------------------
+
+<<>>=
+penguins_raw %>%
+  ggplot(aes(x = `Delta 13 C (o/oo)`, y = `Delta 15 N (o/oo)`)) +
+  geom_point(aes(colour = Species)) +
+  scale_color_manual(values = cols)
+
+read_sf("")
+@
+
 
 \section{Discussion}
 
