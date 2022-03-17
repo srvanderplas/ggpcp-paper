@@ -138,21 +138,21 @@ The remainder of the paper is organized as follows: \autoref{sec:wrangling} desc
 \hh{Why yet another pcp package? }
 
 
-<<eval = FALSE>>=
-flea %>%
-  pcp_select(species, 2:7, species) %>%   # variable selection, see section 3.1
-  pcp_scale(method="uniminmax") %>%       # setting scaling method, see section 3.2
-  pcp_arrange() %>%                       #
-  ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp(aes(colour = species))
+<<eval = FALSE, echo=TRUE>>=
+flea %>%                                  # data management:
+  pcp_select(species, 2:7, species) %>%   #   variable selection, see section 3.1
+  pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
+  pcp_arrange() %>%                       #   arranging categorical data
+  ggplot(aes_pcp()) +                     # plotting the chart:
+    geom_pcp_axes() +                     #   vertical lines for axes
+    geom_pcp(aes(colour = species))       #   parallel coordinate line segments
 @
 
 \begin{itemize}
-- tidy syntax
-- layers, ggplot2 style
-- facets
-- data wrangling separated from visual rendering
+\item tidy syntax
+\item layers, ggplot2 style - e.g. boxplots
+\item facets
+\item data wrangling separated from visual rendering
 \end{itemize}
 
 %------------------------------------------------
@@ -168,13 +168,13 @@ The idea behind this re-implementation of parallel coordinate plots is to expose
 \item Treatment of ties in categorical axes. \hh{The treatment of ties is an aspect not generally addressed in the original parallel coordinate plots of \citet{Inselberg:1985} and \citet{Wegman:1990}. We have found a need to deal with ties, because ties are visually the main obstacle of allowing the viewer to follow an observation from axis to axis through the high-dimensional space. Once this assessment is broken for the individual observation, the  we cannot reasonably expect to gain much more information by plotting more data in the plot. XXX this is clumsy - what I am really aiming for needs a bit more: the way plots should be used in order to make sense of complicated situations is  to provide (1) a visual summary of the main trends and (2) allow us to identify observations that do not follow those trends. By mapping all plots that have the same value on one dimension into a single point on an axis, we hinder any higher-dimensional insights.}
 \end{enumerate}
 
-\au{XXX test test}
-
 \hh{The modularization of the data wrangling process has the additional advantage to lay out the necessary elements in successive steps. Some of these steps are even optional - e.g. scaling variables might not be necessary, if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if there are any factor variables, and if we actively want to spread these observations out. }
 
 
 
-\subsection{Variable selection}
+\subsection{Variable selection and Order of the variables}
+
+\hh{mention order of the variables}
 
 One of the biggest strengths of the Grammar of Graphics is its mapping between data variables and visual aesthetics.
 In standard plots any mapping is a function between one aesthetic and one data variable.
@@ -192,7 +192,7 @@ Variables can be specified by
 \end{itemize}
 
 or any combination thereof. Variables can be selected multiple times and will then be included in the data and the resulting plot multiple times.
-The order in which variables are selected determines the order in which the corresponding axis is drawn in the parallel coordinate plots.
+Note that the order in which variables are selected determines the order in which the corresponding axis is drawn in the parallel coordinate plots.
 \code{pcp\_select} transforms the selected variables to long form and embellishes the data set with a number of additional variables. All of the newly created and added variables start with the prefix \code{pcp\_}:
 \begin{itemize}
 \item \code{pcp\_x}: discrete variable consisting of the names of the selected variables in the order that they were selected - this is the order in which the variables will be included in the plot.
@@ -869,14 +869,7 @@ Along the x-axis the number of clusters are plotted with one PCP axis each, from
 
 %------------------------------------------------
 
-<<>>=
-penguins_raw %>%
-  ggplot(aes(x = `Delta 13 C (o/oo)`, y = `Delta 15 N (o/oo)`)) +
-  geom_point(aes(colour = Species)) +
-  scale_color_manual(values = cols)
 
-read_sf("")
-@
 
 
 \section{Discussion}
