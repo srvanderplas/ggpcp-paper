@@ -31,7 +31,7 @@
 % Commands for editing
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
 \newcommand{\svp}[1]{{\textcolor{blue}{#1}}}
-\newcommand{\jz}[1]{{\textcolor{ForestGreen}{#1}}}
+\newcommand{\au}[1]{{\textcolor{ForestGreen}{#1}}}
 
 \newcommand{\code}[1]{\texttt{{#1}}}
 \newcommand{\pkg}[1]{\texttt{{#1}}}
@@ -39,11 +39,11 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{Visual Diagnostics: assessing similarity of breech face impressions} % Article title
+\title{A grammar of graphics framework for generalized parallel coordinate plots} % Article title
 \author{%
-\textsc{Joseph Zemmels}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
-\textsc{Susan Vander Plas}$^2$\hspace{2em}
-\textsc{Heike Hofmann}$^3$\\[1ex] % Your name
+\textsc{Author 1}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
+\textsc{Author 2}$^2$\hspace{2em}
+\textsc{Author 3}$^3$\\[1ex] % Your name
 {\footnotesize
 $^1$ University 1;
 $^2$ University 2;
@@ -60,8 +60,8 @@ $^3$ University 3
 \maketitle
 \begin{abstract}
 \noindent
-Come back to later
-% Dummy abstract text - replace \blindtext with your abstract text
+\noindent Parallel coordinate plots (PCP) are a useful tool in exploratory data analysis of high-dimensional numerical data. The use of PCPs is limited when working with categorical variables or a mix of categorical and continuous  variables. In this paper, we propose generalized parallel coordinate plots (GPCP) to extend the ability of PCPs from just numeric variables to dealing seamlessly with a mix of categorical and numeric variables in a single plot. In this process we find that existing solutions for categorical values only, such as hammock plots or parsets become edge cases in the new framework. By focusing on individual observations rather than a marginal frequency we gain additional flexibility. The resulting approach is implemented in the R package ggpcp.
+
 \end{abstract}
 
 \tableofcontents
@@ -85,8 +85,7 @@ theme_set(theme_bw())
 \section{Introduction}
 
 Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by \svp{facetting or} additional mappings to plot aesthetics, such as point size and color.
-Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis a cross all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
-
+Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
 Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data, and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado\svp{I'm not sure this game is that well known? I had to google it - I think it might be called pick-up sticks here?} rather than organized data.
@@ -104,9 +103,7 @@ An attempt to combine categorical and numeric variables in a parallel coordinate
 
 
 Various packages in R \citep{R} exist that contain an implementation of one of the parallel coordinate plots. The function "parcoord" in the \pkg{MASS} package \citep{MASS} makes use of the base plot system of R to draw parallel coordinate plots.
-The function "cpcp" in package \pkg{iplots} implements the parallel coordinate plot \citep{cpcp}. Developments based on the grammar of graphics \citep{wilkinson:1999} and the \pkg{ggplot2} \citep{ggplot2} framework are, e.g. the function `ggparcoord' in \pkg{GGally} \citep{GGally} or \pkg{ggparallel} \citep{ggparallel} which provide an implementation of Hammock and common-angle plots. \svp{We may want to integrate this paragraph into the previous paragraph, or provide graphical examples of the different plots?}
-
-Those packages based on \pkg{ggplot2} make use of \pkg{ggplot2}, but are actually wrapper of existing functions for highly specialized plots with tens of parameters, which do not allow the full flexibility of \pkg{ggplot2} and do not make use of \pkg{ggplot2}'s  layer framework. \svp{Might be useful to actually provide an example of the syntax/underlying code here or in an appendix?}
+The function "cpcp" in package \pkg{iplots} implements the parallel coordinate plot \citep{cpcp}. Developments based on the grammar of graphics \citep{wilkinson:1999} and the \pkg{ggplot2} \citep{ggplot2} framework are, e.g. the functions `ggparcoord' in \pkg{GGally} \citep{GGally} or \pkg{ggparallel} \citep{ggparallel} which provide an implementation of Hammock and common-angle plots. \svp{We may want to integrate this paragraph into the previous paragraph, or provide graphical examples of the different plots?} Those packages based on \pkg{ggplot2} make use of \pkg{ggplot2}, but are actually wrapper of existing functions for highly specialized plots with tens of parameters, which do not allow the full flexibility of \pkg{ggplot2} and do not make use of \pkg{ggplot2}'s  layer framework. \svp{Might be useful to actually provide an example of the syntax/underlying code here or in an appendix?}
 
 <<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next. ">>=
 df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
@@ -135,7 +132,6 @@ The remainder of the paper is organized as follows: \autoref{sec:wrangling} desc
 % Section 3  presents the conceptual framework of  generalized parallel coordinate plots and general principles informing their construction. Section 4 describes the connection between generalized parallel coordinates and the grammar of graphics. Section 5 provides three examples highlighting different aspects of the use of  generalized parallel coordinate plots in an exploratory setting.
 
 \section{Motivation and Package Usage}\label{sec:usage}
-\hh{Why yet another pcp package? }
 
 
 <<eval = FALSE, echo=TRUE>>=
@@ -148,12 +144,16 @@ flea %>%                                  # data management:
     geom_pcp(aes(colour = species))       #   parallel coordinate line segments
 @
 
-\begin{itemize}
-\item tidy syntax
-\item layers, ggplot2 style - e.g. boxplots
-\item facets
-\item data wrangling separated from visual rendering
-\end{itemize}
+
+By leveraging the full ggplot2 philosophy instead of using highly specific wrapper functions, \pkg{ggpcp} allows users to focus on the data, rather than the names of various parameters used for customization.
+\pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering. Scaling, ordering of cases, and the arrangement of the parallel axes are completed using \code{pcp\_scale}, \code{pcp\_arrange}, and \code{pcp\_select}, respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
+During the plotting state, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
+The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}), but there are additional advantages to the use of \pkg{ggplot2}.
+Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
+
+One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
+
+In addition, basing \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as \pkg{plotly} \citep{plotly-book}  and \pkg{gridsvg}\citep{gridsvg} which leverage \pkg{ggplot2} to create interactive graphics for the web.
 
 %------------------------------------------------
 
@@ -882,6 +882,41 @@ Along the x-axis the number of clusters are plotted with one PCP axis each, from
 \bibliography{refs.bib}
 
 %----------------------------------------------------------------------------------------
+\begin{appendix}
+\section{Example usage}
+Commented code for \autoref{fig:carcinoma}:
+<<code-figure, eval=FALSE, echo=TRUE>>=
+data(carcinoma, package = "poLCA")
+
+# Prepping the Dataset
+carcinoma$total <- rowSums(carcinoma) - 7
+carcinoma <- carcinoma %>% mutate(
+  across(A:G, .fns = as.factor)
+)
+
+carcinoma %>%
+
+# Selecting and scaling variables
+pcp_select(F, D, C, A, G, E, B, tot) %>%
+pcp_scale(method="uniminmax") %>%
+pcp_arrange() %>%
+
+# Setting up ggplot for pcp and setting pcp display options
+ggplot(aes_pcp()) +
+geom_pcp_axes() +
+geom_pcp_boxes(colour="black", alpha=0) +
+geom_pcp(aes(colour = tot)) +
+geom_pcp_labels(aes(label = pcp_level), fill="white", alpha = 1) +
+
+# Choosing general ggplot display options
+scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette ="Dark2") +
+theme_bw() +
+guides(color = guide_legend(reverse=TRUE)) +
+scale_x_discrete(expand = expansion(add=0.25)) +
+xlab(NULL) + ylab(NULL) +
+theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
+@
+\end{appendix}
 
 \end{document}
 
