@@ -645,7 +645,6 @@ p1 %>%
 
 \subsubsection{Determining sex}
 
-Possible color scheme: https://coolors.co/ff595e-ffca3a-8ac926-1982c4-6a4c93
 
 %
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, fig.width=8>>=
@@ -667,7 +666,7 @@ penguins_pcp %>%
   geom_pcp(aes(colour = sex), alpha = 0.8) +
   geom_pcp(aes(colour = sex), size =1,
            data = penguins_pcp %>% filter(sex=="?")) +
-  geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
+  geom_pcp_labels(aes(label = pcp_level), alpha = .75) +
   theme_bw() +
   scale_colour_manual(values=c("#FFCD70", "#8b4950", "#008080")) +
 #    scale_colour_manual(values=c("#ff595e", "#573e79", "#1982c4")) +
@@ -679,7 +678,7 @@ penguins_pcp %>%
 
 \hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 
-The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by orange \hh{XXX} lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2b} shows a facetted version of the previous generalized parallel coordinate plots. \hh{XXX we also added the ribbons within each species and sex to emphasize the main location of the observed data.}
+The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2b} shows a facetted version of the previous generalized parallel coordinate plots. \hh{XXX we also added the ribbons within each species and sex to emphasize the main location of the observed data.}
  Facetted is done by species \hh{and sex}, note that the axes are re-scaled within each facet to make use of the full range in $y$. \hh{The listing in  \autoref{fig:penguins2a} shows the code for prepping the data shown in \autoref{fig:penguins2b}. By grouping on species but not on sex (see line 10), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of the interquantile-ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and hypothetical sex. }
 
 
