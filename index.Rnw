@@ -1,4 +1,5 @@
 %----------------------------------------------------------------------------------------
+%	PA%----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
@@ -21,6 +22,23 @@
 
 \usepackage{enumitem} % Customized lists
 \setlist[itemize]{noitemsep} % Make itemize lists more compact
+
+\usepackage[T1]{fontenc}
+\usepackage{listings} % for numbers in code chunks
+
+% macro to select a scaled-down version of Bera Mono (for instance)
+\makeatletter
+\newcommand\BeraMonottfamily{%
+  \def\fvm@Scale{0.85}% scales the font down
+  \fontfamily{fvm}\selectfont% selects the Bera Mono font
+}
+\makeatother
+
+\lstset{
+  basicstyle=\BeraMonottfamily,
+  frame=single,
+}
+
 
 \usepackage{hyperref} % For hyperlinks in the PDF
 \usepackage{nameref} % \Cref command automatically handles figure/table/etc refs
@@ -69,9 +87,22 @@ $^3$ University 3
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
 
-<<setup, echo=FALSE, warning=FALSE, message=FALSE>>=
+<<setup, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE>>=
 library(knitr)
 knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
+@
+
+
+<<setup2, echo=FALSE, cache=FALSE>>=
+knit_hooks$set(source = function(x, options) {
+    paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x,
+        "\\end{lstlisting}\n", sep = "")
+})
+knit_hooks$set(reset = function(before, options, envir){
+if(before){
+    return("\\setcounter{lstnumber}{1}")
+}
+})
 @
 
 <<packages, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE>>=
@@ -84,19 +115,18 @@ theme_set(theme_bw())
 
 \section{Introduction}
 
-Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by \svp{facetting or} additional mappings to plot aesthetics, such as point size and color.
+Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by facetting or additional mappings to plot aesthetics, such as point size and color.
 Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
-Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data, and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado\svp{I'm not sure this game is that well known? I had to google it - I think it might be called pick-up sticks here?} rather than organized data.
-This clutter is sometimes \svp{mitigated} by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
+Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data, and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
+This clutter is sometimes mitigated by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
 % However, parallel coordinate plots have some shortcomings. \hh{XXXX after bashing clutter in pcps, `some shortcomings' feels like rubbing it in :)} The biggest challenge comes when working with categorical variables.
-\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions\svp{XXX cite XXX}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This \svp{almost invariably} introduces
+\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions\svp{XXX cite XXX}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This \svp{almost invariably}\hh{XXX if it doesn't introduce ties, are we still talking about categorical data or have we switched to identifiers? - with identifiers we could deal this way} introduces
 %a lot of
 ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows lines from each level of one variable to all levels of the next variable.
-Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}. These solutions \svp{are intended for use with}
-%all have in common that they work with
+Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}. These solutions are intended for use with
 tabularized data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate the sine-illusion's effects \citep{sine, susan:2015} on parallel sets plots.
 An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp}. These plots provide an extension to parallel sets that allows numeric variables to be included in the plot. Similar to parallel sets, this approach is also based on marginal frequencies for the categorical variables. Categorical parallel coordinate plots are the closest of these variations to our solution, \svp{but the \pkg{extracat} package has not been updated recently and is no longer on CRAN.}
 %they are not implemented in the \pkg{ggplot2} framework and can therefore not be further extended.\svp{They can't be extended because they're not implemented in ggplot2, or it's just not convenient to implement them first and then extend them? Surely there's an actual structural difference between the approach here and cpcps?}
@@ -571,7 +601,7 @@ m1 <- p1 %>% filter(Sex=="MALE") %>% pcp_select(studyName, species, island, `-Cu
 pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
 geom_pcp_axes() +
 geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
-geom_pcp_boxes(fill="white") +
+geom_pcp_boxes(fill="white", alpha = 0.8) +
 geom_pcp_labels(fill="white", alpha=1) +
   theme_bw() +
 xlab(NULL) + ylab(NULL) +
@@ -583,7 +613,7 @@ f1 <- p1 %>% filter(Sex=="FEMALE") %>% pcp_select(studyName, species, island, `-
 pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
 geom_pcp_axes() +
 geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
-geom_pcp_boxes(fill="white") +
+geom_pcp_boxes(fill="white", alpha =0.8) +
 geom_pcp_labels(fill="white", alpha=1) +
   theme_bw() +
 xlab(NULL) + ylab(NULL) +
@@ -603,7 +633,7 @@ p1 %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
-  geom_pcp_boxes(fill="white") +
+  geom_pcp_boxes(fill="white", alpha =0.8) +
   geom_pcp_labels(fill="white", alpha=1) +
   theme_bw() +
   xlab(NULL) + ylab(NULL) +
@@ -614,15 +644,19 @@ p1 %>%
 @
 
 \subsubsection{Determining sex}
+
+Possible color scheme: https://coolors.co/ff595e-ffca3a-8ac926-1982c4-6a4c93
+
 %
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, fig.width=8>>=
 
 penguins_pcp <- penguins %>%
     mutate(
-        sex = ifelse(is.na(sex),"NA", as.character(sex))
+        sex = ifelse(is.na(sex),"?", as.character(sex)),
+        sex = factor(sex, levels = c("female", "?", "male"))
     ) %>%
   filter(!is.na(body_mass_g)) %>%
-  pcp_select(1,3:4, 1, 5:7) %>%
+  pcp_select(1,4:3, 1, 5:7) %>%
   pcp_scale() %>%
   pcp_arrange()
 
@@ -631,11 +665,12 @@ penguins_pcp %>%
   geom_pcp_axes() +
   geom_pcp_boxes(boxwidth=0.1) +
   geom_pcp(aes(colour = sex), alpha = 0.8) +
-  geom_pcp(aes(colour = sex), size =0.9,
-           data = penguins_pcp %>% filter(sex=="NA")) +
+  geom_pcp(aes(colour = sex), size =1,
+           data = penguins_pcp %>% filter(sex=="?")) +
   geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
   theme_bw() +
-  scale_colour_manual(values=c("#ff990050", "steelblue", "black")) +
+  scale_colour_manual(values=c("#FFCD70", "#8b4950", "#008080")) +
+#    scale_colour_manual(values=c("#ff595e", "#573e79", "#1982c4")) +
   theme(legend.position="bottom") +
   ylab("") +
   xlab("Variable")
@@ -644,40 +679,113 @@ penguins_pcp %>%
 
 \hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 
- The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by black lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2} shows a facetted version of the previous generalized parallel coordinate plots. Facetted is done by species, note that the axes are re-scaled within each facet to make use of the full range in $y$. Chinstrap penguins are excluded because all of their individuals in the data have a gender assigned.
-The general pattern of measurements of the Gentoo penguins suggests that all four individuals with missing sex information are female (for further evidence, we find from the original data  that their nest partners are all sexed as male - assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships. However, in all three studies only nests with breeding successes have been considered. More details can be found in \citet{penguins2}).
-For Adelie penguins the situation is not quite as clear-cut, but based on body weight and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements. \hh{XXX check nests for Adelies}
+The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by orange \hh{XXX} lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2b} shows a facetted version of the previous generalized parallel coordinate plots. \hh{XXX we also added the ribbons within each species and sex to emphasize the main location of the observed data.}
+ Facetted is done by species \hh{and sex}, note that the axes are re-scaled within each facet to make use of the full range in $y$. \hh{The listing in  \autoref{fig:penguins2a} shows the code for prepping the data shown in \autoref{fig:penguins2b}. By grouping on species but not on sex (see line 10), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of the interquantile-ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and hypothetical sex. }
 
 
-
-
-<<penguins2, fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species.", fig.height = 6, fig.width = 8>>=
+%\caption{Code for prepping data for \autoref{fig:penguins2b}: \caption{fig:penguins2a}}
+<<penguins2a, echo=TRUE, reset=TRUE>>=
 penguins_pcp <- penguins %>%
-    filter(species != "Chinstrap") %>%
+    filter(species != "Chinstrap") %>%                   # no unsexed animals in Chinstrap
     mutate(
-        sex = ifelse(is.na(sex),"NA", as.character(sex))
+        sex = ifelse(is.na(sex),"?", as.character(sex)), # make assignment more readable
+        sex = factor(sex, levels = c("female", "?", "male"))
     ) %>%
   filter(!is.na(body_mass_g)) %>%
-  pcp_select(3:4, 5:7) %>%
-  group_by(species) %>%
+  mutate(bill_ratio = bill_depth_mm/bill_length_mm) %>%  # ratio of bill depth and length is
+                                                         # informative
+  pcp_select(9, 4:3, 5:6) %>%
+  group_by(species) %>%                                  # re-scale by species
   pcp_scale() %>%
   pcp_arrange()
+@
+
+Chinstrap penguins are excluded because all of their individuals in the data have a sex assigned.
+The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill ratio). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2b}.
+For Adelie penguins the situation is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements. \hh{XXX check nests for Adelies}
+
+
+%\caption{\label{penguin2-code} Code for prepping the data for figure penguin2}
+%Code for prepping the data shown in \autoref{fig:penguins2b}:
+
+
+
+<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes.", fig.height = 6, fig.width = 8>>=
+
+# making ribbons
+# probs <- seq(0,1,by=0.1)
+probs <- c(0.025, 0.25, 0.75, 0.975)
+
+dframe <-
+  penguins_pcp %>% filter(sex!="?") %>% group_by(species, sex, pcp_x) %>%
+  summarise(value = quantile(pcp_y, prob=probs),
+            quantile=probs,
+            lower = probs<0.5,
+            level = round(10*abs(quantile-0.5), digits = 1))  %>%
+  select(-quantile) %>%
+  mutate(lower = factor(lower, labels=c("upper", "lower"))) %>%
+  pivot_wider(names_from="lower", values_from="value") %>%
+  ungroup() %>%
+  mutate(
+    level = ifelse(level > 2.5, "Inner 95%", "Inner 50%"),
+    level = factor(level, levels=c("Inner 50%", "Inner 95%"))
+  ) # %>% filter(level <= 4)
+
+# for annotations
+annotate_dframe <- penguins_pcp %>%
+  filter(sex=="?", !is.na(body_mass_g), pcp_x == "body_mass_g")
+
+library(emojifont)
+load.fontawesome()
+labels <- fontawesome(c('fa-venus','fa-mars', "fa-question"))
+
+annotate_dframe$putative <- labels[1]
+annotate_dframe <- annotate_dframe %>% mutate(
+  putative = ifelse(pcp_y > 0.4, labels[3], putative),
+  putative = ifelse(pcp_y > 0.5, labels[2], putative)
+)
+
+
 
 # recalculate position by group
 # XXXX pcp_arrange has to also do the tie-breaking by group.
 penguins_pcp %>%
+  filter(sex!= "?") %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp_boxes(boxwidth=0.1) +
-  geom_pcp(aes(colour = sex), alpha = 0.8) +
-  geom_pcp(aes(colour = sex), size =0.9,
-           data = penguins_pcp %>% filter(sex=="NA")) +
+#  geom_pcp(aes(colour = sex), alpha = 0.4) +
+  geom_ribbon(aes( ymin = lower, ymax=upper, group=interaction(sex,level), fill = sex, alpha=level),
+              #alpha = 0.25,
+              data = dframe) +
+  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
+           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "female")) +
+  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
+           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "male")) +
   geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
   theme_bw() +
-  scale_colour_manual(values=c("#ff990050", "steelblue", "black")) +
+  scale_fill_manual(values=c( "#8b4950", "#FAA404", "#008080")) + # lighter yellow "#FFCD70"
   theme(legend.position="bottom") +
-    facet_grid(species~.) +
-  scale_x_discrete(expand = expansion(add=0.25))
+    facet_grid(species~sex) +
+  scale_x_discrete(expand = expansion(add=0.25)) +
+  xlab("") + ylab("") +
+  scale_alpha_manual("Inter-quantile Range", values = c(0.25, 0.25)) +
+  guides(
+    fill = guide_legend(override.aes = list(alpha = 0.5)),
+    alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
+  ) +
+  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
+           data = annotate_dframe %>% mutate(sex = "male"), nudge_x = 0.125,
+           family='fontawesome-webfont', size=5) +
+  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
+           data = annotate_dframe %>% mutate(sex = "female"), nudge_x = 0.125,
+           family='fontawesome-webfont', size=5)
+
+
+
+
+
+
 @
 
 
