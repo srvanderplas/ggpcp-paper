@@ -164,7 +164,7 @@ The remainder of the paper is organized as follows: \autoref{sec:wrangling} desc
 \section{Motivation and Package Usage}\label{sec:usage}
 
 
-<<eval = FALSE, echo=TRUE>>=
+<<eval = FALSE, echo=TRUE, reset=TRUE>>=
 flea %>%                                  # data management:
   pcp_select(species, 2:7, species) %>%   #   variable selection, see section 3.1
   pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
@@ -561,7 +561,7 @@ The plot does not show anything about the differences between male and female pe
 
 <<penguins-variable-order, fig.cap="Changing the order of the variables along the x-axis emphasizes the differences in body measurements between the species.", fig.height=6, fig.width=8>>=
 # Reorder the variables, moving CulmenL to the right, and do case ordering from the left
-# Invert the CulmenD variable (and use your minus notation :-))
+# Invert the CulmenD variable (and use the minus notation :-))
 p1 <- p1 %>% mutate(`-CulmenD`=-CulmenD)
 
 # Fifth pcp
@@ -648,6 +648,13 @@ p1 %>%
 
 %
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, fig.width=8>>=
+ penguins <- penguins %>%
+   mutate(
+     species = factor(species, c("Chinstrap", "Adelie", "Gentoo")),
+     species2 = factor(species, c( "Adelie", "Gentoo","Chinstrap")),
+     `-bill_length_mm`=-bill_length_mm,
+     `-bill_depth_mm`=-bill_depth_mm
+   )
 
 penguins_pcp <- penguins %>%
     mutate(
@@ -655,7 +662,8 @@ penguins_pcp <- penguins %>%
         sex = factor(sex, levels = c("female", "?", "male"))
     ) %>%
   filter(!is.na(body_mass_g)) %>%
-  pcp_select(1,4:3, 1, 5:7) %>%
+  pcp_select(species2,`bill_length_mm`,
+             flipper_length_mm, body_mass_g, `-bill_depth_mm`, species,  sex) %>%
   pcp_scale() %>%
   pcp_arrange()
 
@@ -672,14 +680,16 @@ penguins_pcp %>%
 #    scale_colour_manual(values=c("#ff595e", "#573e79", "#1982c4")) +
   theme(legend.position="bottom") +
   ylab("") +
-  xlab("Variable")
+  xlab("Variable") #+
+#  facet_wrap(~sex)
 @
 
 
 \hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 
-The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \autoref{fig:penguins2b} shows a facetted version of the previous generalized parallel coordinate plots. \hh{XXX we also added the ribbons within each species and sex to emphasize the main location of the observed data.}
- Facetted is done by species \hh{and sex}, note that the axes are re-scaled within each facet to make use of the full range in $y$. \hh{The listing in  \autoref{fig:penguins2a} shows the code for prepping the data shown in \autoref{fig:penguins2b}. By grouping on species but not on sex (see line 10), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of the interquantile-ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and hypothetical sex. }
+The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex. \hh{\autoref{fig:penguins2b} shows another version of a generalized parallel coordinate plot: ribbons of inter-quantile ranges are plotted across body measurements. We facet by species and sex. The two ribbons shown represent the interquartile range (middle 50\% of the data) and the range between the 2.5\% and the 97.5\% quantiles (inner 95\%). These ribbons provide a basic summary of the each variable and its two dimensional density with each of its adjacent axes.
+Body measurements of the unsexed animals are represented as line segments on top. facetted version of the previous generalized parallel coordinate plots.
+ While we facet both by species and sex, note that the axes are re-scaled within each species  to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of facetting variables is achieved by the use of the grouping variable.  The listing in  \autoref{fig:penguins2a} shows the code for prepping the data shown in \autoref{fig:penguins2b}. By grouping on species but not on sex (see line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of the interquantile-ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and hypothetical sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.}
 
 
 %\caption{Code for prepping data for \autoref{fig:penguins2b}: \caption{fig:penguins2a}}
@@ -691,16 +701,14 @@ penguins_pcp <- penguins %>%
         sex = factor(sex, levels = c("female", "?", "male"))
     ) %>%
   filter(!is.na(body_mass_g)) %>%
-  mutate(bill_ratio = bill_depth_mm/bill_length_mm) %>%  # ratio of bill depth and length is
-                                                         # informative
-  pcp_select(9, 4:3, 5:6) %>%
+  pcp_select( 4:3, 5:6) %>%
   group_by(species) %>%                                  # re-scale by species
   pcp_scale() %>%
   pcp_arrange()
 @
 
-Chinstrap penguins are excluded because all of their individuals in the data have a sex assigned.
-The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill ratio). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2b}.
+Chinstrap penguins are excluded (line 2) because all of their individuals in the data have a sex assigned.
+The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill depth). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2b}.
 For Adelie penguins the situation is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin walks the line between typical male and typical female measurements. \hh{XXX check nests for Adelies}
 
 
@@ -709,7 +717,7 @@ For Adelie penguins the situation is not quite as clear-cut, but based on body m
 
 
 
-<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes.", fig.height = 6, fig.width = 8>>=
+<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the right are our best guess at a penguin's sex based on body measurements of other penguins of the same species.}", fig.height = 6, fig.width = 8>>=
 
 # making ribbons
 # probs <- seq(0,1,by=0.1)
