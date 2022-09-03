@@ -849,7 +849,210 @@ carcinoma %>%
 
 %------------------------------------------------
 
+\subsection{Clustering with PCPs}
 
+
+\hh{Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We are using $k$-means clustering on all numeric body measurements, and we are investigating which observations are generally captured in each of the clusters. }
+
+\hh{XXX I'm thinking that the six figures should be combined into one figure.}
+
+<<cluster-setup>>=
+penguins_complete <- penguins %>% na.omit()
+
+# run kmeans for k from 2 to 8, sort clusters by body weight,
+# then label clusters from lightest to heaviest
+set.seed(20220901)
+clusters <- tibble(k = 2:8)
+clusters <- clusters %>% mutate(
+  kmeans_cl = k %>% purrr::map(.f = function(cl) {
+    kmeans(penguins_complete %>%
+             select(bill_length_mm:body_mass_g) %>%
+             mutate(
+               across(.fns = scale)
+             ), centers=cl)
+  })
+)
+
+penguins_complete$cl2 <- clusters$kmeans_cl[[1]]$cluster
+penguins_complete$cl3 <- clusters$kmeans_cl[[2]]$cluster
+penguins_complete$cl4 <- clusters$kmeans_cl[[3]]$cluster
+penguins_complete$cl5 <- clusters$kmeans_cl[[4]]$cluster
+penguins_complete$cl6 <- clusters$kmeans_cl[[5]]$cluster
+penguins_complete$cl7 <- clusters$kmeans_cl[[6]]$cluster
+penguins_complete$cl8 <- clusters$kmeans_cl[[7]]$cluster
+
+penguins_complete <- penguins_complete %>% mutate(
+  across(starts_with("cl"), as.factor),
+  across(starts_with("cl"), .fns = function(cl) {
+    cl <- reorder(cl, body_mass_g, mean)
+    levels(cl) <- 1:length(levels(cl))
+    cl
+  })
+)
+
+# penguins_complete <- penguins_complete %>% mutate(
+#   species = factor(species, levels = c("Gentoo", "Adelie", "Chinstrap"))
+# )
+@
+
+\autoref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
+<<cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8>>=
+penguins_complete %>%
+  mutate(
+    cl2 = reorder(cl2, body_mass_g, mean)
+  ) %>%
+  pcp_select(bill_length_mm:body_mass_g, cl2, species) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+  geom_pcp(aes(color=cl2), alpha = 0.8) +
+  geom_pcp_boxes(fill=NA) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_color_brewer(type="qual") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+                     breaks=c(0,0.25, .5,.75, 1)) +
+  scale_x_discrete("",expand = expansion(add=0.25),
+                   labels=c("Bill length", "Bill depth",
+                            "Flipper length", "Body mass",
+                            "k=2 Clusters", "Species")) +
+  ggtitle("Clustering into 2 groups")
+
+@
+
+<<cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8>>=
+penguins_complete %>%
+  mutate(
+    cl3 = reorder(cl3, body_mass_g, mean)
+  ) %>%
+  pcp_select(bill_length_mm:body_mass_g, cl3, species) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+  geom_pcp(aes(color=cl3), alpha = 0.8) +
+  geom_pcp_boxes(fill=NA) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_color_brewer(type="qual") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+                     breaks=c(0,0.25, .5,.75, 1)) +
+  scale_x_discrete("",expand = expansion(add=0.25),
+                   labels=c("Bill length", "Bill depth",
+                            "Flipper length", "Body mass",
+                            "k=3 Clusters", "Species")) +
+  ggtitle("Clustering into 3 groups")
+
+@
+
+
+<<cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8>>=
+penguins_complete %>%
+  mutate(
+    cl4 = reorder(cl4, body_mass_g, mean)
+  ) %>%
+  pcp_select(bill_length_mm:body_mass_g, cl4, species, sex) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+  geom_pcp(aes(color=cl4), alpha = 0.8) +
+  geom_pcp_boxes(fill=NA) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_color_brewer(type="qual") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+                     breaks=c(0,0.25, .5,.75, 1)) +
+  scale_x_discrete("",expand = expansion(add=0.25),
+                   labels=c("Bill length", "Bill depth",
+                            "Flipper length", "Body mass",
+                            "k=4 Clusters", "Species")) +
+  ggtitle("Clustering into 4 groups")
+
+@
+
+<<cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8>>=
+penguins_complete %>%
+  mutate(
+    cl5 = reorder(cl5, body_mass_g, mean)
+  ) %>%
+  pcp_select(bill_length_mm:body_mass_g, cl5, species, sex) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+  geom_pcp(aes(color=cl5), alpha = 0.8) +
+  geom_pcp_boxes(fill=NA) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_color_brewer(type="qual") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+                     breaks=c(0,0.25, .5,.75, 1)) +
+  scale_x_discrete("",expand = expansion(add=0.25),
+                   labels=c("Bill length", "Bill depth",
+                            "Flipper length", "Body mass",
+                            "k=5 Clusters", "Species")) +
+  ggtitle("Clustering into 5 groups")
+
+@
+
+<<cl6, fig.cap="The third cluster is created around penguins with a medium body mass. This ensures that cluster 3 only consists of Gentoo penguins.", fig.height = 4, fig.width = 8>>=
+penguins_complete %>%
+  mutate(
+    cl6 = reorder(cl6, body_mass_g, mean)
+  ) %>%
+  pcp_select(bill_length_mm:body_mass_g, cl6, species, sex) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+  geom_pcp(aes(color=cl6), alpha = 0.8) +
+  geom_pcp_boxes(fill=NA) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_color_brewer(type="qual") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+                     breaks=c(0,0.25, .5,.75, 1)) +
+  scale_x_discrete("",expand = expansion(add=0.25),
+                   labels=c("Bill length", "Bill depth",
+                            "Flipper length", "Body mass",
+                            "k=5 Clusters", "Species")) +
+  ggtitle("Clustering into 6 groups")
+@
+
+<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 8.", fig.height = 4, fig.width = 8>>=
+penguins_complete %>%
+    mutate(
+    across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
+  ) %>%
+  pcp_select(starts_with("cl"), species, sex) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp(aes(color=interaction(sex, species)), alpha = 0.6) +
+    geom_pcp_boxes(fill=NA) +
+    geom_pcp_labels() +
+  theme_bw() +
+  scale_color_brewer(type="qual") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+                     breaks=c(0,0.25, .5,.75, 1)) +
+  scale_x_discrete("",expand = expansion(add=0.25))
+
+@
 
 
 \section{Discussion}
