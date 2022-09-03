@@ -163,6 +163,7 @@ The remainder of the paper is organized as follows: \autoref{sec:wrangling} desc
 
 \section{Motivation and Package Usage}\label{sec:usage}
 
+\hh{XXX We need to state what this code is about: paper structured along how code is used.}
 <<echo=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
 library(GGally)
 data(flea)
@@ -215,13 +216,13 @@ In a parallel coordinate plot, this one-to-one mapping between data and plot aes
 \begin{figure}
 %\includegraphics[width=\linewidth]{sketches/data-wrangling.pdf}
 \includegraphics[width=\linewidth]{sketches/data-wrangling-plus.pdf}
-\caption{\label{sketch:wrangling}What the user sees (left) and data wrangling step (right) before a parallel coordinate plot can be drawn.}
+\caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step  before a parallel coordinate plot can be drawn (bottom left). Note that the order in which variables are selected is reflected in the order in which variables are included in the parallel coordinate plot.}
 \end{figure}
 
 \hh{From the user's perspective this data reshaping has purely the form of a data selection, while the data wrangling is going on behind the scenes in this function.}
 
 \code{pcp\_select(data, ...)} allows a selection of variables to be included in the parallel coordinate plot.
-Variables can be specified by
+Variables can be specified by an any combination of the following methods:
 
 \begin{itemize}
 \item position, e.g. \code{1:4, 7, 5, 4},
@@ -229,7 +230,7 @@ Variables can be specified by
 \item using pattern selectors, e.g. \code{starts\_with("aede")}, see \code{?tidyselect::select\_helpers}
 \end{itemize}
 
-or any combination thereof. Variables can be selected multiple times and will then be included in the data and the resulting plot multiple times.
+Variables can be selected multiple times and will then be included in the data and the resulting plot multiple times.
 Note that the order in which variables are selected determines the order in which the corresponding axis is drawn in the parallel coordinate plots.
 \code{pcp\_select} transforms the selected variables to long form and embellishes the data set with a number of additional variables. All of the newly created and added variables start with the prefix \code{pcp\_}:
 \begin{itemize}
@@ -238,7 +239,7 @@ Note that the order in which variables are selected determines the order in whic
 \item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form).
 \hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
   What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels. Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise. This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
-\hh{This might lead to a visual insonsistency between the orderings in the levels of a categorical variable and an accompanying color legend. In those situations we suggest to reverse the order in the legend by using the command \code{guides(color = guide\_legend(reverse=TRUE))} as shown in the example in \autoref{sec:carcinoma}.}
+\hh{This might lead to a visual inconsistency between the orderings in the levels of a categorical variable and an accompanying color legend. In those situations we suggest to reverse the order in the legend by using the command \code{guides(color = guide\_legend(reverse=TRUE))} as shown in the example in \autoref{sec:carcinoma}.}
 \item \code{pcp\_class}: character variable containing the class information of a selected variable.
 \item \code{pcp\_id}: integer variable identifying each observation in the original dataset. This variable will be used as grouping variable to identify which values should be connected by a line segment in the parallel coordinate plot.
 \end{itemize}
