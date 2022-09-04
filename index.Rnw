@@ -907,10 +907,16 @@ carcinoma %>%
 
 \subsection{Clustering with PCPs}
 
+Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We use $k$-means clustering on all numeric body measurements and investigate which observations are generally captured in each of the clusters.
 
-\hh{Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We are using $k$-means clustering on all numeric body measurements, and we are investigating which observations are generally captured in each of the clusters. }
+\svp{Because $k$-means clustering assigns cluster labels arbitrarily based on random cluster centers, in order to maintain a persistent ordering over different values of $k$ we reorder the clusters by the value of \code{body\_mass\_g}. This allows us to compare between e.g. $k$ and $k+1$ clusters.}
 
-\hh{XXX I'm thinking that the six figures should be combined into one figure.}
+\svp{\autoref{fig:kmean-penguins} shows the numeric measurements along with the assigned clusters, with categorical variables sex and species on the right. Each line is colored by the assigned cluster, allowing us to determine how the categorical variables relate to the quantitative variables and the resulting clusters.}
+
+\svp{When $k=2$, \autoref{fig:penguink2} shows that the largest difference in the observed data is between Gentoo penguins and the other two species. When $k=3$, in \autoref{fig:penguink3}, the additional cluster separates the Adelie and Chinstrap penguins into two groups with a few misclassifications; this additional cluster is based on the length of the bill (which we can follow due to the clear connection between data values in the generalized PCP). Adding a fourth cluster, as in \autoref{fig:penguink4} splits Adelie penguins into males and females, though again there are again some penguins who are misclassified. The addition of a fifth cluster in \autoref{fig:penguink5} splits Chinstrap penguins into male and female. Once we add a sixth cluster in \autoref{fig:penguink6}, we finally split the Gentoo penguins by sex as well, though again this clustering is not perfect.}
+
+\svp{What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species. \autoref{fig:cl-overview} shows the changes between successive clusters and the corresponding species and sex classification for each observation.}
+
 
 <<cluster-setup>>=
 penguins_complete <- penguins %>% na.omit()
@@ -951,7 +957,6 @@ penguins_complete <- penguins_complete %>% mutate(
 # )
 @
 
-\autoref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
 <<cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
@@ -1088,6 +1093,7 @@ penguins_complete %>%
 @
 
 
+% \autoref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
 \begin{figure}
      \centering
      \begin{subfigure}[b]{.8\textwidth}
@@ -1128,11 +1134,12 @@ penguins_complete %>%
         \label{fig:kmean-penguins}
 \end{figure}
 
-<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 8.", fig.height = 4, fig.width = 8>>=
+<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
 penguins_complete %>%
     mutate(
     across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
   ) %>%
+  select(-c(cl7, cl8)) %>%
   pcp_select(starts_with("cl"), species, sex) %>%
   pcp_scale() %>%
   pcp_arrange() %>%
@@ -1145,8 +1152,9 @@ penguins_complete %>%
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
+  # scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+  #                    breaks=c(0,0.25, .5,.75, 1)) +
+  scale_y_continuous(breaks = NULL) +
   scale_x_discrete("",expand = expansion(add=0.25))
 
 @
