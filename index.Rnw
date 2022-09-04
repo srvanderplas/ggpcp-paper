@@ -118,14 +118,42 @@ theme_set(theme_bw())
 \section{Introduction}
 
 Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by facetting or additional mappings to plot aesthetics, such as point size and color.
-Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
+Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.
+% \svp{, as shown in \autoref{fig:projective-space}}.
+This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}.
+
+<<projective-space, echo = F, out.width = "\\linewidth", fig.cap = "Parallel coordinate plots show the data in the projective space rather than the Euclidean space, allowing for more dimensions to be shown on the same plot.", fig.width = 8, fig.height = 3, include = F>>=
+library(palmerpenguins)
+data(penguins)
+p1 <- ggplot(penguins, aes(x = body_mass_g, y = bill_depth_mm, color = species)) + geom_point() +
+  ggtitle("Points in Euclidean space")
+
+library(ggpcp)
+p2 <- penguins %>%
+  pcp_select(body_mass_g, bill_depth_mm) %>%
+  pcp_scale() %>%
+  pcp_arrange(method="from-left") %>%
+  ggplot(aes_pcp()) +
+  geom_pcp_axes() +
+  geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
+  geom_pcp_labels(alpha=1) +
+  theme_bw() +
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none") +
+  ggtitle("Lines in Projective Space")
+
+library(patchwork)
+
+p1 + p2 + plot_layout(nrow = 1, byrow = FALSE)
+@
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
 Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data, and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
 This clutter is sometimes mitigated by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
 % However, parallel coordinate plots have some shortcomings. \hh{XXXX after bashing clutter in pcps, `some shortcomings' feels like rubbing it in :)} The biggest challenge comes when working with categorical variables.
-\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions\svp{XXX cite XXX}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This
+\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions such as the \code{scpcp} function in the \code{extracat} package\citep{cpcp}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This
 % \hh{XXX if it doesn't introduce ties, are we still talking about categorical data or have we switched to identifiers? - with identifiers we could deal this way} % svp - fair point.
 introduces
 %a lot of
