@@ -15,7 +15,9 @@
 \usepackage[margin=1in,columnsep=20pt]{geometry} % Document margins
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions
 \usepackage{booktabs} % Horizontal rules in tables
-\usepackage{subfig} % Sub figures
+% \usepackage{subfig} % Sub figures
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{graphicx} % better graphics
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor} % colors
@@ -950,7 +952,7 @@ penguins_complete <- penguins_complete %>% mutate(
 @
 
 \autoref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
-<<cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8>>=
+<<cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl2 = reorder(cl2, body_mass_g, mean)
@@ -977,7 +979,7 @@ penguins_complete %>%
 
 @
 
-<<cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8>>=
+<<cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl3 = reorder(cl3, body_mass_g, mean)
@@ -1005,7 +1007,7 @@ penguins_complete %>%
 @
 
 
-<<cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8>>=
+<<cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl4 = reorder(cl4, body_mass_g, mean)
@@ -1032,7 +1034,7 @@ penguins_complete %>%
 
 @
 
-<<cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8>>=
+<<cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl5 = reorder(cl5, body_mass_g, mean)
@@ -1059,7 +1061,7 @@ penguins_complete %>%
 
 @
 
-<<cl6, fig.cap="The third cluster is created around penguins with a medium body mass. This ensures that cluster 3 only consists of Gentoo penguins.", fig.height = 4, fig.width = 8>>=
+<<cl6, fig.cap="The sixth cluster does...", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl6 = reorder(cl6, body_mass_g, mean)
@@ -1084,6 +1086,47 @@ penguins_complete %>%
                             "k=5 Clusters", "Species")) +
   ggtitle("Clustering into 6 groups")
 @
+
+
+\begin{figure}
+     \centering
+     \begin{subfigure}[b]{.8\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl2-1}
+         \caption{When $k=2$, Gentoo penguins are separated from Adele and Chinstrap penguins.}
+         \label{fig:penguink2}
+     \end{subfigure}
+\\
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl3-1}
+         \caption{The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.}
+         \label{fig:penguink3}
+     \end{subfigure}
+\hfill
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl4-1}
+         \caption{The fourth cluster splits Adelie penguins (mostly) into males and females of the species.}
+         \label{fig:penguink4}
+     \end{subfigure}
+\\
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl5-1}
+         \caption{The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or the wrong sex.}
+         \label{fig:penguink5}
+     \end{subfigure}
+\hfill
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl6-1}
+         \caption{}
+         \label{fig:penguink6}
+     \end{subfigure}
+        \caption{An overview of the use of parallel coordinate plots to examine which variables contribute to clustering and to identify individuals who are misclassified.}
+        \label{fig:kmean-penguins}
+\end{figure}
 
 <<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 8.", fig.height = 4, fig.width = 8>>=
 penguins_complete %>%
