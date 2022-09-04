@@ -1155,7 +1155,7 @@ penguins_complete %>%
      \begin{subfigure}[t]{0.48\textwidth}
          \centering
          \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl6-1}
-         \caption{}
+         \caption{With the introduction of a sixth cluster, Gentoo penguins are split into males and females. However, the sex separation for Chinstrap penguins gets lost in this clustering. }
          \label{fig:penguink6}
      \end{subfigure}
         \caption{An overview of the use of parallel coordinate plots to examine which variables contribute to clustering and to identify individuals who are misclassified.}
