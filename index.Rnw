@@ -15,7 +15,9 @@
 \usepackage[margin=1in,columnsep=20pt]{geometry} % Document margins
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions
 \usepackage{booktabs} % Horizontal rules in tables
-\usepackage{subfig} % Sub figures
+% \usepackage{subfig} % Sub figures
+\usepackage{caption}
+\usepackage{subcaption}
 \usepackage{graphicx} % better graphics
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor} % colors
@@ -116,14 +118,42 @@ theme_set(theme_bw())
 \section{Introduction}
 
 Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by facetting or additional mappings to plot aesthetics, such as point size and color.
-Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.  This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}. \svp{We might want to provide a plot in both spaces with interpretation}
+Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.
+% \svp{, as shown in \autoref{fig:projective-space}}.
+This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}.
+
+<<projective-space, echo = F, out.width = "\\linewidth", fig.cap = "Parallel coordinate plots show the data in the projective space rather than the Euclidean space, allowing for more dimensions to be shown on the same plot.", fig.width = 8, fig.height = 3, include = F>>=
+library(palmerpenguins)
+data(penguins)
+p1 <- ggplot(penguins, aes(x = body_mass_g, y = bill_depth_mm, color = species)) + geom_point() +
+  ggtitle("Points in Euclidean space")
+
+library(ggpcp)
+p2 <- penguins %>%
+  pcp_select(body_mass_g, bill_depth_mm) %>%
+  pcp_scale() %>%
+  pcp_arrange(method="from-left") %>%
+  ggplot(aes_pcp()) +
+  geom_pcp_axes() +
+  geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
+  geom_pcp_labels(alpha=1) +
+  theme_bw() +
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none") +
+  ggtitle("Lines in Projective Space")
+
+library(patchwork)
+
+p1 + p2 + plot_layout(nrow = 1, byrow = FALSE)
+@
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
 Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data, and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
 This clutter is sometimes mitigated by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
 % However, parallel coordinate plots have some shortcomings. \hh{XXXX after bashing clutter in pcps, `some shortcomings' feels like rubbing it in :)} The biggest challenge comes when working with categorical variables.
-\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions\svp{XXX cite XXX}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This
+\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables.} In current solutions such as the \code{scpcp} function in the \code{extracat} package\citep{cpcp}, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This
 % \hh{XXX if it doesn't introduce ties, are we still talking about categorical data or have we switched to identifiers? - with identifiers we could deal this way} % svp - fair point.
 introduces
 %a lot of
@@ -258,9 +288,47 @@ Note that the order in which variables are selected determines the order in whic
 \item \code{pcp\_id}: integer variable identifying each observation in the original dataset. This variable will be used as grouping variable to identify which values should be connected by a line segment in the parallel coordinate plot.
 \end{itemize}
 
-\hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.}
+\svp{As a consequence of these design decisions, users have several ways to perform different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable.}
+
+% <<reordering-variables-axis1>>=
+% flea %>%
+%   pcp_select(species, 5:7, 2:4, species) %>%
+%   pcp_scale(method="uniminmax") %>%
+%   pcp_arrange() %>%
+%   ggplot(aes_pcp()) +
+%     geom_pcp_axes() +
+%     geom_pcp(aes(colour = species))
+% @
+% <<reordering-variables-axis1>>=
+% library(forcats)
+% flea %>%
+%   pcp_select(species, 2:7, species) %>%
+%   pcp_scale(method="uniminmax") %>%
+%   dplyr::mutate(
+%     pcp_x = fct_relevel(pcp_x, c("species", "aede1", "aede2", "aede3",
+%                                  "tars1", "tars2", "head", "species.1"))
+%     ) %>%
+%   pcp_arrange() %>%
+%   ggplot(aes_pcp()) +
+%     geom_pcp_axes() +
+%     geom_pcp(aes(colour = species))
+% @
+% \hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.} % I think that it's a lot more complicated to reorder pcp_x, to be honest. I've written the code to do it, but it's ugly.
 
 \hh{XXX univariate transformations, such as reversing an axis for a variable can be done using a mutate statement before the variable selection. example? changing order of levels on a categorical variable or a log transform or square root transformation work the same. }
+<<reordering-variables-axis1>>=
+library(dplyr)
+flea %>%
+  mutate(
+    species_inv = factor(species, levels = rev(levels(.$species))),
+    head_sqrt = log(head)) %>%
+  pcp_select(species, 2:4, head_sqrt, 5:7, species_inv) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = species))
+@
 
 \hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
   What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels. Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise. This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
@@ -867,10 +935,16 @@ carcinoma %>%
 
 \subsection{Clustering with PCPs}
 
+Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We use $k$-means clustering on all numeric body measurements and investigate which observations are generally captured in each of the clusters.
 
-\hh{Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We are using $k$-means clustering on all numeric body measurements, and we are investigating which observations are generally captured in each of the clusters. }
+\svp{Because $k$-means clustering assigns cluster labels arbitrarily based on random cluster centers, in order to maintain a persistent ordering over different values of $k$ we reorder the clusters by the value of \code{body\_mass\_g}. This allows us to compare between e.g. $k$ and $k+1$ clusters.}
 
-\hh{XXX I'm thinking that the six figures should be combined into one figure.}
+\svp{\autoref{fig:kmean-penguins} shows the numeric measurements along with the assigned clusters, with categorical variables sex and species on the right. Each line is colored by the assigned cluster, allowing us to determine how the categorical variables relate to the quantitative variables and the resulting clusters.}
+
+\svp{When $k=2$, \autoref{fig:penguink2} shows that the largest difference in the observed data is between Gentoo penguins and the other two species. When $k=3$, in \autoref{fig:penguink3}, the additional cluster separates the Adelie and Chinstrap penguins into two groups with a few misclassifications; this additional cluster is based on the length of the bill (which we can follow due to the clear connection between data values in the generalized PCP). Adding a fourth cluster, as in \autoref{fig:penguink4} splits Adelie penguins into males and females, though again there are again some penguins who are misclassified. The addition of a fifth cluster in \autoref{fig:penguink5} splits Chinstrap penguins into male and female. Once we add a sixth cluster in \autoref{fig:penguink6}, we finally split the Gentoo penguins by sex as well, though again this clustering is not perfect.}
+
+\svp{What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species. \autoref{fig:cl-overview} shows the changes between successive clusters and the corresponding species and sex classification for each observation.}
+
 
 <<cluster-setup>>=
 penguins_complete <- penguins %>% na.omit()
@@ -911,8 +985,7 @@ penguins_complete <- penguins_complete %>% mutate(
 # )
 @
 
-\autoref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
-<<cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8>>=
+<<cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl2 = reorder(cl2, body_mass_g, mean)
@@ -939,7 +1012,7 @@ penguins_complete %>%
 
 @
 
-<<cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8>>=
+<<cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl3 = reorder(cl3, body_mass_g, mean)
@@ -967,7 +1040,7 @@ penguins_complete %>%
 @
 
 
-<<cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8>>=
+<<cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl4 = reorder(cl4, body_mass_g, mean)
@@ -994,7 +1067,7 @@ penguins_complete %>%
 
 @
 
-<<cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8>>=
+<<cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl5 = reorder(cl5, body_mass_g, mean)
@@ -1021,7 +1094,7 @@ penguins_complete %>%
 
 @
 
-<<cl6, fig.cap="The third cluster is created around penguins with a medium body mass. This ensures that cluster 3 only consists of Gentoo penguins.", fig.height = 4, fig.width = 8>>=
+<<cl6, fig.cap="The sixth cluster does...", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
     cl6 = reorder(cl6, body_mass_g, mean)
@@ -1047,11 +1120,54 @@ penguins_complete %>%
   ggtitle("Clustering into 6 groups")
 @
 
-<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 8.", fig.height = 4, fig.width = 8>>=
+
+% \autoref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
+\begin{figure}
+     \centering
+     \begin{subfigure}[b]{.8\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl2-1}
+         \caption{When $k=2$, Gentoo penguins are separated from Adele and Chinstrap penguins.}
+         \label{fig:penguink2}
+     \end{subfigure}
+\\
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl3-1}
+         \caption{The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.}
+         \label{fig:penguink3}
+     \end{subfigure}
+\hfill
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl4-1}
+         \caption{The fourth cluster splits Adelie penguins (mostly) into males and females of the species.}
+         \label{fig:penguink4}
+     \end{subfigure}
+\\
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl5-1}
+         \caption{The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or the wrong sex.}
+         \label{fig:penguink5}
+     \end{subfigure}
+\hfill
+     \begin{subfigure}[t]{0.48\textwidth}
+         \centering
+         \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl6-1}
+         \caption{}
+         \label{fig:penguink6}
+     \end{subfigure}
+        \caption{An overview of the use of parallel coordinate plots to examine which variables contribute to clustering and to identify individuals who are misclassified.}
+        \label{fig:kmean-penguins}
+\end{figure}
+
+<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
 penguins_complete %>%
     mutate(
     across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
   ) %>%
+  select(-c(cl7, cl8)) %>%
   pcp_select(starts_with("cl"), species, sex) %>%
   pcp_scale() %>%
   pcp_arrange() %>%
@@ -1064,8 +1180,9 @@ penguins_complete %>%
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
+  # scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+  #                    breaks=c(0,0.25, .5,.75, 1)) +
+  scale_y_continuous(breaks = NULL) +
   scale_x_discrete("",expand = expansion(add=0.25))
 
 @
