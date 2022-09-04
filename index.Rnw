@@ -945,6 +945,8 @@ Let's revisit the penguins data for an example of working with clusters in the f
 
 \svp{What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species. \autoref{fig:cl-overview} shows the changes between successive clusters and the corresponding species and sex classification for each observation.}
 
+\svp{As $k$-means uses random cluster seeds, a different starting seed value will change the results of each set of clusters. After repeating this exercise with several different seeds, it is clear that gender and species are both important variables, but which species and gender split off first changes based on the seed value.}
+
 
 <<cluster-setup>>=
 penguins_complete <- penguins %>% na.omit()
@@ -952,6 +954,7 @@ penguins_complete <- penguins %>% na.omit()
 # run kmeans for k from 2 to 8, sort clusters by body weight,
 # then label clusters from lightest to heaviest
 set.seed(20220901)
+# set.seed(20220902)
 clusters <- tibble(k = 2:8)
 clusters <- clusters %>% mutate(
   kmeans_cl = k %>% purrr::map(.f = function(cl) {
