@@ -1162,7 +1162,57 @@ penguins_complete %>%
         \label{fig:kmean-penguins}
 \end{figure}
 
-<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
+<<cl-overview-2, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
+set.seed(20220901)
+clusters6 <- tibble(k = rep(6, 7))
+clusters6 <- clusters6 %>% mutate(
+  kmeans_cl = k %>% purrr::map(.f = function(cl) {
+    kmeans(penguins_complete %>%
+             select(bill_length_mm:body_mass_g) %>%
+             mutate(
+               across(.fns = scale)
+             ), centers=cl)
+  })
+)
+
+penguins_complete$cl6b <- clusters6$kmeans_cl[[1]]$cluster
+penguins_complete$cl6c <- clusters6$kmeans_cl[[2]]$cluster
+penguins_complete$cl6d <- clusters6$kmeans_cl[[3]]$cluster
+penguins_complete$cl6e <- clusters6$kmeans_cl[[4]]$cluster
+penguins_complete$cl6f <- clusters6$kmeans_cl[[5]]$cluster
+penguins_complete$cl6g <- clusters6$kmeans_cl[[6]]$cluster
+penguins_complete$cl6h <- clusters6$kmeans_cl[[7]]$cluster
+
+penguins_complete <- penguins_complete %>% mutate(
+  across(starts_with("cl6"), as.factor),
+  across(starts_with("cl6"), .fns = function(cl) {
+    cl <- reorder(cl, as.numeric(species:sex), mean)
+    levels(cl) <- 1:length(levels(cl))
+    cl
+  })
+)
+
+penguins_complete %>%
+  pcp_select(starts_with("cl6"), species, sex) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp(aes(color=interaction(sex, species)), alpha = 0.6) +
+    geom_pcp_boxes(fill=NA, colour = "black", size = .5) +
+    geom_pcp_labels(alpha = 0.9) +
+  theme_bw() +
+  scale_color_brewer(type="qual", palette = "Paired") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  # scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+  #                    breaks=c(0,0.25, .5,.75, 1)) +
+  scale_y_continuous(breaks = NULL) +
+  scale_x_discrete("",expand = expansion(add=0.5))
+
+@
+
+<<cl-overview, eval=FALSE, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
 penguins_complete %>%
     mutate(
     across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
@@ -1176,7 +1226,7 @@ penguins_complete %>%
     geom_pcp_boxes(fill=NA) +
     geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+  scale_color_brewer(type="qual", palette = "Paired") +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
