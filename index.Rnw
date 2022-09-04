@@ -258,9 +258,47 @@ Note that the order in which variables are selected determines the order in whic
 \item \code{pcp\_id}: integer variable identifying each observation in the original dataset. This variable will be used as grouping variable to identify which values should be connected by a line segment in the parallel coordinate plot.
 \end{itemize}
 
-\hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.}
+\svp{As a consequence of these design decisions, users have several ways to perform different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable.}
+
+% <<reordering-variables-axis1>>=
+% flea %>%
+%   pcp_select(species, 5:7, 2:4, species) %>%
+%   pcp_scale(method="uniminmax") %>%
+%   pcp_arrange() %>%
+%   ggplot(aes_pcp()) +
+%     geom_pcp_axes() +
+%     geom_pcp(aes(colour = species))
+% @
+% <<reordering-variables-axis1>>=
+% library(forcats)
+% flea %>%
+%   pcp_select(species, 2:7, species) %>%
+%   pcp_scale(method="uniminmax") %>%
+%   dplyr::mutate(
+%     pcp_x = fct_relevel(pcp_x, c("species", "aede1", "aede2", "aede3",
+%                                  "tars1", "tars2", "head", "species.1"))
+%     ) %>%
+%   pcp_arrange() %>%
+%   ggplot(aes_pcp()) +
+%     geom_pcp_axes() +
+%     geom_pcp(aes(colour = species))
+% @
+% \hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.} % I think that it's a lot more complicated to reorder pcp_x, to be honest. I've written the code to do it, but it's ugly.
 
 \hh{XXX univariate transformations, such as reversing an axis for a variable can be done using a mutate statement before the variable selection. example? changing order of levels on a categorical variable or a log transform or square root transformation work the same. }
+<<reordering-variables-axis1>>=
+library(dplyr)
+flea %>%
+  mutate(
+    species_inv = factor(species, levels = rev(levels(.$species))),
+    head_sqrt = log(head)) %>%
+  pcp_select(species, 2:4, head_sqrt, 5:7, species_inv) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = species))
+@
 
 \hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
   What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels. Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise. This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
