@@ -321,7 +321,7 @@ Note that the order in which variables are selected determines the order in whic
 flea %>%
   mutate(
     species_inv = factor(species, levels = rev(levels(.$species))),
-    head_sqrt = log(head)) %>%
+    head_log = log(head)) %>%
   pcp_select(species, 2:4, head_sqrt, 5:7, species_inv) %>%
   pcp_scale(method="uniminmax") %>%
   pcp_arrange() %>%
