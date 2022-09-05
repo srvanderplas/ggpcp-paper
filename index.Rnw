@@ -943,10 +943,11 @@ Let's revisit the penguins data for an example of working with clusters in the f
 
 \svp{When $k=2$, \autoref{fig:penguink2} shows that the largest difference in the observed data is between Gentoo penguins and the other two species. When $k=3$, in \autoref{fig:penguink3}, the additional cluster separates the Adelie and Chinstrap penguins into two groups with a few misclassifications; this additional cluster is based on the length of the bill (which we can follow due to the clear connection between data values in the generalized PCP). Adding a fourth cluster, as in \autoref{fig:penguink4} splits Adelie penguins into males and females, though again there are again some penguins who are misclassified. The addition of a fifth cluster in \autoref{fig:penguink5} splits Chinstrap penguins into male and female. Once we add a sixth cluster in \autoref{fig:penguink6}, we finally split the Gentoo penguins by sex as well, though again this clustering is not perfect.}
 
-\svp{What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species. \autoref{fig:cl-overview} shows the changes between successive clusters and the corresponding species and sex classification for each observation.}
+\svp{What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species. }
 
-\svp{As $k$-means uses random cluster seeds, a different starting seed value will change the results of each set of clusters. After repeating this exercise with several different seeds, it is clear that gender and species are both important variables, but which species and gender split off first changes based on the seed value.}
+\hh{ In the Hartigan-Wong \cite{10.2307/2346830} algorithm used here for the clustering, points are assigned to random clusters in the initialization. In order to assess the effect of this non-deterministic start on the results, we are often advised to assess the cluster stability by repeating the clustering multiple times for the same $k$ (if $k > 1$). \autoref{fig:cl-overview-2} shows a comparison of the results from multiple runs of the $k$-means algorithm for $k = 6$. The lines in this figure are colored by species and sex. We see that the splits by species are relatively stable - there are only a few cases across all results in which individuals end up in clusters with individuals from another species, and if they do, it is the same individuals across different results. Splits by sex show more variability: Chinstrap penguins rarely split into male/female clusters, while Gentoo shows a relatively stable separation into males and females. The Adelie population has subsets of individuals that are separated into males only, females only, and a third, more variable subset of a combination of the two. }
 
+\hh{XXX with Susan: using generalized parallel coordinate plots and item sorting allows us to assess the stability of clustering results.}
 
 <<cluster-setup>>=
 penguins_complete <- penguins %>% na.omit()
@@ -1165,7 +1166,57 @@ penguins_complete %>%
         \label{fig:kmean-penguins}
 \end{figure}
 
-<<cl-overview, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
+<<cl-overview-2, fig.cap="Comparison of eight $k$-means runs for $k=6$. Color of lines is given by species and sex. The differences between the clusters are introduced by the different random seeds in the inital cluster centers.", fig.height = 4, fig.width = 8>>=
+set.seed(20220901)
+clusters6 <- tibble(k = rep(6, 7))
+clusters6 <- clusters6 %>% mutate(
+  kmeans_cl = k %>% purrr::map(.f = function(cl) {
+    kmeans(penguins_complete %>%
+             select(bill_length_mm:body_mass_g) %>%
+             mutate(
+               across(.fns = scale)
+             ), centers=cl)
+  })
+)
+
+penguins_complete$cl6b <- clusters6$kmeans_cl[[1]]$cluster
+penguins_complete$cl6c <- clusters6$kmeans_cl[[2]]$cluster
+penguins_complete$cl6d <- clusters6$kmeans_cl[[3]]$cluster
+penguins_complete$cl6e <- clusters6$kmeans_cl[[4]]$cluster
+penguins_complete$cl6f <- clusters6$kmeans_cl[[5]]$cluster
+penguins_complete$cl6g <- clusters6$kmeans_cl[[6]]$cluster
+penguins_complete$cl6h <- clusters6$kmeans_cl[[7]]$cluster
+
+penguins_complete <- penguins_complete %>% mutate(
+  across(starts_with("cl6"), as.factor),
+  across(starts_with("cl6"), .fns = function(cl) {
+    cl <- reorder(cl, as.numeric(species:sex), mean)
+    levels(cl) <- 1:length(levels(cl))
+    cl
+  })
+)
+
+penguins_complete %>%
+  pcp_select(starts_with("cl6"), species, sex) %>%
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp(aes(color=interaction(sex, species)), alpha = 0.6) +
+    geom_pcp_boxes(fill=NA, colour = "black", size = .5) +
+    geom_pcp_labels(alpha = 0.9) +
+  theme_bw() +
+  scale_color_brewer(type="qual", palette = "Paired") +
+  theme(legend.position = "none") +
+  ylab("") +
+  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+  # scale_y_continuous(labels=c("low", "", "medium", "", "high"),
+  #                    breaks=c(0,0.25, .5,.75, 1)) +
+  scale_y_continuous(breaks = NULL) +
+  scale_x_discrete("",expand = expansion(add=0.5))
+
+@
+
+<<cl-overview, eval=FALSE, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8>>=
 penguins_complete %>%
     mutate(
     across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
@@ -1179,7 +1230,7 @@ penguins_complete %>%
     geom_pcp_boxes(fill=NA) +
     geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+  scale_color_brewer(type="qual", palette = "Paired") +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
