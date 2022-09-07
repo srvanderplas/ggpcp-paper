@@ -92,6 +92,8 @@ $^3$ University 3
 <<setup, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE>>=
 library(knitr)
 knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
+
+
 @
 
 
@@ -580,6 +582,9 @@ library(scales)
 #cols <- hue_pal()(3)
 cols <- rev(c("#535993", "#C5D068", "#D4856A"))
 
+oranges <- c("#FDBF6F", "#F89D38", "#F37A00")
+purples <- c("#CAB2D6", "#9A78B8", "#6A3D9A")
+greens <- c("#b2df8a", "#73C05B", "#33a02c")
 # #####  Color Palette by Paletton.com
 # #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
 #
@@ -997,11 +1002,12 @@ penguins_complete %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl2), alpha = 0.8) +
+  geom_pcp(aes(color=cl2), alpha = 0.6) +
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+#  scale_color_brewer(type="qual") +
+  scale_color_manual(values = c(oranges[2], greens[2])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1024,11 +1030,12 @@ penguins_complete %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl3), alpha = 0.8) +
+  geom_pcp(aes(color=cl3), alpha = 0.6) +
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+#  scale_color_brewer(type="qual") +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2]))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1052,11 +1059,12 @@ penguins_complete %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl4), alpha = 0.8) +
+  geom_pcp(aes(color=cl4), alpha = 0.6) +
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+#  scale_color_brewer(type="qual") +
+    scale_color_manual(values = c(oranges[1], purples[2], oranges[3], greens[2]))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1083,7 +1091,10 @@ penguins_complete %>%
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+#  scale_color_brewer(type="qual") +
+    scale_color_manual(
+      values = c(oranges[1], purples[1], purples[3], oranges[3], greens[2])) +
+    #  values = c("#fdbf6f", "#cab2d6", "#6a3d9a" , "#ff7f00",  "#b2df8a"))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1094,7 +1105,6 @@ penguins_complete %>%
                             "Flipper length", "Body mass",
                             "k=5 Clusters", "Species")) +
   ggtitle("Clustering into 5 groups")
-
 @
 
 <<cl6, fig.cap="The sixth cluster does...", fig.height = 4, fig.width = 8, include = F>>=
@@ -1110,7 +1120,8 @@ penguins_complete %>%
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual") +
+#  scale_color_brewer(type="qual") +
+    scale_color_manual(values = c(oranges[1], purples[2], oranges[2], oranges[3], greens[1], greens[3]))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1204,7 +1215,10 @@ penguins_complete %>%
     geom_pcp_boxes(fill=NA, colour = "black", size = .5) +
     geom_pcp_labels(alpha = 0.9) +
   theme_bw() +
-  scale_color_brewer(type="qual", palette = "Paired") +
+#  scale_color_brewer(type="qual", palette = "Paired") +
+  scale_color_manual(values = c("#fdbf6f", "#ff7f00",
+                                "#cab2d6", "#6a3d9a",
+                                "#b2df8a", "#33a02c")) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1229,7 +1243,7 @@ penguins_complete %>%
     geom_pcp_boxes(fill=NA) +
     geom_pcp_labels() +
   theme_bw() +
-  scale_color_brewer(type="qual", palette = "Paired") +
+  scale_color_manual(values = c("darkorange", "#ffa940", "purple4", "#842ad8", "darkgreen", "#009c00")) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1238,6 +1252,10 @@ penguins_complete %>%
   scale_y_continuous(breaks = NULL) +
   scale_x_discrete("",expand = expansion(add=0.25))
 
+
+#FF8C00 "darkorange"
+#551A8B "purple4"
+#006400 "darkgreen"
 @
 
 
