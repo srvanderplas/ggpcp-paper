@@ -59,7 +59,7 @@
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{A grammar of graphics framework for generalized parallel coordinate plots} % Article title
+\title{Penguins Go Parallel: a grammar of graphics framework for generalized parallel coordinate plots} % Article title
 \author{%
 \textsc{Author 1}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
 \textsc{Author 2}$^2$\hspace{2em}
@@ -949,7 +949,7 @@ clusters <- tibble(k = 2:8)
 clusters <- clusters %>% mutate(
   kmeans_cl = k %>% purrr::map(.f = function(cl) {
     kmeans(penguins_complete %>%
-             select(bill_length_mm:body_mass_g) %>%
+             dplyr::select(bill_length_mm:body_mass_g) %>%
              mutate(
                across(.fns = scale)
              ), centers=cl)
@@ -1007,15 +1007,20 @@ penguins_complete %>%
 @
 
 <<cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8, include = F>>=
-penguins_complete %>%
+penguins_complete_pcp <- penguins_complete %>%
   mutate(
     cl3 = reorder(cl3, body_mass_g, mean)
   ) %>%
   pcp_select(bill_length_mm:body_mass_g, cl3, species) %>%
   pcp_scale() %>%
-  pcp_arrange() %>%
+  pcp_arrange()
+
+penguins_complete_pcp %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl3), alpha = 0.6) +
+  geom_pcp(aes(color=cl3), alpha = 0.6,
+           data = filter(penguins_complete_pcp, cl3!="2")) +
+  geom_pcp(aes(color=cl3), alpha = 0.6,
+           data = filter(penguins_complete_pcp, cl3=="2")) +
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
@@ -1031,6 +1036,7 @@ penguins_complete %>%
                             "Flipper length", "Body mass",
                             "k=3 Clusters", "Species")) +
   ggtitle("Clustering into 3 groups")
+
 
 @
 
@@ -1064,22 +1070,27 @@ penguins_complete %>%
 @
 
 <<cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8, include = F>>=
-penguins_complete %>%
+penguins_complete_pcp <- penguins_complete %>%
   mutate(
     cl5 = reorder(cl5, body_mass_g, mean)
   ) %>%
   pcp_select(bill_length_mm:body_mass_g, cl5, species, sex) %>%
   pcp_scale() %>%
-  pcp_arrange() %>%
+  pcp_arrange()
+
+penguins_complete_pcp %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl5), alpha = 0.6) +
+  geom_pcp(aes(color=cl5), alpha = 0.6,
+           data = filter(penguins_complete_pcp,
+                         species != "Chinstrap")) +
+  geom_pcp(aes(color=cl5), alpha = 0.6,
+           data = filter(penguins_complete_pcp,
+                         species == "Chinstrap")) +
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-#  scale_color_brewer(type="qual") +
     scale_color_manual(
       values = c(oranges[1], purples[1], purples[3], oranges[3], greens[2])) +
-    #  values = c("#fdbf6f", "#cab2d6", "#6a3d9a" , "#ff7f00",  "#b2df8a"))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1093,15 +1104,20 @@ penguins_complete %>%
 @
 
 <<cl6, fig.cap="The sixth cluster does...", fig.height = 4, fig.width = 8, include = F>>=
-penguins_complete %>%
+penguins_complete_pcp <- penguins_complete %>%
   mutate(
     cl6 = reorder(cl6, body_mass_g, mean)
   ) %>%
   pcp_select(bill_length_mm:body_mass_g, cl6, species, sex) %>%
   pcp_scale() %>%
-  pcp_arrange() %>%
+  pcp_arrange()
+
+penguins_complete_pcp %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl6), alpha = 0.6) +
+  geom_pcp(aes(color=cl6), alpha = 0.6,
+           data = filter(penguins_complete_pcp, species != "Gentoo")) +
+  geom_pcp(aes(color=cl6), alpha = 0.6,
+           data = filter(penguins_complete_pcp, species == "Gentoo")) +
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
@@ -1154,7 +1170,7 @@ penguins_complete %>%
      \begin{subfigure}[t]{0.48\textwidth}
          \centering
          \includegraphics[keepaspectratio=true,width=\linewidth]{figures/cl6-1}
-         \caption{With the introduction of a sixth cluster, Gentoo penguins are split into males and females. However, the sex separation for Chinstrap penguins gets lost in this clustering. }
+         \caption{With the introduction of a sixth cluster, all previous clusters change: Gentoo penguins are split into males and females. The sex separation for Chinstrap penguins gets lost, but  Adelie males get split into two separate clusters. }
          \label{fig:penguink6}
      \end{subfigure}
         \caption{An overview of the use of parallel coordinate plots to examine which variables contribute to clustering and to identify individuals who are misclassified.}
