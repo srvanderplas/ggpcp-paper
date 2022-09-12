@@ -167,25 +167,35 @@ Categorical parallel coordinate plots are the closest of these variations to our
 % Those packages based on \pkg{ggplot2} make use of \pkg{ggplot2}, but are actually wrapper of existing functions for highly specialized plots with tens of parameters, which do not allow the full flexibility of \pkg{ggplot2} and do not make use of \pkg{ggplot2}'s  layer framework.
 % \svp{Might be useful to actually provide an example of the syntax/underlying code here or in an appendix?}
 
-<<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next.\\au{Use two individual penguins in this example} ">>=
-df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
-df %>%
-  pcp_select(x1:x4) %>%
+<<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next.\\au{Two penguins from the Palmer Penguin data set (see section 5) were sampled for this example.} ">>=
+#df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
+df <- penguins
+df_pcp <- df %>%
+  pcp_select(bill_length_mm:body_mass_g) %>%
 #  mutate(value = parse_number(as.character(value))) %>%
-#  pcp_scale(method="globalminmax") %>%
+  pcp_scale()
+
+df_pcp$Observation = paste0("Penguin #", df_pcp$pcp_id, " (", df_pcp$species,")")
+df_pcp$Observation = paste0("Penguin #", df_pcp$pcp_id)
+
+df_pcp %>%
   ggplot(aes_pcp())  +
   geom_pcp_axes() +
-  geom_pcp(aes(colour = factor(pcp_id)), size=1) +
-  geom_point(aes(shape=factor(pcp_id), colour = factor(pcp_id)), size=5) +
+  geom_pcp(aes(colour = Observation), size=1,
+           data = df_pcp %>% filter(pcp_id %in% c(1,275))) +
+  geom_point(aes(shape=Observation, colour = Observation), size=5,
+             data = df_pcp %>% filter(pcp_id %in% c(1,275))) +
   theme_bw() +
   xlab("") +
-  scale_shape_discrete("Observation") +
+#  scale_shape_discrete("Observation") +
   scale_colour_manual("Observation", values=c("darkorange", "purple4")) +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   scale_y_continuous(labels=c("low", "", "medium", "", "high"),
                      breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete(expand = expansion(add=0.2))
+  scale_x_discrete(expand = expansion(add=0.2),
+                   labels = c("Bill Length (mm)", "Bill Depth (mm)",
+                              "Flipper Length (mm)", "Body Mass (g)"))
 @
 
 
