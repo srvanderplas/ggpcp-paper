@@ -446,14 +446,28 @@ The left-most panel shows two categorical variables and the typical net of lines
  spirit of the original parallel coordinate plots to follow an individual observation from left to right through the plot even for  categorical variables.
 The other two solutions in the middle panels of \autoref{fig:alignment} show
 two intermediary solutions of breaking ties in categorical variables: jittering and equi-spaced (unordered) values.
-<<alignment, fig.height = 3.5, fig.align="center", fig.cap="Four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels ties in categorical levels are broken using different approaches: from left to right, jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
+
+
+<<alignment, fig.height = 3.5, fig.align="center", fig.cap="At the example of 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels ties in categorical levels are broken using different approaches: from left to right, jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
 set.seed(20200924)
-x1 <- c(rep(1, 5), rep(2, 3), rep(3, 4))
-x2 <- c(1,2,1,2,1,1,1,1,2,2,2,1)
+#x1 <- c(rep(1, 5), rep(2, 3), rep(3, 4))
+#x2 <- c(1,2,1,2,1,1,1,1,2,2,2,1)
+
+df <- penguins %>% na.omit() %>%  group_by(species, sex) %>%
+  slice_sample(n = 3, replace = FALSE) %>%
+  mutate(id = 1:n())
+
+df <- df %>% filter(!(species=="Chinstrap" & sex=="male"),
+                    !(species=="Adelie" & sex=="male" & id ==3) &
+                    !(species=="Gentoo" & sex=="female" & id != 1))
+
+x1 <- as.numeric(df$sex)
+x2 <- as.numeric(df$species)
 jitter1 <- runif(n = 12, min = -0.1, max = 0.1)
 jitter2 <- runif(n = 12, min = -0.1, max = 0.1)
-y <- c("a", "b", "c")[x1]
-dfnew <- tibble(v1 = x2, v2 = x1,
+y <- as.factor(df$species)
+dfnew <- tibble(#v1 = x2, v2 = x1,
+  v1 = x1, v2 = x2,
                 v3 = as.factor(x1),
                 v4 = as.factor(x2),
                 z = y,
@@ -474,13 +488,13 @@ p1 <- dfnew %>%
   facet_grid(.~"Original PCP") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   theme(legend.position="none") +
-  scale_x_discrete(expand = expansion(add=0.05))
+  scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 
 
 p2 <- dfnew %>%
   mutate(v1 = v4, v2 = v3) %>%
-  pcp_select(v1:v2) %>%
+  pcp_select(v2, v1) %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
@@ -494,12 +508,12 @@ p2 <- dfnew %>%
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   theme(legend.position="none") +
   ylim(c(0,1))+
-  scale_x_discrete(expand = expansion(add=0.2))
+  scale_x_discrete(expand = expansion(add=0.2), labels=c("sex", "species"))
 
 
 
 p3 <- dfnew %>%
-  mutate(v1 = v5, v2 = v6) %>%
+  mutate(v1 = v6, v2 = v5) %>%
   pcp_select(v1:v2) %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
@@ -510,10 +524,10 @@ p3 <- dfnew %>%
   facet_grid(.~"Jitter") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   theme(legend.position="none")+
-  scale_x_discrete(expand = expansion(add=0.05))
+  scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 p4 <- dfnew %>%
-  mutate(v1 = v7, v2 = v8) %>%
+  mutate(v1 = v8, v2 = v7) %>%
   pcp_select(v1:v2) %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
@@ -524,7 +538,7 @@ p4 <- dfnew %>%
   facet_grid(.~"Equally spaced") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   theme(legend.position="none")+
-  scale_x_discrete(expand = expansion(add=0.05))
+  scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 grid.arrange(p1, p3, p4, p2, nrow=1)
 @
