@@ -621,14 +621,15 @@ greens <- c("#b2df8a", "#73C05B", "#33a02c")
 #    shade 3 = #803015 = rgb(128, 48, 21) = rgba(128, 48, 21,1) = rgb0(0.502,0.188,0.082)
 #    shade 4 = #551600 = rgb( 85, 22,  0) = rgba( 85, 22,  0,1) = rgb0(0.333,0.086,0)
 
-
+penguins1 <- penguins1 %>%
+  rename(`study ID` = studyName, `Bill Length` = CulmenL,
+             `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
+             `Body Weight` = BodyMass)
 
 # First pcp
 pp1 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
-  pcp_select(`study ID` = studyName, species, Island, `Bill Length` = CulmenL,
-             `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
-             `Body weight` = BodyMass) %>%
+  pcp_select(`study ID`, species, Island, `Bill Length`:`Body Weight`) %>%
   pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
   geom_pcp_axes(colour="white") +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
@@ -648,10 +649,7 @@ penguins1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap"
 # Fourth pcp
 pp2 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
-  pcp_select(`study ID` = studyName, species, island, `Bill Length` = CulmenL,
-             `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
-             `Body weight` = BodyMass) %>%
-#pp2 <- p1 %>% pcp_select(studyName, speciesC, islandC, CulmenL, `-CulmenD`, FlipperL:Sex) %>%
+  pcp_select(`study ID`, species, island, `Bill Length`:`Body Weight`) %>%
   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
@@ -668,10 +666,15 @@ library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 @
 
-\svp{In addition to the ordering of factor levels, it is also important to carefully order the variables on the $x$-axis}, as shown in \autoref{fig:penguins-variable-order}, where the variables have been re-ordered
-to allow the viewer to see what body measurements distinguish the species. Note that besides the re-ordering, the axes for Culmen depth is also reversed.\svp{XXX explain why this helps}
-The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, that Adelie and Chinstrap are distinguished by Culmen Length.
-The plot does not show anything about the differences between male and female penguins.  Given the greater size of the males \au{we don't know that yet} in general it may be better to split by male and female, ignoring the missing values.  The results are the same for both sexes and stand out more.  Interestingly,  some potential outliers that were not visible previously, now stand out. \au{highlight the two Gentoo males with short flippers - ordering = 'none'} \au{XXX Explain the introduction of faceting XXX}
+In addition to the ordering of factor levels, it is also important to carefully order the variables on the $x$-axis, as shown in \autoref{fig:penguins-variable-order}, where the variables have been re-ordered
+to allow the viewer to see what body measurements distinguish the species. Note that besides the re-ordering, the axes for bill depth is also reversed. \svp{XXX explain why this helps} \hh{Again, this reversal helps with distinguishing between species: Gentoo penguins have the lowest bill depth, while generally having the longest flippers. Reversing the axis for bill depths, aligns the smallest bill depths with the longest flippers, thereby moving Gentoo penguins closer together as a group. }
+The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, and, finally, that Adelie and Chinstrap are distinguished by the lengths of their bills.
+
+\hh{Note that we are using facetting by penguins' sex} in \autoref{fig:penguins-variable-order}. \hh{While all of the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.}
+
+
+%The plot does not show anything about the differences between male and female penguins.  Given the greater size of the males \au{we don't know that yet} in general it may be better to split by male and female, ignoring the missing values.  The results are the same for both sexes and stand out more.
+Interestingly,  some potential outliers that were not visible previously, now stand out. \au{highlight the two Gentoo males with short flippers - ordering = 'none'}
 
 \au{XXX Possible other ordering approaches would be to use some kind of association measure or a matrix reordering algorithm for two categorical variables, medians by category or R2 from a linear model for continuous and categorical, correlations for two continuous variables.}
 
@@ -680,23 +683,12 @@ The plot does not show anything about the differences between male and female pe
 <<penguins-variable-order, fig.cap="Changing the order of the variables along the x-axis emphasizes the differences in body measurements between the species.", fig.height=6, fig.width=8>>=
 # Reorder the variables, moving CulmenL to the right, and do case ordering from the left
 # Invert the CulmenD variable (and use the minus notation :-))
-p1 <- p1 %>% mutate(`-CulmenD`=-CulmenD)
+penguins1 <- penguins1 %>% mutate(`-Bill Depth`=-`Bill Depth`)
 
-# Fifth pcp
-# p1 %>% pcp_select(studyName, speciesC, islandC, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
-#   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
-#   geom_pcp_axes(colour="white") +
-#   geom_pcp(aes(colour=speciesC)) +
-#   geom_pcp_boxes(fill="white") +
-#   geom_pcp_labels(fill="white", alpha=1) +
-#   xlab(NULL) + ylab(NULL) +
-#   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-#         legend.position="none") +
-#   scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
 
 # Change the order of printing the colours to make Chinstrap stand out better
 # Requires rearranging of dataset case order and using overplot="none"
-p1 <- p1 %>% arrange(fct_rev(species))
+penguins1 <- penguins1 %>% arrange(fct_rev(species))
 
 # # Sixth pcp
 # p1 %>% pcp_select(studyName, speciesC, islandC, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
@@ -715,7 +707,7 @@ p1 <- p1 %>% arrange(fct_rev(species))
 
 # Splitting by sex (not faceting so that NAs are excluded and scales are individual)
 # Seventh pcp
-m1 <- p1 %>% filter(Sex=="MALE") %>% pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+m1 <- penguins1 %>% filter(Sex=="MALE") %>% pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`, Sex) %>%
 pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
 geom_pcp_axes() +
 geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
@@ -727,7 +719,7 @@ theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
 legend.position="none") +
 scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
 
-f1 <- p1 %>% filter(Sex=="FEMALE") %>% pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
+f1 <- penguins1 %>% filter(Sex=="FEMALE") %>% pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`, Sex) %>%
 pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
 geom_pcp_axes() +
 geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
@@ -742,9 +734,10 @@ scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
 #library(patchwork)
 #f1 + m1 + plot_layout(nrow = 2, byrow = FALSE)
 
-p1 %>%
+penguins1 %>%
   filter(!is.na(Sex)) %>%
-  pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL) %>%
+  pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`) %>%
+#  pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL) %>%
   group_by(Sex) %>%
   pcp_scale(.by_group = TRUE) %>%
   pcp_arrange(method="from-left", .by_group = TRUE) %>%
