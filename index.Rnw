@@ -626,7 +626,9 @@ greens <- c("#b2df8a", "#73C05B", "#33a02c")
 # First pcp
 pp1 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
-  pcp_select(studyName, species, Island, CulmenL:BodyMass) %>%
+  pcp_select(`study ID` = studyName, species, Island, `Bill Length` = CulmenL,
+             `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
+             `Body weight` = BodyMass) %>%
   pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
   geom_pcp_axes(colour="white") +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
@@ -639,14 +641,16 @@ pp1 <- penguins1 %>%
   ggtitle("Original order of levels and variables") +
   scale_colour_manual(values=c(cols[1], cols[2], cols[3]))
 
-p1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adelie", "Gentoo"))) %>%
+penguins1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adelie", "Gentoo"))) %>%
   mutate(island=factor(Island, levels=c("Dream", "Torgersen", "Biscoe")))
 
 
 # Fourth pcp
 pp2 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
-  pcp_select(studyName, species, Island, CulmenL:BodyMass) %>%
+  pcp_select(`study ID` = studyName, species, island, `Bill Length` = CulmenL,
+             `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
+             `Body weight` = BodyMass) %>%
 #pp2 <- p1 %>% pcp_select(studyName, speciesC, islandC, CulmenL, `-CulmenD`, FlipperL:Sex) %>%
   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
   geom_pcp_axes() +
