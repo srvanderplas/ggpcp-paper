@@ -672,7 +672,6 @@ The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap ar
 
 \hh{Note that we are using facetting by penguins' sex} in \autoref{fig:penguins-variable-order}. \hh{While all of the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.}
 
-
 %The plot does not show anything about the differences between male and female penguins.  Given the greater size of the males \au{we don't know that yet} in general it may be better to split by male and female, ignoring the missing values.  The results are the same for both sexes and stand out more.
 Interestingly,  some potential outliers that were not visible previously, now stand out. \au{highlight the two Gentoo males with short flippers - ordering = 'none'}
 
