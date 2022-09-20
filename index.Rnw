@@ -757,7 +757,7 @@ penguins1 %>%
 
 
 %
-<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data.", fig.height=4, fig.width=8>>=
+<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.", fig.height=4, fig.width=8>>=
  penguins <- penguins %>%
    mutate(
      species = factor(species, c("Chinstrap", "Adelie", "Gentoo")),
@@ -811,7 +811,8 @@ penguins_pcp <- penguins %>%
         sex = factor(sex, levels = c("female", "?", "male"))
     ) %>%
   filter(!is.na(body_mass_g)) %>%
-  pcp_select( 4:3, 5:6) %>%
+    pcp_select(6:5, 3:4) %>%
+#  pcp_select(4:3, 5:6) %>%
   group_by(species) %>%                                  # re-scale by species
   pcp_scale() %>%
   pcp_arrange()
@@ -827,7 +828,7 @@ For Adelie penguins the situation is not quite as clear-cut, but based on body m
 
 
 
-<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the right of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate four unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
+<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate four unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
 
 # making ribbons
 # probs <- seq(0,1,by=0.1)
@@ -892,10 +893,10 @@ penguins_pcp %>%
     alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
   ) +
   geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
-           data = annotate_dframe %>% mutate(sex = "male"), nudge_x = 0.125,
+           data = annotate_dframe %>% mutate(sex = "male"), nudge_x = -0.125,
            family='fontawesome-webfont', size=5) +
   geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
-           data = annotate_dframe %>% mutate(sex = "female"), nudge_x = 0.125,
+           data = annotate_dframe %>% mutate(sex = "female"), nudge_x = -0.125,
            family='fontawesome-webfont', size=5) +
   geom_text(aes(label=marker),
             data = data.frame(
@@ -905,7 +906,7 @@ penguins_pcp %>%
                               pcp_x = "bill_depth_mm",
                  nest = c("N5", "N5", "N6", "N6")),
             colour = "#8b4950",
-           nudge_x = -0.1,
+           nudge_x = 0.1,
            family='fontawesome-webfont', size=3)
 
 @
