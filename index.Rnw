@@ -215,8 +215,8 @@ data(flea)
 @
 
 <<echo=TRUE, reset=TRUE,  results = 'hold', error=FALSE, warning=FALSE>>=
-pcp <- flea %>%                           # data management:
-  pcp_select(species, 2:7, species) %>%   #   variable selection, see section 3.1
+pcp <- penguins %>%                       # data management:
+  pcp_select(species, 3:6, sex) %>%       #   variable selection, see section 3.1
   pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
   pcp_arrange() %>%                       #   arranging categorical data
   ggplot(aes_pcp()) +                     # plotting the chart:
