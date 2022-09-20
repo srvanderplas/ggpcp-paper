@@ -811,8 +811,7 @@ penguins_pcp <- penguins %>%
         sex = factor(sex, levels = c("female", "?", "male"))
     ) %>%
   filter(!is.na(body_mass_g)) %>%
-    pcp_select(6:5, 3:4) %>%
-#  pcp_select(4:3, 5:6) %>%
+  pcp_select(6:5, 3:4) %>%
   group_by(species) %>%                                  # re-scale by species
   pcp_scale() %>%
   pcp_arrange()
@@ -820,7 +819,7 @@ penguins_pcp <- penguins %>%
 
 Chinstrap penguins are excluded (line 2) because all of their individuals in the data have a sex assigned.
 The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill depth). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2b}.
-For Adelie penguins the situation is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin \hh{literally? I need to re-phrase this sentence} walks the line between typical male and typical female measurements. \hh{Trying to confirm the putative assignments is a bit more tricky for these penguins, because four of the five unsexed penguins are nest partners. The lightest unsexed penguin is the partner of a sexed male penguin. The putative assignments do not contradict the hypothesis that each nest is host to a male and a female penguin. Using this assumption, the last unsexed penguin would be resolved as  the male of the nest.  }
+For Adelie penguins the situation is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin \hh{exhibits measurements that are neither typically male not typically female}. \hh{Trying to confirm the putative assignments is a bit more tricky for these penguins, because four of the five unsexed penguins are nest partners. The lightest unsexed penguin is the partner of a sexed male penguin. The putative assignments do not contradict the hypothesis that each nest is host to a male and a female penguin. Using this assumption, the last unsexed penguin would be resolved as  the male of the nest.  }
 
 
 %\caption{\label{penguin2-code} Code for prepping the data for figure penguin2}
