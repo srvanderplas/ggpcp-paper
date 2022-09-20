@@ -267,7 +267,7 @@ By transforming the wide form of the data set into a long form \citep{reshape, d
 \begin{figure}
 %\includegraphics[width=\linewidth]{sketches/data-wrangling.pdf}
 \includegraphics[width=\linewidth]{sketches/data-wrangling-plus.pdf}
-\caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step  before a parallel coordinate plot can be drawn (bottom left). Note that the order in which variables are selected is reflected in the order in which variables are included in the parallel coordinate plot.\\au{Ordering in RH graphic should be the same as explanations below - start w/ pcp\_id, then pcp\_x, ...}}
+\caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step  before a parallel coordinate plot can be drawn (bottom left). Note that the order in which variables are selected is reflected in the order in which variables are included in the parallel coordinate plot. }%\\au{Ordering in RH graphic should be the same as explanations below - start w/ pcp\_id, then pcp\_x, ...}}
 \end{figure}
 
 \hh{From the user's perspective this data reshaping has purely the form of a data selection, while the data wrangling is going on behind the scenes in \code{pcp\_select}.}
@@ -285,11 +285,11 @@ Variables can be selected multiple times and will then be included in the data a
 Note that the order in which variables are selected determines the order in which the corresponding axis is drawn in the parallel coordinate plots.
 \code{pcp\_select} transforms the selected variables to long form and embellishes the data set with a number of additional variables. All of the newly created and added variables start with the prefix \code{pcp\_}:
 \begin{itemize}
+\item \code{pcp\_id}: integer variable identifying each observation in the original dataset. This variable is used as the grouping variable to identify which values should be connected by a line segment in the parallel coordinate plot.
 \item \code{pcp\_x}: discrete variable consisting of the names of the selected variables in the order that they were selected - this is the order in which the variables will be included in the plot.
 \item \code{pcp\_y}: numeric variable containing the values of all of the selected variables. In case a selected variable is not numeric, it is converted to a factor variable and the (numeric) factor levels are saved in \code{pcp\_y}.
-\item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form). \svp{The ordering of factor variables will be discussed below but is implemented using this added variable.}
 \item \code{pcp\_class}: character variable containing the class information of a selected variable.
-\item \code{pcp\_id}: integer variable identifying each observation in the original dataset. This variable will be used as grouping variable to identify which values should be connected by a line segment in the parallel coordinate plot.
+\item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form). \svp{The ordering of factor variables will be discussed below but is implemented using this added variable.}
 \end{itemize}
 
 \svp{As a consequence of these design decisions, users have several ways to perform different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable.}
