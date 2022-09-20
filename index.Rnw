@@ -127,10 +127,10 @@ theme_set(theme_bw())
 <<prep-raw-penguin, warning = FALSE>>=
 library(palmerpenguins)
 
-p1 <- penguins_raw
-p1 <- p1 %>% separate(col=`Individual ID`, into=c("Nest", "Individ"), remove=FALSE, sep=-2)
+penguins1 <- penguins_raw
+penguins1 <- penguins1 %>% separate(col=`Individual ID`, into=c("Nest", "Individ"), remove=FALSE, sep=-2)
 names(p1)[12:15] <- c("CulmenL", "CulmenD", "FlipperL", "BodyMass")
-p1 <- p1 %>% separate(Species, into=c("species", "foo2", "foo3", "foo4"), sep=" ") %>% select(-starts_with("foo")) # foos make R happy, because it doesn't throw away anything unexpected
+penguins1 <- penguins1 %>% separate(Species, into=c("species", "foo2", "foo3", "foo4"), sep=" ") %>% select(-starts_with("foo")) # foos make R happy, because it doesn't throw away anything unexpected
 @
 
 
@@ -624,7 +624,7 @@ greens <- c("#b2df8a", "#73C05B", "#33a02c")
 
 
 # First pcp
-pp1 <- p1 %>% pcp_select(studyName, species, Island, CulmenL:Sex) %>%
+pp1 <- penguins1 %>% pcp_select(studyName, species, Island, CulmenL:Sex) %>%
   pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
   geom_pcp_axes(colour="white") +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
@@ -637,12 +637,12 @@ pp1 <- p1 %>% pcp_select(studyName, species, Island, CulmenL:Sex) %>%
   ggtitle("Original order of levels and variables") +
   scale_colour_manual(values=c(cols[1], cols[2], cols[3]))
 
-p1 <- p1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adelie", "Gentoo"))) %>%
+p1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adelie", "Gentoo"))) %>%
   mutate(island=factor(Island, levels=c("Dream", "Torgersen", "Biscoe")))
 
 
 # Fourth pcp
-pp2 <- p1 %>%
+pp2 <- penguins1 %>%
   pcp_select(studyName, species, island, CulmenL:Sex) %>%
 #pp2 <- p1 %>% pcp_select(studyName, speciesC, islandC, CulmenL, `-CulmenD`, FlipperL:Sex) %>%
   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
