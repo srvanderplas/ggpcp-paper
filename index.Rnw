@@ -129,7 +129,7 @@ library(palmerpenguins)
 
 penguins1 <- penguins_raw
 penguins1 <- penguins1 %>% separate(col=`Individual ID`, into=c("Nest", "Individ"), remove=FALSE, sep=-2)
-names(p1)[12:15] <- c("CulmenL", "CulmenD", "FlipperL", "BodyMass")
+names(penguins1)[12:15] <- c("CulmenL", "CulmenD", "FlipperL", "BodyMass")
 penguins1 <- penguins1 %>% separate(Species, into=c("species", "foo2", "foo3", "foo4"), sep=" ") %>% select(-starts_with("foo")) # foos make R happy, because it doesn't throw away anything unexpected
 @
 
@@ -624,7 +624,9 @@ greens <- c("#b2df8a", "#73C05B", "#33a02c")
 
 
 # First pcp
-pp1 <- penguins1 %>% pcp_select(studyName, species, Island, CulmenL:Sex) %>%
+pp1 <- penguins1 %>%
+  filter(!is.na(Sex)) %>%
+  pcp_select(studyName, species, Island, CulmenL:BodyMass) %>%
   pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
   geom_pcp_axes(colour="white") +
   geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
@@ -643,7 +645,8 @@ p1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adel
 
 # Fourth pcp
 pp2 <- penguins1 %>%
-  pcp_select(studyName, species, island, CulmenL:Sex) %>%
+  filter(!is.na(Sex)) %>%
+  pcp_select(studyName, species, Island, CulmenL:BodyMass) %>%
 #pp2 <- p1 %>% pcp_select(studyName, speciesC, islandC, CulmenL, `-CulmenD`, FlipperL:Sex) %>%
   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
   geom_pcp_axes() +
