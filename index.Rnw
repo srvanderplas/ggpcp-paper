@@ -757,7 +757,7 @@ penguins1 %>%
 
 
 %
-<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.", fig.height=4, fig.width=8>>=
+<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). \\hh{XXX reason for that here or in the text?}", fig.height=4, fig.width=8>>=
  penguins <- penguins %>%
    mutate(
      species = factor(species, c("Chinstrap", "Adelie", "Gentoo")),
@@ -789,8 +789,9 @@ penguins_pcp %>%
   scale_colour_manual(values=c("#FFCD70", "#8b4950", "#008080")) +
 #    scale_colour_manual(values=c("#ff595e", "#573e79", "#1982c4")) +
   theme(legend.position="bottom") +
-  ylab("") +
-  xlab("") #+
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none")
 #  facet_wrap(~sex)
 @
 
@@ -827,9 +828,204 @@ For Adelie penguins the situation is not quite as clear-cut, but based on body m
 %\caption{\label{penguin2-code} Code for prepping the data for figure penguin2}
 %Code for prepping the data shown in \autoref{fig:penguins2b}:
 
-
-
 <<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate four unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
+
+# making ribbons
+# probs <- seq(0,1,by=0.1)
+# probs <- c(0.025, 0.25, 0.75, 0.975)
+#
+# dframe <-
+#   penguins_pcp %>% filter(sex!="?") %>% group_by(species, sex, pcp_x) %>%
+#   summarise(value = quantile(pcp_y, prob=probs),
+#             quantile=probs,
+#             lower = probs<0.5,
+#             level = round(10*abs(quantile-0.5), digits = 1))  %>%
+#   select(-quantile) %>%
+#   mutate(lower = factor(lower, labels=c("upper", "lower"))) %>%
+#   pivot_wider(names_from="lower", values_from="value") %>%
+#   ungroup() %>%
+#   mutate(
+#     level = ifelse(level > 2.5, "Inner 95%", "Inner 50%"),
+#     level = factor(level, levels=c("Inner 50%", "Inner 95%"))
+#   ) # %>% filter(level <= 4)
+
+# for annotations
+annotate_dframe <- penguins_pcp %>%
+  filter(sex=="?", !is.na(body_mass_g), pcp_x == "body_mass_g")
+
+library(emojifont)
+load.fontawesome()
+labels <- fontawesome(c('fa-venus','fa-mars', "fa-question"))
+
+annotate_dframe$putative <- labels[1]
+annotate_dframe <- annotate_dframe %>% mutate(
+  putative = ifelse(pcp_y > 0.4, labels[3], putative),
+  putative = ifelse(pcp_y > 0.5, labels[2], putative)
+)
+
+circle <- fontawesome(c( 'fa-star', 'fa-github'))
+
+
+
+
+gg_p1 <- penguins %>%
+  filter(species != "Chinstrap", !is.na(sex)) %>%
+  ggplot(aes(x = body_mass_g, y = flipper_length_mm)) +
+  facet_wrap(species~sex)+
+  ggdensity::geom_hdr(probs =c(0.5, 0.95))
+
+gg_df <- gg_p1 %>% ggplot_build()
+
+
+gg_p2 <- penguins %>%
+  filter(species != "Chinstrap", !is.na(sex)) %>%
+  ggplot(aes(x = flipper_length_mm, y = bill_length_mm)) +
+  facet_wrap(species~sex)+
+  ggdensity::geom_hdr(probs =c(0.5, 0.95))
+
+gg_df2 <- gg_p2 %>% ggplot_build()
+
+gg_p3 <- penguins %>%
+  filter(species != "Chinstrap", !is.na(sex)) %>%
+  ggplot(aes(x = bill_length_mm, y = bill_depth_mm)) +
+  facet_wrap(species~sex)+
+  ggdensity::geom_hdr(probs =c(0.5, 0.95))
+
+gg_df3 <- gg_p3 %>% ggplot_build()
+
+gg_p1_pcp <- gg_df$data[[1]] %>%
+  #  filter(nlevel==1) %>%
+  select(x, y, PANEL, order) %>%
+  rename(body_mass_g = x, flipper_length_mm = y) %>%
+  mutate(type = "contour",
+         sex = ifelse(PANEL %in% c(1,3), "female", "male"),
+         species = ifelse(PANEL %in% c(1,2), "Adelie", "Gentoo"),
+         bill_length_mm = NA,
+         bill_depth_mm = NA
+  ) %>% select(-PANEL) %>%
+  rbind2(
+    gg_df2$data[[1]] %>%
+      #  filter(nlevel==1) %>%
+      select(x, y, PANEL, order) %>%
+      rename(flipper_length_mm = x, bill_length_mm = y) %>%
+      mutate(type = "contour",
+             sex = ifelse(PANEL %in% c(1,3), "female", "male"),
+             species = ifelse(PANEL %in% c(1,2), "Adelie", "Gentoo"),
+             body_mass_g = NA,
+             bill_depth_mm = NA
+      ) %>% select(-PANEL)
+  ) %>%
+  rbind2(
+    gg_df3$data[[1]] %>%
+      #  filter(nlevel==1) %>%
+      select(x, y, PANEL, order) %>%
+      rename(bill_length_mm = x, bill_depth_mm = y) %>%
+      mutate(type = "contour",
+             sex = ifelse(PANEL %in% c(1,3), "female", "male"),
+             species = ifelse(PANEL %in% c(1,2), "Adelie", "Gentoo"),
+             body_mass_g = NA,
+             flipper_length_mm = NA
+      ) %>% select(-PANEL)
+  ) %>%
+  rbind2(penguins %>% select(body_mass_g, flipper_length_mm, bill_length_mm,bill_depth_mm, sex, species) %>%
+           mutate(type = "observed", order=NA)) %>%
+  filter(species !="Chinstrap", !is.na(order)) %>%
+  mutate(
+    sex = ifelse(is.na(sex),"?", as.character(sex)), # make assignment more readable
+    sex = factor(sex, levels = c("female", "?", "male"))
+  )
+
+gg_p1_pcp <- gg_p1_pcp %>% ungroup() %>%
+  select(body_mass_g, flipper_length_mm, bill_length_mm,bill_depth_mm, order, type, species, sex) %>%
+  pcp_select(body_mass_g, flipper_length_mm, bill_length_mm,bill_depth_mm) %>%
+  group_by(species) %>%                                  # re-scale by species
+  pcp_scale() %>%
+  pcp_arrange()
+
+
+contours <- gg_p1_pcp %>% filter(type=="contour") %>%
+  ungroup() %>%
+  group_by(sex, species, order, pcp_x) %>%
+  summarize(
+    pcp_y = range(pcp_y, na.rm = TRUE),
+    range = c("lower", "upper")
+  )
+
+contours <- contours %>%
+  pivot_wider(values_from = pcp_y, names_from = range)
+
+
+gg_p1_pcp <- filter(gg_p1_pcp, type != "contour")
+
+# gg_p1_pcp %>%
+#   ggplot(aes_pcp()) +
+#   geom_ribbon(aes(x = pcp_x, ymin=lower, ymax=upper, fill=sex,
+#                   group = order), alpha = 0.25, data = contours) +
+#   facet_grid(species~sex) +
+#   geom_pcp(aes(colour = sex, colour = "?"), colour = "#8b4950dd", size = 0.9,
+#            data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "female")) +
+#   geom_pcp(aes(colour = sex, colour = "?"), colour = "#8b4950dd", size = 0.9,
+#            data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "male")) +
+#   theme_bw() +
+#   scale_fill_manual("Sex",values=c( "#FAA404", "#008080",  "#8b4950")) +
+#   scale_alpha_manual("Inter-quantile Range", values = c(0.05, 0.15)) +
+#   guides(
+#     colour = guide_legend(override.aes = list(alpha = 0.5)),
+#     alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
+#   ) +
+#   theme(legend.position = "bottom")
+#
+
+# recalculate position by group
+# XXXX pcp_arrange has to also do the tie-breaking by group.
+gg_p1_pcp %>%
+  filter(sex!= "?") %>%
+  ggplot(aes_pcp()) +
+  geom_pcp_axes() +
+  geom_pcp_boxes(boxwidth=0.1) +
+#  geom_pcp(aes(colour = sex), alpha = 0.4) +
+  geom_ribbon(aes( ymin = lower, ymax=upper, group=interaction(sex,order), fill = sex, alpha=order),
+              #alpha = 0.25,
+              data = contours) +
+  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
+           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "female")) +
+  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
+           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "male")) +
+  geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
+  theme_bw() +
+  scale_fill_manual("Sex", values=c( "#8b4950", "#FAA404", "#008080")) + # lighter yellow "#FFCD70"
+  theme(legend.position="bottom") +
+    facet_grid(species~sex) +
+  scale_x_discrete(expand = expansion(add=0.25)) +
+  xlab("") + ylab("") +
+  scale_alpha_manual("Inter-quantile Range", values = c(0.25, 0.25)) +
+  guides(
+    fill = guide_legend(override.aes = list(alpha = 0.5)),
+    alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
+  ) +
+  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
+           data = annotate_dframe %>% mutate(sex = "male"), nudge_x = -0.125,
+           family='fontawesome-webfont', size=5) +
+  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
+           data = annotate_dframe %>% mutate(sex = "female"), nudge_x = -0.125,
+           family='fontawesome-webfont', size=5) +
+  geom_text(aes(label=marker),
+            data = data.frame(
+                 species="Adelie",
+                 marker = c(circle[1], circle[1], circle[2], circle[2]),
+                              pcp_y = c(0.783, 0.433, 0.3, 0.267),
+                              pcp_x = "bill_depth_mm",
+                 nest = c("N5", "N5", "N6", "N6")),
+            colour = "#8b4950",
+           nudge_x = 0.1,
+           family='fontawesome-webfont', size=3)
+
+@
+
+
+
+
+<<penguins2c, eval=FALSE, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate four unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
 
 # making ribbons
 # probs <- seq(0,1,by=0.1)
