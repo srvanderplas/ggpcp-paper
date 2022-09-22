@@ -1003,7 +1003,7 @@ gg_p1_pcp %>%
   scale_alpha_manual("Inter-quantile Range", values = c(0.25, 0.25)) +
   guides(
     fill = guide_legend(override.aes = list(alpha = 0.5)),
-    alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
+    alpha = guide_legend(override.aes = list(alpha =  c(0.25, 0.5)))
   ) +
   geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
            data = annotate_dframe %>% mutate(sex = "male"), nudge_x = -0.125,
