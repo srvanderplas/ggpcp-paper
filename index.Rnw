@@ -590,11 +590,10 @@ p1 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(aes(colour = z), size=1) +
   theme_bw() +
-  scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen")) +
+  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) +
   xlab("") + ylab("") +
   facet_grid(.~"Original PCP") +
-  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  theme(legend.position="none") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 
@@ -609,11 +608,10 @@ p2 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(aes(colour = z), size=1) +
   theme_bw() +
-  scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen")) +
+  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) +
   xlab("") + ylab("") +
   facet_grid(.~"GPCP style") +
-  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  theme(legend.position="none") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   ylim(c(0,1))+
   scale_x_discrete(expand = expansion(add=0.2), labels=c("sex", "species"))
 
