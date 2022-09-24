@@ -152,7 +152,7 @@ greens <- c("#b2df8a", "#73C05B", "#33a02c")
 
 #cols <- hue_pal()(3)
 # cols <- rev(c("#535993", "#C5D068", "#D4856A"))
-cols <-  c(oranges[3], purples[3], greens[3])
+cols <-  c(oranges[2], purples[2], greens[2])
 
 # #####  Color Palette by Paletton.com
 # #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
@@ -408,7 +408,8 @@ flea %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
     geom_pcp_axes() +
-    geom_pcp(aes(colour = species))
+    geom_pcp(aes(colour = species)) +
+    geom_pcp_labels()
 @
 
 
@@ -424,24 +425,28 @@ penguins %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
     geom_pcp_axes() +
-    geom_pcp(aes(colour = species))
+    geom_pcp(aes(colour = species), alpha = 0.6) +
+    geom_pcp_labels()
 @
 \end{minipage}
 
 <<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The left-most axis shows species, where the right-most axis shows the same variable with categories reordered; similarly, \\texttt{neg\\_bill\\_depth\\_mm} shows the bill depth, multiplied by -1 to invert the order of data points.">>=
-penguins %>%
+penguins_pcp2 <- penguins %>%
   mutate(
     species_inv = factor(species, levels = rev(levels(.$species))),
     neg_bill_depth_mm = -bill_depth_mm) %>%
   pcp_select(species, neg_bill_depth_mm, 3, 6, 5, species_inv) %>%
   pcp_scale(method="uniminmax") %>%
-  pcp_arrange() %>%
+  pcp_arrange()
+
+penguins_pcp2 %>%
   ggplot(aes_pcp()) +
     geom_pcp_axes() +
-    geom_pcp(aes(colour = species)) +
+    geom_pcp(aes(colour = species), alpha = 0.6,
+             overplot="none") +
   xlab("") + ylab("") + scale_x_discrete(expand = c(0.05, 0)) +
   theme(axis.text.y=element_blank(), legend.position="bottom") +
-  scale_color_manual("Species", values = c(oranges[3], purples[3], greens[3]))
+  scale_color_manual("Species", values = cols)
 @
 
 \hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
@@ -594,7 +599,7 @@ p1 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(aes(colour = z), size=1) +
   theme_bw() +
-  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
   xlab("") + ylab("") +
   facet_grid(.~"Original PCP") +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
@@ -612,7 +617,7 @@ p2 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(aes(colour = z), size=1) +
   theme_bw() +
-  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
   xlab("") + ylab("") +
   facet_grid(.~"GPCP style") +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
@@ -629,7 +634,7 @@ p3 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(size=1, aes(colour = z)) +
   theme_bw() + ylab("") +
-  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) + xlab("") +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) + xlab("") +
   facet_grid(.~"Jittering") +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
@@ -642,7 +647,7 @@ p4 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(size=1, aes(colour = z)) +
   theme_bw() + ylab("") +
-  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) + xlab("") +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) + xlab("") +
   facet_grid(.~"Equally spaced") +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
@@ -705,9 +710,9 @@ pp1 <- penguins1 %>%
   pcp_select(`study ID`, species, Island, `Bill Length`:`Body Weight`) %>%
   pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
   geom_pcp_axes(colour="white") +
-  geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
+  geom_pcp(aes(colour=species), alpha=0.6, overplot="none") +
   geom_pcp_boxes(fill="white", alpha = 0.5) +
-  geom_pcp_labels(fill="white", alpha=1) +
+  geom_pcp_labels() +
   theme_bw() +
   xlab(NULL) + ylab(NULL) +
   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
@@ -725,9 +730,9 @@ pp2 <- penguins1 %>%
   pcp_select(`study ID`, species, island, `Bill Length`:`Body Weight`) %>%
   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour=species), alpha=0.8, overplot="none") +
+  geom_pcp(aes(colour=species), alpha=0.6, overplot="none") +
   geom_pcp_boxes(fill="white", alpha = 0.5) +
-  geom_pcp_labels(alpha=1) +
+  geom_pcp_labels() +
   theme_bw() +
   xlab(NULL) + ylab(NULL) +
   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
