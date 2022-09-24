@@ -878,21 +878,23 @@ The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be 
 
 While we facet both by species and sex, note that the axes are re-scaled within each species  to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of facetting variables is achieved by the use of the grouping variable.  The listing below shows the code for prepping the data shown in \autoref{fig:penguins2b}. By grouping on species but not on sex (see line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of the high-density ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex \citep{ggdensity}. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
 
-
-%\caption{Code for prepping data for \autoref{fig:penguins2b}: \caption{fig:penguins2a}}
+\begin{minipage}[b]{.95\linewidth}
+\captionof{lstlisting}{Code to prepare data for \autoref{fig:penguins} by relabling penguins with NA sex as `?' and ordering sex so that penguins of unknown sex are between the male and female labels.}
+% : \caption{fig:penguins2a}}
 <<penguins2a, echo=TRUE, reset=TRUE>>=
 penguins_pcp <- penguins %>%
-    filter(species != "Chinstrap") %>%                   # no unsexed animals in Chinstrap
-    mutate(
-        sex = ifelse(is.na(sex),"?", as.character(sex)), # make assignment more readable
-        sex = factor(sex, levels = c("female", "?", "male"))
-    ) %>%
+  filter(species != "Chinstrap") %>%                  # no unsexed animals in Chinstrap
+  mutate(
+    sex = ifelse(is.na(sex),"?", as.character(sex)),  # make assignment more readable
+    sex = factor(sex, levels = c("female", "?", "male"))
+  ) %>%
   filter(!is.na(body_mass_g)) %>%
   pcp_select(6:5, 3:4) %>%
-  group_by(species) %>%                                  # re-scale by species
+  group_by(species) %>%                               # re-scale by species
   pcp_scale() %>%
   pcp_arrange()
 @
+\end{minipage}
 
 Chinstrap penguins are excluded (line 2) because all of their individuals in the data have a sex assigned.
 The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill depth). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2}.
