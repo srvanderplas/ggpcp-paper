@@ -369,6 +369,27 @@ flea %>%
     geom_pcp(aes(colour = species))
 @
 
+
+\begin{minipage}[b]{.94\linewidth}
+\captionof{lstlisting}{Mutations before the \code{pcp\_select} stage can be used to reorder factors or transform numerical variables, as shown in \autoref{fig:reordering-variables-axis1}.}\label{lst:reverse-axis}
+<<reordering-variables-axis1, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
+penguins %>%
+  mutate(
+    species_inv = factor(species, levels = rev(levels(.$species))),
+    neg_bill_depth_mm = -bill_depth_mm) %>%
+  pcp_select(species, neg_bill_depth_mm, 3, 6, 5, species_inv) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = species)) +
+  scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen"))
+@
+\end{minipage}
+
+<<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The left-most axis shows species, where the right-most axis shows the same variable with categories reordered; similarly, \\texttt{neg\\_bill\\_depth\\_mm} shows the bill depth, multiplied by -1 to invert the order of data points.">>=
+@
+
 \hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
   What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels. Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise. This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
 \hh{This might lead to a visual inconsistency between the orderings in the levels of a categorical variable and an accompanying color legend. In those situations we suggest to reverse the order in the legend by using the command \code{guides(color = guide\_legend(reverse=TRUE))} as shown in the example in \autoref{sec:carcinoma}.}
