@@ -192,7 +192,7 @@ Categorical parallel coordinate plots are the closest of these variations to our
 % Those packages based on \pkg{ggplot2} make use of \pkg{ggplot2}, but are actually wrapper of existing functions for highly specialized plots with tens of parameters, which do not allow the full flexibility of \pkg{ggplot2} and do not make use of \pkg{ggplot2}'s  layer framework.
 % \svp{Might be useful to actually provide an example of the syntax/underlying code here or in an appendix?}
 
-<<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next.\\au{Two penguins from the Palmer Penguin data set (see section 5) were sampled for this example.} ">>=
+<<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next.\\au{Two penguins from the Palmer Penguin data set (see section 5) were sampled for this example.}">>=
 #df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
 df <- penguins
 df_pcp <- df %>%
