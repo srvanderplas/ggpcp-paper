@@ -353,9 +353,10 @@ Note that the order in which variables are selected determines the order in whic
 % @
 % \hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.} % I think that it's a lot more complicated to reorder pcp_x, to be honest. I've written the code to do it, but it's ugly.
 
-\hh{XXX univariate transformations, such as reversing an axis for a variable can be done using a mutate statement before the variable selection. example? changing order of levels on a categorical variable or a log transform or square root transformation work the same. }
+\svp{Users can transform individual variables, reordering factors or reversing an axis, using a mutate statement bfeore variable selection, as shown in \autoref{lst:reverse-axis}, which generates \autoref{fig:reordering-variables-axis1}. Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of anticorrelated axes in sequence.}
 
-<<reordering-variables-axis1, fig.width = 8, fig.height = 4, fig.cap = "Mutations before the \\code{pcp\\_select} stage can be used to reorder factors or transform numerical variables.", echo = TRUE, reset = TRUE>>=
+
+<<reordering-variables-axis1-flea, fig.width = 8, fig.height = 4, eval = F>>=
 flea %>%
   mutate(
     species_inv = factor(species, levels = rev(levels(.$species))),
