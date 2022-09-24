@@ -583,7 +583,7 @@ dfnew <- tibble(#v1 = x2, v2 = x1,
                 z = y,
                 v5 = x2 + jitter1,
                 v6 = x1 + jitter2,
-                v7 = c(sample(5), 6.5+sample(3), 11+sample(4)))
+                v7 = c(sample(5), 5+10+sample(3), 18+10+sample(4)))
 dfnew <- dfnew %>% arrange(v1, v7)
 dfnew$v8 <- c(sample(7), 10+sample(5))
 
