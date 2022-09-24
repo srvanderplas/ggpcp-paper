@@ -555,7 +555,7 @@ The other two solutions in the middle panels of \autoref{fig:alignment} show
 two intermediary solutions of breaking ties in categorical variables: jittering and equi-spaced (unordered) values.
 
 
-<<alignment, fig.height = 3.5, fig.align="center", fig.cap="At the example of 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels ties in categorical levels are broken using different approaches: from left to right, jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
+<<alignment, fig.height = 3.5, fig.align="center", fig.cap="\\svp{Using} 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels, ties in categorical levels are broken using different approaches (from left to right): jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
 set.seed(20200924)
 #x1 <- c(rep(1, 5), rep(2, 3), rep(3, 4))
 #x2 <- c(1,2,1,2,1,1,1,1,2,2,2,1)
