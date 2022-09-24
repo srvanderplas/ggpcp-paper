@@ -293,7 +293,7 @@ pcp <- penguins %>%                       # data management:
     geom_pcp(aes(colour = species))       #   parallel coordinate line segments
 @
 \end{minipage}
-<<echo=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
+<<echo=FALSE, eval=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
 library(GGally)
 data(flea)
 @
@@ -585,7 +585,7 @@ dfnew <- tibble(#v1 = x2, v2 = x1,
                 v6 = x1 + jitter2,
                 v7 = c(sample(5), 5+10+sample(3), 18+10+sample(4)))
 dfnew <- dfnew %>% arrange(v1, v7)
-dfnew$v8 <- c(sample(7), 10+sample(5))
+dfnew$v8 <- c(sample(7), 20+sample(5))
 
 p1 <- dfnew %>%
   pcp_select(v1:v2) %>%
