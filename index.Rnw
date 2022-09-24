@@ -145,12 +145,15 @@ theme_set(theme_bw())
 
 <<penguin-colors, echo = F, include = F>>=
 library(scales)
-#cols <- hue_pal()(3)
-cols <- rev(c("#535993", "#C5D068", "#D4856A"))
 
 oranges <- c("#FDBF6F", "#F89D38", "#F37A00")
 purples <- c("#CAB2D6", "#9A78B8", "#6A3D9A")
 greens <- c("#b2df8a", "#73C05B", "#33a02c")
+
+#cols <- hue_pal()(3)
+# cols <- rev(c("#535993", "#C5D068", "#D4856A"))
+cols <-  c(oranges[3], purples[3], greens[3])
+
 # #####  Color Palette by Paletton.com
 # #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
 #
