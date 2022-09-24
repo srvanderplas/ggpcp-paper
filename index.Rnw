@@ -1139,8 +1139,9 @@ carcinoma %>%
     theme_bw() +
     guides(color = guide_legend(reverse=TRUE, override.aes = list(size = 3))) +
   scale_x_discrete(expand = expansion(add=0.25)) +
-  xlab("") +
-  ylab("")
+  xlab(NULL) + ylab(NULL) +
+  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
+        legend.position="none")
 @
 
 \hh{note: in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way. }
