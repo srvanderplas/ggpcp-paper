@@ -36,10 +36,35 @@
 }
 \makeatother
 
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}
 \lstset{
+  backgroundcolor=\color{shadecolor},
   basicstyle=\BeraMonottfamily,
   frame=single,
 }
+
+% Removing the kframe command makes the listings and code customization
+% work better - specifically, it removes the extra shaded line outside the
+% framed box
+\usepackage{framed}
+\makeatletter
+\renewenvironment{kframe}{%
+ % \def\at@end@of@kframe{}%
+ % \ifinner\ifhmode%
+ %  \def\at@end@of@kframe{\end{minipage}}%
+ %  \begin{minipage}{\columnwidth}%
+ % \fi\fi%
+ % \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ % \colorbox{shadecolor}{##1}\hskip-\fboxsep
+ %     % There is no \\@totalrightmargin, so:
+ %     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ % \MakeFramed {\advance\hsize-\width
+ %   \@totalleftmargin\z@ \linewidth\hsize
+ %   \@setminipage}}%
+ % {\par\unskip\endMakeFramed%
+ % \at@end@of@kframe
+ }
+\makeatother
 
 
 \usepackage{hyperref} % For hyperlinks in the PDF
