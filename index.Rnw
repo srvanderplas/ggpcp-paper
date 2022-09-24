@@ -142,6 +142,45 @@ library(gridExtra)
 theme_set(theme_bw())
 @
 
+
+<<penguin-colors, echo = F, include = F>>=
+library(scales)
+#cols <- hue_pal()(3)
+cols <- rev(c("#535993", "#C5D068", "#D4856A"))
+
+oranges <- c("#FDBF6F", "#F89D38", "#F37A00")
+purples <- c("#CAB2D6", "#9A78B8", "#6A3D9A")
+greens <- c("#b2df8a", "#73C05B", "#33a02c")
+# #####  Color Palette by Paletton.com
+# #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
+#
+#
+# *** Primary color:
+#
+#    shade 0 = #323875 = rgb( 50, 56,117) = rgba( 50, 56,117,1) = rgb0(0.196,0.22,0.459)
+#    shade 1 = #7D82B0 = rgb(125,130,176) = rgba(125,130,176,1) = rgb0(0.49,0.51,0.69)
+#    shade 2 = #535993 = rgb( 83, 89,147) = rgba( 83, 89,147,1) = rgb0(0.325,0.349,0.576)
+#    shade 3 = #191F58 = rgb( 25, 31, 88) = rgba( 25, 31, 88,1) = rgb0(0.098,0.122,0.345)
+#    shade 4 = #080D3B = rgb(  8, 13, 59) = rgba(  8, 13, 59,1) = rgb0(0.031,0.051,0.231)
+#
+# *** Secondary color (1):
+#
+#    shade 0 = #9AA637 = rgb(154,166, 55) = rgba(154,166, 55,1) = rgb0(0.604,0.651,0.216)
+#    shade 1 = #F1FAA6 = rgb(241,250,166) = rgba(241,250,166,1) = rgb0(0.945,0.98,0.651)
+#    shade 2 = #C5D068 = rgb(197,208,104) = rgba(197,208,104,1) = rgb0(0.773,0.816,0.408)
+#    shade 3 = #727D15 = rgb(114,125, 21) = rgba(114,125, 21,1) = rgb0(0.447,0.49,0.082)
+#    shade 4 = #4A5300 = rgb( 74, 83,  0) = rgba( 74, 83,  0,1) = rgb0(0.29,0.325,0)
+#
+# *** Secondary color (2):
+#
+#    shade 0 = #AA5639 = rgb(170, 86, 57) = rgba(170, 86, 57,1) = rgb0(0.667,0.337,0.224)
+#    shade 1 = #FFC0AA = rgb(255,192,170) = rgba(255,192,170,1) = rgb0(1,0.753,0.667)
+#    shade 2 = #D4856A = rgb(212,133,106) = rgba(212,133,106,1) = rgb0(0.831,0.522,0.416)
+#    shade 3 = #803015 = rgb(128, 48, 21) = rgba(128, 48, 21,1) = rgb0(0.502,0.188,0.082)
+#    shade 4 = #551600 = rgb( 85, 22,  0) = rgba( 85, 22,  0,1) = rgb0(0.333,0.086,0)
+
+@
+
 \au{Broad Comments:}
 \begin{itemize}
 \item \au{Replace fleas with penguins}
@@ -642,40 +681,6 @@ Drawing pcps depends on what your goal might be.  It reminds me of rotating plot
 \autoref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variable in the generalized parallel coordinate plots. \svp{This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.}
 
 <<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island.", fig.height=6, fig.width=8>>=
-library(scales)
-#cols <- hue_pal()(3)
-cols <- rev(c("#535993", "#C5D068", "#D4856A"))
-
-oranges <- c("#FDBF6F", "#F89D38", "#F37A00")
-purples <- c("#CAB2D6", "#9A78B8", "#6A3D9A")
-greens <- c("#b2df8a", "#73C05B", "#33a02c")
-# #####  Color Palette by Paletton.com
-# #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
-#
-#
-# *** Primary color:
-#
-#    shade 0 = #323875 = rgb( 50, 56,117) = rgba( 50, 56,117,1) = rgb0(0.196,0.22,0.459)
-#    shade 1 = #7D82B0 = rgb(125,130,176) = rgba(125,130,176,1) = rgb0(0.49,0.51,0.69)
-#    shade 2 = #535993 = rgb( 83, 89,147) = rgba( 83, 89,147,1) = rgb0(0.325,0.349,0.576)
-#    shade 3 = #191F58 = rgb( 25, 31, 88) = rgba( 25, 31, 88,1) = rgb0(0.098,0.122,0.345)
-#    shade 4 = #080D3B = rgb(  8, 13, 59) = rgba(  8, 13, 59,1) = rgb0(0.031,0.051,0.231)
-#
-# *** Secondary color (1):
-#
-#    shade 0 = #9AA637 = rgb(154,166, 55) = rgba(154,166, 55,1) = rgb0(0.604,0.651,0.216)
-#    shade 1 = #F1FAA6 = rgb(241,250,166) = rgba(241,250,166,1) = rgb0(0.945,0.98,0.651)
-#    shade 2 = #C5D068 = rgb(197,208,104) = rgba(197,208,104,1) = rgb0(0.773,0.816,0.408)
-#    shade 3 = #727D15 = rgb(114,125, 21) = rgba(114,125, 21,1) = rgb0(0.447,0.49,0.082)
-#    shade 4 = #4A5300 = rgb( 74, 83,  0) = rgba( 74, 83,  0,1) = rgb0(0.29,0.325,0)
-#
-# *** Secondary color (2):
-#
-#    shade 0 = #AA5639 = rgb(170, 86, 57) = rgba(170, 86, 57,1) = rgb0(0.667,0.337,0.224)
-#    shade 1 = #FFC0AA = rgb(255,192,170) = rgba(255,192,170,1) = rgb0(1,0.753,0.667)
-#    shade 2 = #D4856A = rgb(212,133,106) = rgba(212,133,106,1) = rgb0(0.831,0.522,0.416)
-#    shade 3 = #803015 = rgb(128, 48, 21) = rgba(128, 48, 21,1) = rgb0(0.502,0.188,0.082)
-#    shade 4 = #551600 = rgb( 85, 22,  0) = rgba( 85, 22,  0,1) = rgb0(0.333,0.086,0)
 
 penguins1 <- penguins1 %>%
   rename(`study ID` = studyName, `Bill Length` = CulmenL,
