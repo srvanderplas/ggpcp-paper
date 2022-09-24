@@ -555,7 +555,7 @@ The other two solutions in the middle panels of \autoref{fig:alignment} show
 two intermediary solutions of breaking ties in categorical variables: jittering and equi-spaced (unordered) values.
 
 
-<<alignment, fig.height = 3.5, fig.align="center", fig.cap="\\svp{Using} 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels, ties in categorical levels are broken using different approaches (from left to right): jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
+<<alignment, fig.height = 3.5, fig.align="center", fig.cap="Using 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels, ties in categorical levels are broken using different approaches (from left to right): jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. ">>=
 set.seed(20200924)
 #x1 <- c(rep(1, 5), rep(2, 3), rep(3, 4))
 #x2 <- c(1,2,1,2,1,1,1,1,2,2,2,1)
@@ -580,8 +580,9 @@ dfnew <- tibble(#v1 = x2, v2 = x1,
                 z = y,
                 v5 = x2 + jitter1,
                 v6 = x1 + jitter2,
-                v7 = x2 + c(0, -0, 0.05, -0.05, 0.1, 0.15, 0.20, 0.25, -0.1, -0.15, -0.2, 0.3)/0.05*0.083,
-                v8 = (x1-1)/2+1 + c(0:4*0.05, 0:2*0.05, 3:0*(-0.05))/0.05*0.083 + c(rep(0,5), rep(-0.04, 3), rep(0,4)))
+                v7 = c(sample(5), 6.5+sample(3), 11+sample(4)))
+dfnew <- dfnew %>% arrange(v1, v7)
+dfnew$v8 <- c(sample(7), 10+sample(5))
 
 p1 <- dfnew %>%
   pcp_select(v1:v2) %>%
@@ -631,9 +632,9 @@ p3 <- dfnew %>%
   scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 p4 <- dfnew %>%
-  mutate(v1 = v8, v2 = v7) %>%
-  pcp_select(v1:v2) %>%
+  pcp_select(v8,v7) %>%
   pcp_scale() %>%
+  pcp_arrange() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp(size=1, aes(colour = z)) +
