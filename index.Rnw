@@ -625,10 +625,9 @@ p3 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(size=1, aes(colour = z)) +
   theme_bw() + ylab("") +
-  scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen")) + xlab("") +
-  facet_grid(.~"Jitter") +
-  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  theme(legend.position="none")+
+  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) + xlab("") +
+  facet_grid(.~"Jittering") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 p4 <- dfnew %>%
@@ -639,10 +638,9 @@ p4 <- dfnew %>%
   geom_pcp_axes() +
   geom_pcp(size=1, aes(colour = z)) +
   theme_bw() + ylab("") +
-  scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen")) + xlab("") +
+  scale_color_manual(values = c(oranges[3], purples[3], greens[3])) + xlab("") +
   facet_grid(.~"Equally spaced") +
-  theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  theme(legend.position="none")+
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("sex", "species"))
 
 grid.arrange(p1, p3, p4, p2, nrow=1)
