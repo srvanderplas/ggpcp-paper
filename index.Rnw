@@ -224,6 +224,7 @@ df_pcp %>%
 @
 
 
+
 The remainder of the paper is organized as follows:
 \svp{\autoref{sec:usage} introduces the \pkg{ggpcp} syntax and explains the improvements in \pkg{ggpcp} over other parallel coordinate plot software packages.}
 \autoref{sec:wrangling} describes the data processing for parallel coordinate plots \svp{and how this wrangling is separated from the plot rendering in \pkg{ggpcp}.}
@@ -232,13 +233,14 @@ The remainder of the paper is organized as follows:
 % Section 3  presents the conceptual framework of  generalized parallel coordinate plots and general principles informing their construction. Section 4 describes the connection between generalized parallel coordinates and the grammar of graphics. Section 5 provides three examples highlighting different aspects of the use of  generalized parallel coordinate plots in an exploratory setting.
 
 \section{Motivation and Package Usage}\label{sec:usage}
-\au{XXX Gestalt motivation of what makes this package unique - ability to follow a single data point through the parallel coordinate plot.XXX}
-% \hh{XXX We need to state what this code is about: paper structured along how code is used.}
-<<echo=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
-library(GGally)
-data(flea)
-@
 
+\svp{One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots make it difficult to follow a single observation across the chart. `ggpcp` alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow a line across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.}
+
+% \au{XXX Gestalt motivation of what makes this package unique - ability to follow a single data point through the parallel coordinate plot.XXX}
+% \hh{XXX We need to state what this code is about: paper structured along how code is used.}
+
+\begin{minipage}[b]{.94\linewidth}
+\captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API.}\label{lst:ggpcp-api}
 <<echo=TRUE, reset=TRUE,  results = 'hold', error=FALSE, warning=FALSE>>=
 pcp <- penguins %>%                       # data management:
   pcp_select(species, 3:6, sex) %>%       #   variable selection, see section 3.1
@@ -248,8 +250,14 @@ pcp <- penguins %>%                       # data management:
     geom_pcp_axes() +                     #   vertical lines for axes
     geom_pcp(aes(colour = species))       #   parallel coordinate line segments
 @
+\end{minipage}
+<<echo=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
+library(GGally)
+data(flea)
+@
 
-\svp{XXX Make the code into a subfigure and put alongside figure 1. Switch to penguins data, select 2 penguins from the set. XXX}
+% \svp{XXX Make the code into a subfigure and put alongside figure 1. Switch to penguins data, select 2 penguins from the set. XXX} % I no longer really understand why we'd have this with Fig 1, since it's entirely different?
+
 
 By leveraging the full ggplot2 philosophy instead of using highly specific wrapper functions, \pkg{ggpcp} allows users to focus on the data, rather than the names of various parameters used for customization.
 \pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering. Scaling, ordering of cases, and the arrangement of the parallel axes are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale},respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
