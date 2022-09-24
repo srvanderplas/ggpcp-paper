@@ -411,7 +411,21 @@ flea %>%
 
 \begin{minipage}[b]{.94\linewidth}
 \captionof{lstlisting}{Mutations before the \code{pcp\_select} stage can be used to reorder factors or transform numerical variables, as shown in \autoref{fig:reordering-variables-axis1}.}\label{lst:reverse-axis}
-<<reordering-variables-axis1, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
+<<reordering-variables-axis1-code, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
+penguins %>%
+  mutate(
+    species_inv = factor(species, levels = rev(levels(.$species))),
+    neg_bill_depth_mm = -bill_depth_mm) %>%
+  pcp_select(species, neg_bill_depth_mm, 3, 6, 5, species_inv) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = species))
+@
+\end{minipage}
+
+<<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The left-most axis shows species, where the right-most axis shows the same variable with categories reordered; similarly, \\texttt{neg\\_bill\\_depth\\_mm} shows the bill depth, multiplied by -1 to invert the order of data points.">>=
 penguins %>%
   mutate(
     species_inv = factor(species, levels = rev(levels(.$species))),
@@ -422,11 +436,9 @@ penguins %>%
   ggplot(aes_pcp()) +
     geom_pcp_axes() +
     geom_pcp(aes(colour = species)) +
-  scale_colour_manual(values=c( "darkorange", "purple4", "darkgreen"))
-@
-\end{minipage}
-
-<<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The left-most axis shows species, where the right-most axis shows the same variable with categories reordered; similarly, \\texttt{neg\\_bill\\_depth\\_mm} shows the bill depth, multiplied by -1 to invert the order of data points.">>=
+  xlab("") + ylab("") + scale_x_discrete(expand = c(0.05, 0)) +
+  theme(axis.text.y=element_blank(), legend.position="bottom") +
+  scale_color_manual("Species", values = c(oranges[3], purples[3], greens[3]))
 @
 
 \hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
