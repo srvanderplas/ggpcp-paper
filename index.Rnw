@@ -1193,7 +1193,7 @@ penguins_pcp %>%
 
 \autoref{fig:carcinoma} shows data from \citet{agresti} published as part of the \code{poLCA} package \citep{polca}. Seven pathologists were asked to assess the same 118 slides for the presence or absence of carcinoma in the uterine cervix. Binary responses for each slide were recorded (yes/no).  Pathologists all agreed on about 25\% of slides, which they  considered to be carcinoma free, and a further 12.5\% of slides, which were considered to show carcinoma by all pathologists.
 For the remaining 62.5\% of slides there was some disagreement. However, we see that this disagreement is not random. When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis  from left to right.
-<<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a polyline.", fig.height = 4, fig.width = 8>>=
+<<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a poly-line.", fig.height = 4, fig.width = 8>>=
 data("carcinoma", package = "poLCA")
 carcinoma$numdiag <- rowSums(carcinoma) - 7
 carcinoma$any <- carcinoma$numdiag > 0
@@ -1215,11 +1215,33 @@ carcinoma %>%
     theme_bw() +
     guides(color = guide_legend(reverse=TRUE, override.aes = list(size = 3))) +
   scale_x_discrete(expand = expansion(add=0.25)) +
-  xlab(NULL) + ylab(NULL) +
+  xlab("Pathologist") + ylab(NULL) +
   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
 @
 
 \hh{note: in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way. }
+
+<<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Average scores greater than 2 are mapped to color to distinguish likely carcinoma cases from negative cases.", fig.height = 4, fig.width = 7, out.width='0.8\\textwidth'>>=
+data(Carcinoma, package="ggpcp")
+Carcinoma %>%
+  pcp_select(F, D, C, A, G, E, B, Average) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = Average > 2)) +
+    geom_pcp_boxes(colour="black", alpha=0) +
+    geom_pcp_labels(aes(label = pcp_level), fill="white", alpha = 1) +
+    theme_bw() +
+    scale_x_discrete(expand = expansion(add=c(0.2, 0.0))) +
+    xlab("Pathologist") + ylab("Carcinoma score") +
+#    theme(axis.text.y=element_blank(),
+#          axis.ticks.y=element_blank())
+    theme(legend.position="none") +
+    scale_y_continuous(position = "right", breaks = 0:4/4, label=1:5) +
+  scale_colour_manual(values=c("#3a99b8", "#E6A421"))
+@
+
 
 %------------------------------------------------
 
