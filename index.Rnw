@@ -697,7 +697,9 @@ Drawing pcps depends on what your goal might be.  It reminds me of rotating plot
 
 \autoref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variable in the generalized parallel coordinate plots. \svp{This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.}
 
-<<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island.", fig.height=6, fig.width=8>>=
+\au{study ID is what? ordering in second plot allows us to see that about the same amount of datat from penguins in each species was collected. }
+
+<<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island. ", fig.height=6, fig.width=8>>=
 
 penguins1 <- penguins1 %>%
   rename(`study ID` = studyName, `Bill Length` = CulmenL,
@@ -743,6 +745,8 @@ pp2 <- penguins1 %>%
 library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 @
+
+\au{figure 6 and 7 look quite similar, but are quite different - visual emphasis? Maybe use colors[1] and colors [3]?}
 
 In addition to the ordering of factor levels, it is also important to carefully order the variables on the $x$-axis, as shown in \autoref{fig:penguins-variable-order}, where the variables have been re-ordered
 to allow the viewer to see what body measurements distinguish the species. Note that besides the re-ordering, the axes for bill depth is also reversed. \svp{XXX explain why this helps} \hh{Again, this reversal helps with distinguishing between species: Gentoo penguins have the lowest bill depth, while generally having the longest flippers. Reversing the axis for bill depths, aligns the smallest bill depths with the longest flippers, thereby moving Gentoo penguins closer together as a group. }
@@ -906,8 +910,9 @@ Chinstrap penguins are excluded (line 2) because all of their individuals in the
 The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill depth). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male; this additional information is shown in \autoref{fig:penguins2b}. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2}.
 For Adelie penguins the situation is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin \hh{exhibits measurements that are neither typically male not typically female}. \hh{Trying to confirm these putative assignments is a bit more tricky, because four of the five unsexed penguins are nest partners. The lightest unsexed penguin is the partner of a sexed male penguin. The putative assignments do not contradict the hypothesis that each nest is host to a male and a female penguin. Using this assumption, the last unsexed penguin would be resolved as  the male of the nest.  }
 
+\au{let's go back to inter-quantile ranges.}
 
-<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate four unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
+<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate two pairs of unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
 
 # making ribbons
 # probs <- seq(0,1,by=0.1)
