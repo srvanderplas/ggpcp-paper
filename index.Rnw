@@ -1219,27 +1219,33 @@ carcinoma %>%
   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
 @
 
-\hh{note: in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way. }
+Note, in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way.
 
-<<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Average scores greater than 2 are mapped to color to distinguish likely carcinoma cases from negative cases.", fig.height = 4, fig.width = 7, out.width='0.8\\textwidth'>>=
+\citet{carcinoma} (Table 1) allow us a closer look at this data. Pathologists evaluated the (same) scans at a five levels from 1 to 5, given as:
+(1) Negative, (2) Atypical Squamous Hyperplasia, (3) Carcinoma in Situ, (4) Squamous Carcinoma with Early Stromal Invasion, and (5) Invasive Carcinoma.
+\autoref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \autoref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \autoref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. Overall, the variability between pathologists' scores stems froma difference in applying the scores rather than an actual difference of opinions. \hh{XXX this needs to be phrased differently. What I mean is that we see a lot of agreement in the parallel lines, but the boxes are shifted from one pathologist to another.} The similarity in evaluations is particularly striking between pathologists A, G, E, and B.
+
+<<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Rounded average scores are mapped to color to help distinguish severity of scan evaluations.", fig.height = 5, fig.width = 7, out.width='0.9\\textwidth', fig.align='center'>>=
 data(Carcinoma, package="ggpcp")
-Carcinoma %>%
-  pcp_select(F, D, C, A, G, E, B, Average) %>%
+Carcinoma %>% mutate(
+  `round(Average)` = factor(round(Average))
+  ) %>%
+  pcp_select(F, D, C, A, G, E, B, `round(Average)`) %>%
   pcp_scale(method="uniminmax") %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
     geom_pcp_axes() +
-    geom_pcp(aes(colour = Average > 2)) +
+    geom_pcp(aes(colour = `round(Average)`)) +
     geom_pcp_boxes(colour="black", alpha=0) +
-    geom_pcp_labels(aes(label = pcp_level), fill="white", alpha = 1) +
+    geom_pcp_labels() +
     theme_bw() +
-    scale_x_discrete(expand = expansion(add=c(0.2, 0.0))) +
+    scale_x_discrete(expand = expansion(add=c(0.2, 0.4))) +
     xlab("Pathologist") + ylab("Carcinoma score") +
-#    theme(axis.text.y=element_blank(),
-#          axis.ticks.y=element_blank())
+    theme(axis.text.y=element_blank(),
+          axis.ticks.y=element_blank()) +
     theme(legend.position="none") +
-    scale_y_continuous(position = "right", breaks = 0:4/4, label=1:5) +
-  scale_colour_manual(values=c("#3a99b8", "#E6A421"))
+  scale_colour_manual(values=c("#3a99b8", "#E6A421", "darkorange", "red", "darkred")) + theme(legend.position = "bottom")
+
 @
 
 
