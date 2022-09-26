@@ -1109,7 +1109,7 @@ gg_p1_pcp %>%
 
 
 
-<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate two pairs of unsexed penguins that are nest partners. ", fig.height = 6, fig.width = 8>>=
+<<penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The letters on the right indicate nests -- two penguins with the same letter share the same nest. ", fig.height = 6, fig.width = 8>>=
 
 # making ribbons
 # probs <- seq(0,1,by=0.1)
@@ -1144,8 +1144,11 @@ annotate_dframe <- annotate_dframe %>% mutate(
   putative = ifelse(pcp_y > 0.5, labels[2], putative)
 )
 
-circle <- fontawesome(c( 'fa-star', 'fa-github'))
+#circle <- fontawesome(c('fa-h-square', 'fa-plus-square'))
 
+circle <- c("","")
+
+#e0fd # unicode for b
 # recalculate position by group
 # XXXX pcp_arrange has to also do the tie-breaking by group.
 penguins_pcp %>%
@@ -1182,13 +1185,13 @@ penguins_pcp %>%
   geom_text(aes(label=marker),
             data = data.frame(
                  species="Adelie",
-                 marker = c(circle[1], circle[1], circle[2], circle[2]),
+                 marker = c("A", "A", "B", "B"),
                               pcp_y = c(0.783, 0.433, 0.3, 0.267),
                               pcp_x = "bill_depth_mm",
                  nest = c("N5", "N5", "N6", "N6")),
             colour = "#8b4950",
-           nudge_x = 0.1,
-           family='fontawesome-webfont', size=3)
+           nudge_x = 0.1, size = 3)
+         #  family='fontawesome-webfont', size=3)
 
 @
 
@@ -1248,8 +1251,9 @@ Carcinoma %>% mutate(
     theme(axis.text.y=element_blank(),
           axis.ticks.y=element_blank()) +
     theme(legend.position="none") +
-  scale_colour_manual(values=c("#3a99b8", "#E6A421", "darkorange", "red", "darkred")) + theme(legend.position = "bottom")
-
+  scale_colour_manual(values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20",
+"#bd0026")) + theme(legend.position = "bottom")
+# "#fecc5c",
 @
 
 
