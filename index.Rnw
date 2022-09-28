@@ -105,7 +105,7 @@ $^3$ University 3
 \maketitle
 \begin{abstract}
 \noindent
-\noindent Parallel coordinate plots (PCP) are a useful tool in exploratory data analysis of high-dimensional numerical data. The use of PCPs is limited when working with categorical variables or a mix of categorical and continuous  variables. In this paper, we propose generalized parallel coordinate plots (GPCP) to extend the ability of PCPs from just numeric variables to dealing seamlessly with a mix of categorical and numeric variables in a single plot. In this process we find that existing solutions for categorical values only, such as hammock plots or parsets become edge cases in the new framework. By focusing on individual observations rather than a marginal frequency we gain additional flexibility. The resulting approach is implemented in the R package ggpcp.
+\noindent Parallel coordinate plots (PCP) are a \au{valuable} tool in exploratory data analysis of high-dimensional numerical data. The use of PCPs is limited when working with categorical variables or a mix of categorical and continuous  variables. In this paper, we propose generalized parallel coordinate plots (GPCP) to extend the ability of PCPs from just numeric variables to dealing seamlessly with a mix of categorical and numeric variables in a single plot. In this process we find that existing solutions for categorical values only, such as hammock plots or parsets become edge cases in the new framework. By focusing on individual observations rather than a marginal frequency we gain additional flexibility. The resulting approach is implemented in the R package ggpcp.
 
 \end{abstract}
 
@@ -120,6 +120,8 @@ knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth'
 
 
 @
+
+
 
 
 <<setup2, echo=FALSE, cache=FALSE>>=
@@ -1646,3 +1648,98 @@ theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
 
 \end{document}
 
+From Antony:
+
+p1 Abstract: are a valuable tool (not useful)
+
+p2 an arbitrary number (not an arbitrary many number)
+p2 Projective Space or projective space?
+p2 as a way of getting (not to get), of identifying, of finding
+p2 While parallel coordinate plots are a powerful tool (not have some shortcomings)
+p2 to the levels of the next (not to all levels)
+p2 tabular (not tabularized)
+
+p3 An important motivation for our package is that other implementations of parallel coordinate plots for categorical variables (not the current first sentence)
+p3 to follow individual cases across (not to follow one line across)
+p3 It should be gridSVG and the sentence implies it helps interactive graphics, how?
+
+p4 of laying out (not to lay out)
+p4 are optional (not even optional)
+p4 the main obstacle to allowing (not the main obstacle of allowing)
+p4 two-variable associations (not two-variable comparisons)
+p4 adjacent axes (not sequential axes)
+p4 When ties cannot be separated (not When ties are not handled appropriately)
+p4 is a function between one data variable and one aesthetic (not is a function between one aesthetic and one data variable)
+p4 Four Hadley references in one place?!
+p4 is purely a form of data selection (not has purely the form of a data selection)
+p4 selects the variables (not allows a selection of variables)
+
+p5 ways of performing (not ways to perform)
+
+p5-6 Why has bill_depth been inverted?  Why does species appear twice?
+
+p6 Last para needs a rewrite (wherever it goes).  How about:
+Ordered factors are plotted from the lowest level upwards.  If a factor legend is included, it will need to be reversed to match this order.  Use guides(color = guide_legend(reverse=TRUE)) as shown in the example in subsection 5.2.
+
+p8 transforming the values of each variable onto a common y axis (not transforming the values of each variable into a common y axis)
+p8 onto a range of [0,1] with the minimum at 0 and the maximum at 1 (not into a range of [0,1] with a minimum at 0 and the maximum at 1)
+p8 onto an interval of [0,1] (not into a an interval of [0,1])
+p8 applied to (not at the example of)
+p8 Forina and one other reference would do
+p8 .  Measurements of fatty (not : measurements of fatty)
+p8 allotted not alloted
+p8 Intro to §4.1  Here is one possible rewrite:
+Assigning all cases of the same level to the same point on the axis of a categorical variable makes it impossible to distinguish them.  The approach of ggpcp is to draw boxes proportional to the numbers of cases in each level and to order the cases within their boxes so that visual clutter is minimised and individual cases can be followed.  The options provided are in pcp_arrange(data, method, space).  The two implemented methods are "from-left" and "from-right", meaning that ties are broken using a hierarchical ordering determined by variables’ values from the left or the right, respectively. The parameter space specifies the amount of the ‘y‘ axis to use for space between levels of categorical variables. By default, 5% of the axis is used for spacing.
+p8 it also allows us, in the spirit of the original parallel coordinate plots, (not it also allows us in the spirit of the original parallel coordinate plots)
+
+p9 As the number of observations increases (not As the number of observations increase)
+p9 particularly for larger data sets (not particularly for slightly larger data sets)
+p9 Instead of "XXX the order in which crossing lines are drawn is only visible when the lines have different colors." how about
+Colouring by groups improves the reability of plots.  However, the order of drawing the cases may affect what can be seen due to overplotting.
+p9 As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter overplot offers the option "small-on-top" where groups are plotted in order of size from largest to smallest so that the smallest is on top.  The default setting "none" is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset.  (not As a countermeasure we carefully control the order in which line segments are plotted.  Two methods to control this order are implemented and are regulated by the parameter overplot:)
+p9 Several aspects in Parallel Coordinate Plots depend on orderings: the order of variables along the x axis, the order of levels in a categorical variable, the orderings of cases within categorical variable levels, and the order in which lines are drawn. (not Several aspects in Parallel Coordinate Plots depend on orderings: order of variables along the x axis, order of levels in a categorical variable, and order in which lines are drawn.)
+p9 Orderings should therefore (a) have good defaults, and (b) be easily changeable. (not Changing orders should therefore (a) have good defaults, and (b) be easily changeable.)
+
+p10 Scrap my contribution in green below Fig 6
+p10 The top plot of Figure 6 shows (not Figure 6 shows)
+p10 The numeric data consists of body measurements of three species of penguins: bill length, bill depth, flipper length, body weight. (not The data consists of body measurements, such as weight, flipper length, bill length, and depth, of three species of penguins.)
+p10 while Gentoo penguins can be distinguished by their relatively large flipper lengths. (not while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.)
+p10 Move the first paragraph of §5.1.1 to the end of the previous section.
+p10 The lower plot of Figure 6 shows (not Figure 6 shows)
+p10 both the ‘species‘ and the ‘island‘ variables (not both the ‘species‘ and the ‘island‘ variable)
+p10 This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands. (not This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.)
+p10 Add to the end of this new paragraph at the end of §5.1:
+It further clarifies that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.
+
+p10 Add introductory sentence to §5.1.1:
+As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in Figure 7 to show that the patterns are similar for both males and females.
+p10 to help the viewer identify which (not to allow the viewer to see what)
+
+p10-11 Besides the re-ordering, the axis for bill depth has been reversed. (not Note that besides the re-ordering, the axes for bill depth is also reversed.)
+p11 Both changes help to separate the species. (not XXX explain why this helps Again, this reversal helps with distinguishing between species:)
+p11 having the longest flippers and being heaviest (not having the longest flippers)
+p11 Scrap my XXX comment
+
+p11 Add intro to §5.1.2:
+Instead of colouring by species, you can colour by sex and compare the distributions of the measurements for males and females, as is done in Figure 8.  This also helps to investigate which sex might be the few penguins whose sex is not given.
+p11 Figure 8 shows that (not The lines in Figure 8 are colored by sex of penguins. What can be seen is that)
+
+p12 Comparing these penguins’ body measurements to those of the other penguins, we can make suggestions regarding their sex. (not Based on these penguins’ body measurements within the context of the other penguins, we can make some suggestions regarding their sex.)
+p12 The text accompanying Figure 9 will depend on what Figure 9 you draw, so I have left that.
+
+p13 For the remaining 62.5% of slides there was some disagreement and it is clear that this disagreement is not random. (not For the remaining 62.5% of slides there was some disagreement. However, we see that this disagreement is not random.)
+p13 The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.  (not When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis from left to right.)
+p13 The pathologists evaluated the slides using five levels from 1 to 5 (not Pathologists evaluated the (same) scans at a five levels from 1 to 5)
+p13 Agresti and others classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".  Figure 11 (not Figure 11)
+
+p15 Mostly, the variability between pathologists’ scores stems from a difference in applying the scores rather than from an actual difference of opinions. (not Overall, the variability between pathologists’ scores stems froma difference in applying the scores rather than an actual difference of opinions.)
+p15 k-means clustering assigns cluster labels arbitrarily based on random cluster centers.   In order to maintain a persistent ordering over different values of k we reorder the clusters by the value of body_mass_g. (not Because k-means clustering assigns cluster labels arbitrarily based on random cluster centers, in or- der to maintain a persistent ordering over different values of k we reorder the clusters by the value of body_mass_g.)
+p15 This helps us to comparing between k and k + 1 clusters. (not This helps us to compare between e.g. k and k + 1 clusters.)
+p15 Figure 12 shows the numeric measurements along with the assigned clusters, with categorical variables species and sex on the right. (not Figure 12 shows the numeric measurements along with the assigned clusters, with categorical variables sex and species on the right.)  Perhaps the sex axis should be added to the first two plots to avoid confusion.
+p15  though again there are some penguins that (not  though again there are again some penguins who)
+p15 that some of the separation into sexes (not that some of separation into sexes)
+
+p17 is not strong or is ambiguous (not is not strong or ambiguous)
+p17 §6
+Generalised parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots the use of colour to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalised parallel coordinate plots two additional kinds of ordering have a part to play, the ordering of levels of categorical variables and the ordering of cases within those levels.
+The ideas described here have been implemented in the R package ggpcp.  There are two central features.  Data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy.  Both these features contribute to the power and flexibility of the software.
