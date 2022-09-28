@@ -206,16 +206,17 @@ penguins1 <- penguins1 %>% separate(Species, into=c("species", "foo2", "foo3", "
 \section{Introduction}
 
 Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by facetting or additional mappings to plot aesthetics, such as point size and color.
-Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary many number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the Projective Space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the Projective Space.
+Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \autoref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the projective space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the projective space.
 This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}.
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
-Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way to get a high-level overview of the marginal distributions involved, to identify outliers in the data, and to find potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
+Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way of getting a high-level overview of the marginal distributions involved, identifying outliers in the data, and  finding potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
 This clutter is sometimes mitigated by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
-\svp{While parallel coordinate plots have some shortcomings, the greatest challenge is in using categorical variables alongside quantitative variables.} In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows lines from each level of one variable to all levels of the next variable.
+\au{While parallel coordinate plots are a powerful tool}
+\svp{ using categorical variables alongside quantitative variables is a great challenge.} In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
 Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}, but these solutions do not accommodate quantitative variables.
-Instead, they are intended for use with tabularized data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
+Instead, they are intended for use with tabular data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
 An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp} by treating factor variables as numeric.
 Similar to parallel sets, this approach is also based on marginal frequencies for the categorical variables.
 Categorical parallel coordinate plots are the closest of these variations to our solution, but the \pkg{extracat} package has not been updated recently and is no longer on CRAN.
@@ -278,7 +279,9 @@ The remainder of the paper is organized as follows:
 
 \section{Motivation and Package Usage}\label{sec:usage}
 
-\svp{One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots make it difficult to follow a single observation across the chart. `ggpcp` alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow a line across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.}
+\au{An important motivation for \hh{the `ggpcp`} package is that other implementations of parallel coordinate plots for categorical variables }
+%One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots
+\svp{make it difficult to follow a single observation across the chart. `ggpcp` alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow \au{individual cases}  across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.}
 
 % \au{XXX Gestalt motivation of what makes this package unique - ability to follow a single data point through the parallel coordinate plot.XXX}
 % \hh{XXX We need to state what this code is about: paper structured along how code is used.}
@@ -312,7 +315,8 @@ Users can also augment their parallel coordinate plots with additional informati
 
 One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
 
-In addition, basing \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as \pkg{plotly}~\citep{plotly-book}  and \pkg{gridsvg}~\citep{gridsvg} which leverage \pkg{ggplot2} to create interactive graphics for the web.
+In addition, basing \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as \pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web
+ and \pkg{gridSVG}~\citep{gridsvg} \hh{which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements}.
 
 %------------------------------------------------
 
@@ -328,7 +332,7 @@ In addition, basing \pkg{ggpcp} on \pkg{ggplot2} expands the functionality avail
 \end{enumerate}
 \svp{XXX Cite subfigure above with code XXX}
 
-\hh{The modularization of the data wrangling process has the additional advantage to lay out the necessary elements in successive steps. Some of these steps are even optional - e.g. scaling variables might not be necessary, if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if there are any factor variables, and if we actively want to spread these observations out. }
+\hh{The modularization of the data wrangling process has the additional advantage of laying out the necessary elements in successive steps. Some of these steps are optional - e.g. scaling variables might not be necessary, if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if there are any factor variables, and if we actively want to spread these observations out. }
 \svp{In addition, by exposing these elements of the pcp data wrangling process, we allow users to create additional functions for handling these tasks.}
 
 \hh{The treatment of ties is an aspect not generally addressed in the original parallel coordinate plots of \citet{Inselberg:1985} and \citet{Wegman:1990}. We have found a need to deal with ties, because ties are visually the main obstacle of allowing the viewer to follow an observation from axis to axis through the high-dimensional space.}
@@ -1650,21 +1654,21 @@ theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
 
 From Antony:
 
-p1 Abstract: are a valuable tool (not useful)
+%p1 Abstract: are a valuable tool (not useful)
 
-p2 an arbitrary number (not an arbitrary many number)
-p2 Projective Space or projective space?
-p2 as a way of getting (not to get), of identifying, of finding
-p2 While parallel coordinate plots are a powerful tool (not have some shortcomings)
-p2 to the levels of the next (not to all levels)
-p2 tabular (not tabularized)
+%p2 an arbitrary number (not an arbitrary many number)
+%p2 Projective Space or projective space? HH: let's go with lower case
+%p2 as a way of getting (not to get), of identifying, of finding
+%p2 While parallel coordinate plots are a powerful tool (not have some shortcomings)
+%p2 to the levels of the next (not to all levels)
+%p2 tabular (not tabularized)
 
-p3 An important motivation for our package is that other implementations of parallel coordinate plots for categorical variables (not the current first sentence)
-p3 to follow individual cases across (not to follow one line across)
-p3 It should be gridSVG and the sentence implies it helps interactive graphics, how?
+%p3 An important motivation for our package is that other implementations of parallel coordinate plots for categorical variables (not the current first sentence)
+%p3 to follow individual cases across (not to follow one line across)
+%p3 It should be gridSVG and the sentence implies it helps interactive graphics, how? HH: gridSVG got pushed in between plotly and its interactivity. I tried to add something for gridSVG, but I'm not sure that my sentence is working yet.
 
-p4 of laying out (not to lay out)
-p4 are optional (not even optional)
+%p4 of laying out (not to lay out)
+%p4 are optional (not even optional)
 p4 the main obstacle to allowing (not the main obstacle of allowing)
 p4 two-variable associations (not two-variable comparisons)
 p4 adjacent axes (not sequential axes)
