@@ -670,41 +670,42 @@ grid.arrange(p1, p3, p4, p2, nrow=1)
 
 One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot. As the number of observations increases, this becomes less feasible because of overplotting of line segments, particularly for larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other. %\hh{XXX the order in which crossing lines are drawn is only visible when the lines have different colors.}
 \au{Coloring by groups improves the readibility of plots.  However, the order of drawing the cases may affect what can be seen due to overplotting.}
-As a countermeasure we carefully control the order in which line segments are plotted.
+\au{As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} offers the option "small-on-top" where groups are plotted in order of size from largest to smallest so that the smallest is on top.  The default setting "none" is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. }
 
-Two methods to control this order are implemented and are regulated by the parameter \code{overplot}:
+% Two methods to control this order are implemented and are regulated by the parameter \code{overplot}:
+%
+% \begin{enumerate}
+% %
+% \item \code{"small-on-top"} groups of lines (defined by the same color) between categorical variables are are ordered by size and drawn from largest to smallest group.
+% %
+% \item \code{"none"} the order of the observations is left un-touched by the data wrangling process. This option allows the user to specify a certain  order before plotting.
+% %
+% \end{enumerate}
+\hh{XXX additional counter-measures: use $\alpha$-blending}
 
-\begin{enumerate}
-%
-\item \code{"small-on-top"} groups of lines (defined by the same color) between categorical variables are are ordered by size and drawn from largest to smallest group.
-%
-\item \code{"none"} the order of the observations is left un-touched by the data wrangling process. This option allows the user to specify a certain  order before plotting.
-%
-\end{enumerate}
-\hh{additional counter-measures: use $\alpha$-blending}
-
-\hh{the option of \code{"none"} is very flexible.}
+%\hh{the option of \code{"none"} is very flexible.}
 
 
 \section{Examples}
 \subsection{Palmers Penguins}
 
-\hh{Several aspects in Parallel Coordinate Plots depend on orderings: order of variables along the $x$ axis, order of levels in a categorical variable, and order in which  lines are drawn.
-Different orders emphasize different aspects of the data. Changing orders should therefore  (a) have good defaults, and (b) be easily changeable.}
-
-\au{XXX
-Drawing pcps depends on what your goal might be.  It reminds me of rotating plots and all the optimisation criteria that were suggested for a variety of purposes.  They did not necessarily work well, but they suggested some ways to proceed and generally improved things a bit.  What criteria might be similarly helpful for pcps?
-}
-
-\autoref{fig:ordering} shows a  generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}. The data consists of body measurements, such as weight, flipper length, bill length, and depth,  of three species of penguins. What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.
-
-\subsubsection{Distinguishing species}
+\au{
+Several aspects in Parallel Coordinate Plots depend on orderings: the order of variables along the x axis, the order of levels in a categorical variable, the orderings of cases within categorical variable levels, and the order in which lines are drawn.
+Orderings should therefore (a) have good defaults, and (b) be easily changeable. }
 
 
+\au{The top of} \autoref{fig:ordering} shows a  generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}.
+\au{The numeric data consists of body measurements of three species of penguins: bill length, bill depth, flipper length, body weight.}
+ What can be seen is that Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished by their relatively large flipper lengths.
+\au{The bottom of} \autoref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variables in the generalized parallel coordinate plots. \svp{This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.}
 
-\autoref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variable in the generalized parallel coordinate plots. \svp{This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.}
+\hh{Only after levels of `island` and `species` are re-ordered, we can see}
+\au{%It further clarifies
+that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.}
 
-\au{study ID is what? ordering in second plot allows us to see that about the same amount of datat from penguins in each species was collected. }
+\paragraph{Distinguishing species}\hfill\newline
+
+%\au{study ID is what? ordering in second plot allows us to see that about the same amount of datat from penguins in each species was collected. }
 
 <<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island. ", fig.height=6, fig.width=8>>=
 
@@ -753,6 +754,8 @@ library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 @
 
+\au{As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in \autoref{fig:ordering} to show that the patterns are similar for both males and females.}
+
 \au{figure 6 and 7 look quite similar, but are quite different - visual emphasis? Maybe use colors[1] and colors [3]?}
 
 In addition to the ordering of factor levels, it is also important to carefully order the variables on the $x$-axis, as shown in \autoref{fig:penguins-variable-order}, where the variables have been re-ordered
@@ -798,14 +801,14 @@ penguins1 <- penguins1 %>% arrange(fct_rev(species))
 m1 <- penguins1 %>% filter(Sex=="MALE") %>% pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`, Sex) %>%
 pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
 geom_pcp_axes() +
-geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
+geom_pcp(aes(colour=interaction(sex,species)), overplot="none", alpha = 0.8) +
 geom_pcp_boxes(fill="white", alpha = 0.8) +
 geom_pcp_labels(fill="white", alpha=1) +
   theme_bw() +
 xlab(NULL) + ylab(NULL) +
 theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
 legend.position="none") +
-scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
+scale_colour_manual(values=c(oranges[c(1,3)], greens[c(1,3)], purples[c(1,3)]))
 
 f1 <- penguins1 %>% filter(Sex=="FEMALE") %>% pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`, Sex) %>%
 pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
@@ -831,19 +834,19 @@ penguins1 %>%
   pcp_arrange(method="from-left", .by_group = TRUE) %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
+  geom_pcp(aes(colour=interaction(Sex,species)), overplot="none", alpha = 0.8) +
   geom_pcp_boxes(fill="white", alpha =0.8) +
   geom_pcp_labels(fill="white", alpha=1) +
   theme_bw() +
   xlab(NULL) + ylab(NULL) +
   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
         legend.position="none") +
-  scale_colour_manual(values=c(cols[2], cols[1], cols[3])) +
+  scale_colour_manual(values=c(oranges[c(1,3)], greens[c(1,3)], purples[c(1,3)])) +
   facet_grid(Sex~.)
 @
 
-\subsubsection{Determining sex}
-
+%\subsubsection{}
+\paragraph{Determining sex}\hfill\newline
 
 %
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). \\hh{XXX reason for that here or in the text?}", fig.height=4, fig.width=8>>=
@@ -1698,21 +1701,21 @@ p5-6 Why has bill_depth been inverted?  Why does species appear twice?
 %p8 it also allows us, in the spirit of the original parallel coordinate plots, (not it also allows us in the spirit of the original parallel coordinate plots)
 
 %p9 As the number of observations increases (not As the number of observations increase)
-p9 particularly for larger data sets (not particularly for slightly larger data sets)
-p9 Instead of "XXX the order in which crossing lines are drawn is only visible when the lines have different colors." how about
-Colouring by groups improves the reability of plots.  However, the order of drawing the cases may affect what can be seen due to overplotting.
-p9 As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter overplot offers the option "small-on-top" where groups are plotted in order of size from largest to smallest so that the smallest is on top.  The default setting "none" is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset.  (not As a countermeasure we carefully control the order in which line segments are plotted.  Two methods to control this order are implemented and are regulated by the parameter overplot:)
-p9 Several aspects in Parallel Coordinate Plots depend on orderings: the order of variables along the x axis, the order of levels in a categorical variable, the orderings of cases within categorical variable levels, and the order in which lines are drawn. (not Several aspects in Parallel Coordinate Plots depend on orderings: order of variables along the x axis, order of levels in a categorical variable, and order in which lines are drawn.)
-p9 Orderings should therefore (a) have good defaults, and (b) be easily changeable. (not Changing orders should therefore (a) have good defaults, and (b) be easily changeable.)
+%p9 particularly for larger data sets (not particularly for slightly larger data sets)
+%p9 Instead of "XXX the order in which crossing lines are drawn is only visible when the lines have different colors." how about
+%Colouring by groups improves the reability of plots.  However, the order of drawing the cases may affect what can be seen due to overplotting.
+%p9 As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter overplot offers the option "small-on-top" where groups are plotted in order of size from largest to smallest so that the smallest is on top.  The default setting "none" is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset.  (not As a countermeasure we carefully control the order in which line segments are plotted.  Two methods to control this order are implemented and are regulated by the parameter overplot:)
+%p9 Several aspects in Parallel Coordinate Plots depend on orderings: the order of variables along the x axis, the order of levels in a categorical variable, the orderings of cases within categorical variable levels, and the order in which lines are drawn. (not Several aspects in Parallel Coordinate Plots depend on orderings: order of variables along the x axis, order of levels in a categorical variable, and order in which lines are drawn.)
+%p9 Orderings should therefore (a) have good defaults, and (b) be easily changeable. (not Changing orders should therefore (a) have good defaults, and (b) be easily changeable.)
 
-p10 Scrap my contribution in green below Fig 6
-p10 The top plot of Figure 6 shows (not Figure 6 shows)
-p10 The numeric data consists of body measurements of three species of penguins: bill length, bill depth, flipper length, body weight. (not The data consists of body measurements, such as weight, flipper length, bill length, and depth, of three species of penguins.)
-p10 while Gentoo penguins can be distinguished by their relatively large flipper lengths. (not while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.)
-p10 Move the first paragraph of §5.1.1 to the end of the previous section.
-p10 The lower plot of Figure 6 shows (not Figure 6 shows)
-p10 both the ‘species‘ and the ‘island‘ variables (not both the ‘species‘ and the ‘island‘ variable)
-p10 This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands. (not This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.)
+%p10 Scrap my contribution in green below Fig 6
+%p10 The top plot of Figure 6 shows (not Figure 6 shows)
+%p10 The numeric data consists of body measurements of three species of penguins: bill length, bill depth, flipper length, body weight. (not The data consists of body measurements, such as weight, flipper length, bill length, and depth, of three species of penguins.)
+%p10 while Gentoo penguins can be distinguished by their relatively large flipper lengths. (not while Gentoo penguins can be distinguished from the other two species by their relatively larger flipper lengths.)
+%p10 Move the first paragraph of §5.1.1 to the end of the previous section.
+%p10 The lower plot of Figure 6 shows (not Figure 6 shows)
+%p10 both the ‘species‘ and the ‘island‘ variables (not both the ‘species‘ and the ‘island‘ variable)
+%p10 This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands. (not This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.)
 p10 Add to the end of this new paragraph at the end of §5.1:
 It further clarifies that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.
 
