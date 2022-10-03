@@ -759,7 +759,7 @@ pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 \au{figure 6 and 7 look quite similar, but are quite different - visual emphasis? Maybe use colors[1] and colors [3]?}
 
 In addition to the ordering of factor levels, it is also important to carefully order the variables on the $x$-axis, as shown in \autoref{fig:penguins-variable-order}, where the variables have been re-ordered
-to allow the viewer to see what body measurements distinguish the species. Note that besides the re-ordering, the axes for bill depth is also reversed. \svp{XXX explain why this helps} \hh{Again, this reversal helps with distinguishing between species: Gentoo penguins have the lowest bill depth, while generally having the longest flippers. Reversing the axis for bill depths, aligns the smallest bill depths with the longest flippers, thereby moving Gentoo penguins closer together as a group. }
+to allow the viewer \au{identify which} body measurements distinguish the species. \au{Besides the re-ordering, the axis for bill depth has been reversed. } \au{Both changes help to separate the species.} \hh{ Gentoo penguins have the lowest bill depth, while generally having the longest flippers and being heaviest. Reversing the axis for bill depths, aligns the smallest bill depths with the longest flippers, thereby moving Gentoo penguins closer together as a group. }
 The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, and, finally, that Adelie and Chinstrap are distinguished by the lengths of their bills.
 
 \hh{Note that we are using facetting by penguins' sex} in \autoref{fig:penguins-variable-order}. \hh{While all of the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.}
@@ -887,11 +887,12 @@ penguins_pcp %>%
 #  facet_wrap(~sex)
 @
 
+\au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \autoref{fig:penguins}.  This also helps to investigate which sex might be the few penguins whose sex is not given.
+}
+%\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 
-\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
-
-The lines in \autoref{fig:penguins} are colored by sex of penguins. What can be seen is that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines.  Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
-In \autoref{fig:penguins2b} we explore this idea a bit further. This figure is based on the same data as \autoref{fig:penguins}, however, we exclude Chinstrap penguins  as researchers were able to sex all of those penguins. The body measurements of all sexed penguins are summarised by two ribbons for each sex and species.The inner ribbons are bounded by the 25\% and the 75\% percentile values on each axis.  The lighter ribbon covers 95\% of each sex within its species. We use these ribbons to reduce the noise introduced by individual lines.
+ \autoref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. \au{Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.} %Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
+In \autoref{fig:penguins2b} we explore this idea a bit further. This figure is based on the same data as \autoref{fig:penguins}, however, we exclude Chinstrap penguins  as researchers were able to sex all of those penguins. The body measurements of all sexed penguins are summarised by two ribbons for each sex and species. The inner ribbons are bounded by the 25\% and the 75\% percentile values on each axis.  The lighter ribbon covers 95\% of observations on each variable. We use these ribbons to reduce the noise introduced by individual lines.
  Body measurements of the unsexed animals are represented as line segments on top of the ribbons.
  This helps us to evaluate and assess the lines drawn for individual, unsexed penguins within the context of the marginal distributions (in this case their putative sex and species).
 
