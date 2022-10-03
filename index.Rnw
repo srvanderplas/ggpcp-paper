@@ -1330,8 +1330,8 @@ gpcp <- Carcinoma_pcp2 %>%
   guides(color = guide_legend(override.aes = list(size = 2)))
 
 layout <- "
-AAAAAA
-BBBBB#
+AAAAAAA
+BBBBBB#
 "
 gpcp + hist +
   plot_layout(design = layout, heights = c(1.5,1))
