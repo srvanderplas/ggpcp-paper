@@ -124,6 +124,7 @@ knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth'
 
 \hh{XXX polyline or poly-line?}
 
+
 <<setup2, echo=FALSE, cache=FALSE>>=
 knit_hooks$set(source = function(x, options) {
     paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x,
@@ -1210,7 +1211,8 @@ penguins_pcp %>%
 \subsection{Getting a second, third, ... and seventh opinion}\label{sec:carcinoma}
 
 \autoref{fig:carcinoma} shows data from \citet{agresti} published as part of the \code{poLCA} package \citep{polca}. Seven pathologists were asked to assess the same 118 slides for the presence or absence of carcinoma in the uterine cervix. Binary responses for each slide were recorded (yes/no).  Pathologists all agreed on about 25\% of slides, which they  considered to be carcinoma free, and a further 12.5\% of slides, which were considered to show carcinoma by all pathologists.
-For the remaining 62.5\% of slides there was some disagreement. However, we see that this disagreement is not random. When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis  from left to right.
+\au{For the remaining 62.5\% of slides there was some disagreement and it is clear that this disagreement is not random.} \au{The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.}
+%When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis  from left to right.
 <<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a poly-line.", fig.height = 4, fig.width = 8>>=
 data("carcinoma", package = "poLCA")
 carcinoma$numdiag <- rowSums(carcinoma) - 7
@@ -1239,9 +1241,12 @@ carcinoma %>%
 
 Note, in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way.
 
-\citet{carcinoma} (Table 1) allow us a closer look at this data. Pathologists evaluated the (same) scans at a five levels from 1 to 5, given as:
+\citet{carcinoma} (Table 1) allow us a closer look at this data.
+\au{The pathologists evaluated the slides using five levels from 1 to 5}, given as:
 (1) Negative, (2) Atypical Squamous Hyperplasia, (3) Carcinoma in Situ, (4) Squamous Carcinoma with Early Stromal Invasion, and (5) Invasive Carcinoma.
-\autoref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \autoref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \autoref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. Overall, the variability between pathologists' scores stems froma difference in applying the scores rather than an actual difference of opinions. \hh{XXX this needs to be phrased differently. What I mean is that we see a lot of agreement in the parallel lines, but the boxes are shifted from one pathologist to another.} The similarity in evaluations is particularly striking between pathologists A, G, E, and B.
+\citet{agresti} \au{classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".}
+\autoref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \autoref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \autoref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. \au{Mostly, the variability between pathologists’ scores stems from a difference in applying the scores rather than from an actual difference of opinions.} %Overall, the variability between pathologists' scores stems froma difference in applying the scores rather than an actual difference of opinions. \hh{XXX this needs to be phrased differently. What I mean is that we see a lot of agreement in the parallel lines, but the boxes are shifted from one pathologist to another.}
+The similarity in evaluations is particularly striking between pathologists A, G, E, and B.
 
 <<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Rounded average scores are mapped to color to help distinguish severity of scan evaluations.", fig.height = 4.25, fig.width = 7, out.width='0.9\\textwidth', fig.align='center'>>=
 data(Carcinoma, package="ggpcp")
@@ -1275,14 +1280,17 @@ Carcinoma %>% mutate(
 
 Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We use $k$-means clustering on all numeric body measurements and investigate which observations are generally captured in each of the clusters.
 
-Because $k$-means clustering assigns cluster labels arbitrarily based on random cluster centers, in order to maintain a persistent ordering over different values of $k$ we reorder the clusters by the value of \code{body\_mass\_g}. This helps us to compare between e.g.\ $k$ and $k+1$ clusters.
+\au{$k$-means clustering assigns cluster labels arbitrarily based on random cluster centers.}
+In order to maintain a persistent ordering over different values of $k$ we reorder the clusters by the value of \code{body\_mass\_g}. This helps us to compare between $k$ and $k+1$ clusters.
 %
-\autoref{fig:kmean-penguins} shows the numeric measurements along with the assigned clusters, with categorical variables sex and species on the right. Each line is colored by the assigned cluster, allowing us to determine how the categorical variables relate to the quantitative variables and the resulting clusters.
+\autoref{fig:kmean-penguins} shows the numeric measurements along with the assigned clusters, with categorical variables species and sex on the right. Each line is colored by the assigned cluster, allowing us to determine how the categorical variables relate to the quantitative variables and the resulting clusters.
 %
-When $k=2$, \autoref{fig:penguink2} shows that the largest difference in the observed data is between Gentoo penguins and the other two species. When $k=3$, in \autoref{fig:penguink3}, the additional cluster separates the Adelie and Chinstrap penguins into two groups with a few misclassifications; this additional cluster is based on the length of the bill (which we can follow due to the clear connection between data values in the generalized PCP). Adding a fourth cluster, as in \autoref{fig:penguink4} splits Adelie penguins into males and females, though again there are again some penguins who are misclassified. The addition of a fifth cluster in \autoref{fig:penguink5} splits Chinstrap penguins into male and female. Once we add a sixth cluster in \autoref{fig:penguink6}, we finally split the Gentoo penguins by sex as well, though again this clustering is not perfect.
+When $k=2$, \autoref{fig:penguink2} shows that the largest difference in the observed data is between Gentoo penguins and the other two species. When $k=3$, in \autoref{fig:penguink3}, the additional cluster separates the Adelie and Chinstrap penguins into two groups with a few misclassifications; this additional cluster is based on the length of the bill (which we can follow due to the clear connection between data values in the generalized PCP). Adding a fourth cluster, as in \autoref{fig:penguink4} splits Adelie penguins into males and females,
+though again there are some penguins that are misclassified. The addition of a fifth cluster in \autoref{fig:penguink5} splits Chinstrap penguins into male and female. Once we add a sixth cluster in \autoref{fig:penguink6}, we finally split the Gentoo penguins by sex as well, though again this clustering is not perfect.
 
 What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species.
-We also see from the figure that some of separation into sexes is lost from one clustering to the next. This is typical for non-hierarchical clustering algorithms. Rather than refining a previous cluster, a switch from $k$ clusters to $k+1$ clusters starts the clustering process anew. If the signal in the data to separate into $k$ clusters is not strong or ambiguous, we will see this reflected in the results; observations might be quite arbitrarily put together into groups, or a group of observations might be split into multiple clusters.
+
+We also see from the figure \au{that some of the separation into sexes} is lost from one clustering to the next. This is typical for non-hierarchical clustering algorithms. Rather than refining a previous cluster, a switch from $k$ clusters to $k+1$ clusters starts the clustering process anew. If the signal in the data to separate into $k$ clusters is not strong or is ambiguous, we will see this reflected in the results; observations might be quite arbitrarily put together into groups, or a group of observations might be split into multiple clusters.
 %
 In the Hartigan-Wong \citep{hartigan1979} algorithm used here for the clustering, points are assigned to random clusters in the initialization. In order to assess the effect of this non-deterministic start on the results, it is good practice to investigate the cluster stability by repeating the clustering multiple times for the same number of classes $k$ (if $k > 1$). \autoref{fig:cl-overview-2} shows a comparison of the results from multiple runs of the $k$-means algorithm for $k = 6$. The lines in this figure are colored by species and sex. We see that the splits by species are relatively stable -- there are only a few cases across all results in which individuals end up in clusters with individuals from another species, and if they do, it is the same individuals across different results. Splits by sex show more variability: Chinstrap penguins rarely split into male/female clusters, while Gentoo penguins shows a relatively stable separation into males and females. The Adelie population has subsets of individuals that are separated into males only, females only, and a third, more variable subset of a combination of the two.
 
@@ -1612,6 +1620,9 @@ penguins_complete %>%
 
 \section{Discussion}
 
+\au{generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots the use of color to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play, the ordering of levels of categorical variables and the ordering of cases within those levels.
+The ideas described here have been implemented in the R package ggpcp.  There are two central features.  Data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy.  Both these features contribute to the power and flexibility of the software.
+}
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
@@ -1718,38 +1729,38 @@ p5-6 Why has bill_depth been inverted?  Why does species appear twice?
 %p10 The lower plot of Figure 6 shows (not Figure 6 shows)
 %p10 both the ‘species‘ and the ‘island‘ variables (not both the ‘species‘ and the ‘island‘ variable)
 %p10 This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands. (not This re-ordering of factor levels has the effect of emphasizing the fact that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.)
-p10 Add to the end of this new paragraph at the end of §5.1:
-It further clarifies that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.
+%p10 Add to the end of this new paragraph at the end of §5.1:
+%It further clarifies that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.
 
-p10 Add introductory sentence to §5.1.1:
-As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in Figure 7 to show that the patterns are similar for both males and females.
-p10 to help the viewer identify which (not to allow the viewer to see what)
+%p10 Add introductory sentence to §5.1.1:
+%As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in Figure 7 to show that the patterns are similar for both males and females.
+%p10 to help the viewer identify which (not to allow the viewer to see what)
 
-p10-11 Besides the re-ordering, the axis for bill depth has been reversed. (not Note that besides the re-ordering, the axes for bill depth is also reversed.)
-p11 Both changes help to separate the species. (not XXX explain why this helps Again, this reversal helps with distinguishing between species:)
-p11 having the longest flippers and being heaviest (not having the longest flippers)
-p11 Scrap my XXX comment
+%p10-11 Besides the re-ordering, the axis for bill depth has been reversed. (not Note that besides the re-ordering, the axes for bill depth is also reversed.)
+%p11 Both changes help to separate the species. (not XXX explain why this helps Again, this reversal helps with distinguishing between species:)
+%p11 having the longest flippers and being heaviest (not having the longest flippers)
+%p11 Scrap my XXX comment
 
-p11 Add intro to §5.1.2:
-Instead of colouring by species, you can colour by sex and compare the distributions of the measurements for males and females, as is done in Figure 8.  This also helps to investigate which sex might be the few penguins whose sex is not given.
-p11 Figure 8 shows that (not The lines in Figure 8 are colored by sex of penguins. What can be seen is that)
+%p11 Add intro to §5.1.2:
+%Instead of colouring by species, you can colour by sex and compare the distributions of the measurements for males and females, as is done in Figure 8.  This also helps to investigate which sex might be the few penguins whose sex is not given.
+%p11 Figure 8 shows that (not The lines in Figure 8 are colored by sex of penguins. What can be seen is that)
 
-p12 Comparing these penguins’ body measurements to those of the other penguins, we can make suggestions regarding their sex. (not Based on these penguins’ body measurements within the context of the other penguins, we can make some suggestions regarding their sex.)
-p12 The text accompanying Figure 9 will depend on what Figure 9 you draw, so I have left that.
+%p12 Comparing these penguins’ body measurements to those of the other penguins, we can make suggestions regarding their sex. (not Based on these penguins’ body measurements within the context of the other penguins, we can make some suggestions regarding their sex.)
+%p12 The text accompanying Figure 9 will depend on what Figure 9 you draw, so I have left that.
 
-p13 For the remaining 62.5% of slides there was some disagreement and it is clear that this disagreement is not random. (not For the remaining 62.5% of slides there was some disagreement. However, we see that this disagreement is not random.)
-p13 The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.  (not When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis from left to right.)
-p13 The pathologists evaluated the slides using five levels from 1 to 5 (not Pathologists evaluated the (same) scans at a five levels from 1 to 5)
-p13 Agresti and others classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".  Figure 11 (not Figure 11)
+%p13 For the remaining 62.5\% of slides there was some disagreement and it is clear that this disagreement is not random. (not For the remaining 62.5\% of slides there was some disagreement. However, we see that this disagreement is not random.)
+%p13 The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.  (not When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis from left to right.)
+%p13 The pathologists evaluated the slides using five levels from 1 to 5 (not Pathologists evaluated the (same) scans at a five levels from 1 to 5)
+%p13 Agresti and others classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".  Figure 11 (not Figure 11)
 
-p15 Mostly, the variability between pathologists’ scores stems from a difference in applying the scores rather than from an actual difference of opinions. (not Overall, the variability between pathologists’ scores stems froma difference in applying the scores rather than an actual difference of opinions.)
-p15 k-means clustering assigns cluster labels arbitrarily based on random cluster centers.   In order to maintain a persistent ordering over different values of k we reorder the clusters by the value of body_mass_g. (not Because k-means clustering assigns cluster labels arbitrarily based on random cluster centers, in or- der to maintain a persistent ordering over different values of k we reorder the clusters by the value of body_mass_g.)
-p15 This helps us to comparing between k and k + 1 clusters. (not This helps us to compare between e.g. k and k + 1 clusters.)
-p15 Figure 12 shows the numeric measurements along with the assigned clusters, with categorical variables species and sex on the right. (not Figure 12 shows the numeric measurements along with the assigned clusters, with categorical variables sex and species on the right.)  Perhaps the sex axis should be added to the first two plots to avoid confusion.
-p15  though again there are some penguins that (not  though again there are again some penguins who)
-p15 that some of the separation into sexes (not that some of separation into sexes)
+%p15 Mostly, the variability between pathologists’ scores stems from a difference in applying the scores rather than from an actual difference of opinions. (not Overall, the variability between pathologists’ scores stems froma difference in applying the scores rather than an actual difference of opinions.)
+%p15 k-means clustering assigns cluster labels arbitrarily based on random cluster centers.   In order to maintain a persistent ordering over different values of k we reorder the clusters by the value of body_mass_g. (not Because k-means clustering assigns cluster labels arbitrarily based on random cluster centers, in or- der to maintain a persistent ordering over different values of k we reorder the clusters by the value of body_mass_g.)
+%p15 This helps us to comparing between k and k + 1 clusters. (not This helps us to compare between e.g. k and k + 1 clusters.)
+%p15 Figure 12 shows the numeric measurements along with the assigned clusters, with categorical variables species and sex on the right. (not Figure 12 shows the numeric measurements along with the assigned clusters, with categorical variables sex and species on the right.)  Perhaps the sex axis should be added to the first two plots to avoid confusion.
+%p15  though again there are some penguins that (not  though again there are again some penguins who)
+%p15 that some of the separation into sexes (not that some of separation into sexes)
 
-p17 is not strong or is ambiguous (not is not strong or ambiguous)
-p17 §6
-Generalised parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots the use of colour to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalised parallel coordinate plots two additional kinds of ordering have a part to play, the ordering of levels of categorical variables and the ordering of cases within those levels.
-The ideas described here have been implemented in the R package ggpcp.  There are two central features.  Data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy.  Both these features contribute to the power and flexibility of the software.
+%p17 is not strong or is ambiguous (not is not strong or ambiguous)
+%p17 §6
+%generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots the use of colour to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play, the ordering of levels of categorical variables and the ordering of cases within those levels.
+%The ideas described here have been implemented in the R package ggpcp.  There are two central features.  Data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy.  Both these features contribute to the power and flexibility of the software.
