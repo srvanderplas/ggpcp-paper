@@ -109,7 +109,7 @@ $^3$ University 3
 
 \end{abstract}
 
-\tableofcontents
+%\tableofcontents
 %----------------------------------------------------------------------------------------
 %	ARTICLE CONTENTS
 %----------------------------------------------------------------------------------------
@@ -187,12 +187,12 @@ cols <-  c(oranges[2], purples[2], greens[2])
 
 @
 
-\au{Broad Comments:}
-\begin{itemize}
-\item \au{Replace fleas with penguins}
-\item \au{Make colors consistent - gentoo are always \_\_\_ color - but with a different (but consistent) color scheme in the clustering example.}
-\item \au{Leave out missing data until it's explicitly discussed in the example with labeled ? points}
-\end{itemize}
+% \au{Broad Comments:}
+% \begin{itemize}
+% \item \au{Replace fleas with penguins}
+% \item \au{Make colors consistent - gentoo are always \_\_\_ color - but with a different (but consistent) color scheme in the clustering example.}
+% \item \au{Leave out missing data until it's explicitly discussed in the example with labeled ? points}
+% \end{itemize}
 
 <<prep-raw-penguin, warning = FALSE>>=
 library(palmerpenguins)
@@ -213,30 +213,6 @@ This duality provides a good basis for interpreting geometric features observed 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
 Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way of getting a high-level overview of the marginal distributions involved, identifying outliers in the data, and  finding potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
 This clutter is sometimes mitigated by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
-
-\au{While parallel coordinate plots are a powerful tool}
-\svp{ using categorical variables alongside quantitative variables is a great challenge.} In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
-Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}, but these solutions do not accommodate quantitative variables.
-Instead, they are intended for use with tabular data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
-An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp} by treating factor variables as numeric.
-Similar to parallel sets, this approach is also based on marginal frequencies for the categorical variables.
-Categorical parallel coordinate plots are the closest of these variations to our solution, but the \pkg{extracat} package has not been updated recently and is no longer on CRAN.
-%they are not implemented in the \pkg{ggplot2} framework and can therefore not be further extended.\svp{They can't be extended because they're not implemented in ggplot2, or it's just not convenient to implement them first and then extend them? Surely there's an actual structural difference between the approach here and cpcps?}
-
-
-% Various packages in R \citep{R} exist that contain an implementation of one of the \svp{types of} parallel coordinate plots \svp{discussed above}:
-%
-% \begin{itemize}
-% \item The function \code{parcoord} in the \pkg{MASS} package \citep{MASS} makes use of the base plot system of R to draw parallel coordinate plots.
-% \item The function \code{cpcp} in package \pkg{iplots} implemented the parallel coordinate plot \citep{cpcp}, \svp{but the function is not available in modern versions of the package. It is provided as an internal package function in the \pkg{extracat} package for posterity's sake.}.
-% \item The \code{scpcp} function of the \pkg{extracat} package has been previously discussed. It allows use of categorical and quantitative variables, but treats categorical variables as numeric.
-% \item The \pkg{GGally}\citep{ggally} package implements parallel coordinate plots using the grammar of graphics \citep{wilkinson:1999} framework of \pkg{ggplot2}\citep{ggplot2} with the \code{ggparcoord} function. It does not leverage ggplot2's extension framework; as a result, the \code{ggparcoord} function has a lot of parameters and cannot leverage the layered framework of ggplot2 natively.
-% \item The \pkg{ggparallel}\citep{ggparallel} package provides an implementation of hammock and common-angle plots, but does not accommodate quantitative data. This package also leverages \pkg{ggplot2} under the hood but cannot be extended easily.
-% \end{itemize}
-% Developments based on the grammar of graphics \citep{wilkinson:1999} and the \pkg{ggplot2} \citep{ggplot2} framework are, e.g. the functions `ggparcoord' in \pkg{GGally} \citep{GGally} or \pkg{ggparallel} \citep{ggparallel} which provide an implementation of Hammock and common-angle plots.
-% \svp{We may want to integrate this paragraph into the previous paragraph, or provide graphical examples of the different plots?}
-% Those packages based on \pkg{ggplot2} make use of \pkg{ggplot2}, but are actually wrapper of existing functions for highly specialized plots with tens of parameters, which do not allow the full flexibility of \pkg{ggplot2} and do not make use of \pkg{ggplot2}'s  layer framework.
-% \svp{Might be useful to actually provide an example of the syntax/underlying code here or in an appendix?}
 
 <<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next.\\au{Two penguins from the Palmer Penguin data set (see section 5) were sampled for this example.}">>=
 #df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
@@ -269,6 +245,16 @@ df_pcp %>%
                               "Flipper Length (mm)", "Body Mass (g)"))
 @
 
+\au{While parallel coordinate plots are a powerful tool}
+\svp{ using categorical variables alongside quantitative variables is a great challenge.} In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
+Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}, but these solutions do not accommodate quantitative variables.
+Instead, they are intended for use with tabular data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
+An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp} by treating factor variables as numeric.
+Similar to parallel sets, this approach is also based on marginal frequencies for the categorical variables.
+Categorical parallel coordinate plots are the closest of these variations to our solution, but the \pkg{extracat} package has not been updated recently and is no longer on CRAN.
+
+
+
 
 
 The remainder of the paper is organized as follows:
@@ -300,11 +286,12 @@ pcp <- penguins %>%                       # data management:
 @
 \end{minipage}
 <<echo=FALSE, eval=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
-library(GGally)
-data(flea)
+#library(GGally)
+#data(flea)
 @
 
 % \svp{XXX Make the code into a subfigure and put alongside figure 1. Switch to penguins data, select 2 penguins from the set. XXX} % I no longer really understand why we'd have this with Fig 1, since it's entirely different?
+\hh{XXX the results from the code should be shown somewhere, so the code is not so unmotivated.}
 
 
 \svp{In addition, \pkg{ggpcp} leverages}  the full ggplot2 philosophy instead of using highly specific wrapper functions, \svp{allowing} users to focus on the data, rather than the names of various parameters used for customization.
