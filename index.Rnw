@@ -674,7 +674,7 @@ One of the primary advantages of the generalized approach to dealing with catego
 %\hh{the option of \code{"none"} is very flexible.}
 
 
-\section{Examples}
+\section{Examples}\label{sec:examples}
 \subsection{Palmers Penguins}
 
 \au{
@@ -1722,7 +1722,6 @@ theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
 \end{document}
 
 From Antony:
-
 
 p5-6 Why has bill_depth been inverted?  Why does species appear twice?
 
