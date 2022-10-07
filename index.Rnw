@@ -1259,13 +1259,20 @@ var_id <- var_id %>% left_join(
   Carcinoma_pcp %>% ungroup() %>%
     select(pcp_id, `round(Average)`)  %>% unique(), by = "pcp_id")
 
+# https://coolors.co/0680c6-a4c7e0-fedfc3-f47966-ff0a3b
+# https://coolors.co/045a8d-74a9cf-fdbe85-f03b20-bd0026
 # scatterplot of variances against each other
 ggvars <- var_id %>%
-  ggplot(aes(x = var_y, y = var_scores, colour = `round(Average)`)) +
-  geom_point(alpha = 0.25) + xlab("Var(pcp_y)") + ylab("Var(scores)") +
-  scale_color_manual(values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20", "#bd0026")) +
+  ggplot(aes(x = var_y, y = var_scores)) +
+#  geom_hex(bins = 20, fill ="grey50", alpha = 0.25) +
+  geom_point(aes(colour = `round(Average)`, alpha = var_y)) +
+  geom_point(colour="grey90",
+             data = var_id %>% filter(var_y < 0.001)) + # fudging a bit to grey out points with high frequencies
+  xlab("Var(pcp_y)") + ylab("Var(scores)") +
+  scale_color_manual(values=c("#045a8d", "#74a9cf",  "#fdbe85", "#f03b20", "#bd0026")) +
   theme(legend.position = "none") +
-  geom_point(data = var_id %>% filter(var_y > 0.03))
+  geom_point(aes(colour = `round(Average)`),
+             data = var_id %>% filter(var_y > 0.02))
 #  scale_x_sqrt() +
 #  scale_y_sqrt()
 
@@ -1288,14 +1295,14 @@ Carcinoma_pcp %>%
   guides(color = guide_legend(override.aes = list(size = 2)))
 @
 
-<<carcinoma3, fig.cap="Highlighting lines with high variability", fig.height = 6, fig.width = 8>>=
+<<carcinoma3, dependson='carcinoma2', fig.cap="Highlighting lines with high variability", fig.height = 6, fig.width = 8>>=
 Carcinoma_pcp2 <- Carcinoma_pcp %>%
   left_join(var_id %>% select(pcp_id, var_scores, var_y), by = "pcp_id")
 
 hist <-
   var_id %>%
   mutate(
-    var_low = var_y < 0.03,
+    var_low = var_y < 0.02,
     var_disc = ifelse(var_low, "Low", "High"),
     var_disc = factor(var_disc, levels = c("Low", "High"))) %>%
   ggplot(aes(x = var_y, fill = `round(Average)`,
