@@ -277,7 +277,7 @@ The remainder of the paper is organized as follows:
 \captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API.}\label{lst:ggpcp-api}
 <<echo=TRUE, reset=TRUE,  results = 'hold', error=FALSE, warning=FALSE>>=
 pcp <- penguins %>%                       # data management:
-  pcp_select(species, 3:6, sex) %>%       #   variable selection, see section 3.1
+  pcp_select(sex, 3:6, species) %>%       #   variable selection, see section 3.1
   pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
   pcp_arrange() %>%                       #   arranging categorical data
   ggplot(aes_pcp()) +                     # plotting the chart:
@@ -1247,10 +1247,27 @@ Carcinoma_pcp <- Carcinoma %>% mutate(
   pcp_scale(method="uniminmax") %>%
   pcp_arrange()
 
-var_id <- Carcinoma_pcp %>% group_by(pcp_id) %>%
+var_id <- Carcinoma_pcp %>%
+  filter(pcp_x != 'round(Average)') %>%
+  group_by(pcp_id) %>%
   summarize(
-    var_y = var(pcp_y)
+    var_y = var(pcp_y),
+    var_scores = var(parse_number(pcp_level))
   )
+
+var_id <- var_id %>% left_join(
+  Carcinoma_pcp %>% ungroup() %>%
+    select(pcp_id, `round(Average)`)  %>% unique(), by = "pcp_id")
+
+# scatterplot of variances against each other
+ggvars <- var_id %>%
+  ggplot(aes(x = var_y, y = var_scores, colour = `round(Average)`)) +
+  geom_point(alpha = 0.25) + xlab("Var(pcp_y)") + ylab("Var(scores)") +
+  scale_color_manual(values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20", "#bd0026")) +
+  theme(legend.position = "none") +
+  geom_point(data = var_id %>% filter(var_y > 0.03))
+#  scale_x_sqrt() +
+#  scale_y_sqrt()
 
 Carcinoma_pcp %>%
   ggplot(aes_pcp()) +
@@ -1273,26 +1290,30 @@ Carcinoma_pcp %>%
 
 <<carcinoma3, fig.cap="Highlighting lines with high variability", fig.height = 6, fig.width = 8>>=
 Carcinoma_pcp2 <- Carcinoma_pcp %>%
-  left_join(var_id, by = "pcp_id")
-
-var_id <- var_id %>% left_join(Carcinoma_pcp2 %>% select(pcp_id, `round(Average)`) %>% unique(), by="pcp_id")
+  left_join(var_id %>% select(pcp_id, var_scores, var_y), by = "pcp_id")
 
 hist <-
   var_id %>%
   mutate(
-    var_low = var_y < 0.02,
-    var_disc = ifelse(var_low, "Low", "High")) %>%
+    var_low = var_y < 0.03,
+    var_disc = ifelse(var_low, "Low", "High"),
+    var_disc = factor(var_disc, levels = c("Low", "High"))) %>%
   ggplot(aes(x = var_y, fill = `round(Average)`,
              alpha = var_disc)) +
-  geom_histogram(binwidth = 0.0075, colour="grey50", size=0.1) +
+  geom_histogram(binwidth = 0.01, colour="grey50", size=0.1) +
   scale_fill_manual("Average carcinoma score",values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20",
 "#bd0026")) +
-  xlab("Variance of pcp_y") +
+  xlab("Variance in pcp_y") +
   ylab("Number of scans") +
   scale_alpha_manual("Variance in pcp_y",
-                     values = c(1, 0.25)) +
+                     values = c(0.25, 1)) +
   theme(legend.position = "right",
-        legend.direction = "horizontal")
+        legend.direction = "horizontal") +
+  guides(fill =
+           guide_legend(title.position="top",
+                           title.hjust = 0),
+         alpha = guide_legend(title.position="top", title.hjust = 0))
+
 
 gpcp <- Carcinoma_pcp2 %>%
   ggplot(aes_pcp()) +
@@ -1317,10 +1338,10 @@ gpcp <- Carcinoma_pcp2 %>%
   guides(color = guide_legend(override.aes = list(size = 2)))
 
 layout <- "
-AAAAAAA
-BBBBBB#
+AAAAAAAAA
+BBBBBCCCC
 "
-gpcp + hist +
+gpcp + hist +  ggvars +
   plot_layout(design = layout, heights = c(1.5,1))
 
 
