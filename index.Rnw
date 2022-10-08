@@ -1310,9 +1310,9 @@ hist <-
   geom_histogram(binwidth = 0.01, colour="grey50", size=0.1) +
   scale_fill_manual("Average carcinoma score",values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20",
 "#bd0026")) +
-  xlab("Variance in pcp_y") +
+  xlab("Var(pcp_y)") +
   ylab("Number of scans") +
-  scale_alpha_manual("Variance in pcp_y",
+  scale_alpha_manual("Var(pcp_y)",
                      values = c(0.25, 1)) +
   theme(legend.position = "right",
         legend.direction = "horizontal") +
