@@ -245,8 +245,8 @@ df_pcp %>%
                               "Flipper Length (mm)", "Body Mass (g)"))
 @
 
-\au{While parallel coordinate plots are a powerful tool}
-\svp{ using categorical variables alongside quantitative variables is a great challenge.} In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
+While parallel coordinate plots are a powerful tool
+ using categorical variables alongside quantitative variables is a great challenge. In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
 Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}, but these solutions do not accommodate quantitative variables.
 Instead, they are intended for use with tabular data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
 An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp} by treating factor variables as numeric.
@@ -266,9 +266,9 @@ The remainder of the paper is organized as follows:
 
 \section{Motivation and Package Usage}\label{sec:usage}
 
-\au{An important motivation for \hh{the `ggpcp`} package is that other implementations of parallel coordinate plots for categorical variables }
+An important motivation for the \pkg{ggpcp} package is that other implementations of parallel coordinate plots for categorical variables
 %One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots
-\svp{make it difficult to follow a single observation across the chart. `ggpcp` alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow \au{individual cases}  across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.}
+make it difficult to follow a single observation across the chart. \pkg{ggpcp} alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow individual cases  across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.
 
 % \au{XXX Gestalt motivation of what makes this package unique - ability to follow a single data point through the parallel coordinate plot.XXX}
 % \hh{XXX We need to state what this code is about: paper structured along how code is used.}
@@ -294,7 +294,7 @@ pcp <- penguins %>%                       # data management:
 \hh{XXX the results from the code should be shown somewhere, so the code is not so unmotivated.}
 
 
-\svp{In addition, \pkg{ggpcp} leverages}  the full ggplot2 philosophy instead of using highly specific wrapper functions, \svp{allowing} users to focus on the data, rather than the names of various parameters used for customization.
+In addition, \pkg{ggpcp} leverages  the full ggplot2 philosophy instead of using highly specific wrapper functions, allowing users to focus on the data, rather than the names of various parameters used for customization.
 \pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering.
 Scaling, ordering of cases, and the arrangement of the parallel axes are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale},respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
 During the plotting state, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
@@ -544,9 +544,9 @@ The method \code{robust} normalizes values univariately by mapping the median va
 
 \hh{XXX it might be good to separate the section into 'how' (data) and 'why' (visual aspects).}
 
-\au{Assigning all cases of the same level to the same point on the axis of a categorical variable makes it impossible to distinguish them.  The approach of `ggpcp` is to draw boxes proportional to the numbers of cases in each level and to order the cases within their boxes so that visual clutter is minimised and individual cases can be followed.}
-\hh{This idea is implemented in the `ggpcp` function \code{pcp\_arrange(data, method, space)}.}
-\au{The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering determined by variables’ values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.}
+Assigning all cases of the same level to the same point on the axis of a categorical variable makes it impossible to distinguish them.  The approach of \pkg{ggpcp} is to draw boxes proportional to the numbers of cases in each level and to order the cases within their boxes so that visual clutter is minimised and individual cases can be followed.
+This idea is implemented in the \pkg{ggpcp} function \code{pcp\_arrange(data, method, space)}.
+The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering determined by variables’ values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
 
 
 \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}
@@ -875,7 +875,7 @@ penguins_pcp %>%
 #  facet_wrap(~sex)
 @
 
-\au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \autoref{fig:penguins}.  This also helps to investigate which sex might be the few penguins whose sex is not given.
+\au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \autoref{fig:penguins}.  This also helps to investigate which sex might be the few penguins whose sex is not given \citep{renner1998}.
 }
 %\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 
@@ -1368,7 +1368,7 @@ In order to maintain a persistent ordering over different values of $k$ we reord
 When $k=2$, \autoref{fig:penguink2} shows that the largest difference in the observed data is between Gentoo penguins and the other two species. When $k=3$, in \autoref{fig:penguink3}, the additional cluster separates the Adelie and Chinstrap penguins into two groups with a few misclassifications; this additional cluster is based on the length of the bill (which we can follow due to the clear connection between data values in the generalized PCP). Adding a fourth cluster, as in \autoref{fig:penguink4} splits Adelie penguins into males and females,
 though again there are some penguins that are misclassified. The addition of a fifth cluster in \autoref{fig:penguink5} splits Chinstrap penguins into male and female. Once we add a sixth cluster in \autoref{fig:penguink6}, we finally split the Gentoo penguins by sex as well, though again this clustering is not perfect.
 
-What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticable sexual dimorphism within each species.
+What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticeable sexual dimorphism within each species.
 
 We also see from the figure \au{that some of the separation into sexes} is lost from one clustering to the next. This is typical for non-hierarchical clustering algorithms. Rather than refining a previous cluster, a switch from $k$ clusters to $k+1$ clusters starts the clustering process anew. If the signal in the data to separate into $k$ clusters is not strong or is ambiguous, we will see this reflected in the results; observations might be quite arbitrarily put together into groups, or a group of observations might be split into multiple clusters.
 %
