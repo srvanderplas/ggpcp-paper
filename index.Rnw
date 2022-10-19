@@ -246,23 +246,21 @@ df_pcp %>%
                               "Flipper Length (mm)", "Body Mass (g)"))
 @
 
-While parallel coordinate plots are a powerful tool
- using categorical variables alongside quantitative variables is a great challenge. In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
-Some versions of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}, but these solutions do not accommodate quantitative variables.
+While parallel coordinate plots are a powerful tool, using categorical variables alongside quantitative variables is a great challenge. In current solutions, levels of categorical variables are transformed to numbers and variables are then used as if they were numeric. This introduces ties into the data, and the resulting parallel coordinate plot becomes uninformative, as it only shows a mesh of lines from each level of one variable to each level of the next variable.
+\svp{Modifications} of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}; \svp{unfortunately}, these solutions do not accommodate quantitative variables.
 Instead, they are intended for use with tabular data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
 An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp} by treating factor variables as numeric.
 Similar to parallel sets, this approach is also based on marginal frequencies for the categorical variables.
 Categorical parallel coordinate plots are the closest of these variations to our solution, but the \pkg{extracat} package has not been updated recently and is no longer on CRAN.
-
-
+\svp{In this paper, we describe a generalization of parallel coordinate plots to accommodate both categorical and quantitative variables, developed using the grammar of graphics, implemented in the R package \pkg{ggpcp}. The resulting plots can be used to gain additional insights into multivariate data compared to plots created using other available software.}
 
 
 
 The remainder of the paper is organized as follows:
-\svp{\autoref{sec:usage} introduces the \pkg{ggpcp} syntax and explains the improvements in \pkg{ggpcp} over other parallel coordinate plot software packages.}
-\autoref{sec:wrangling} describes the data processing for parallel coordinate plots \svp{and how this wrangling is separated from the plot rendering in \pkg{ggpcp}.}
-\svp{\autoref{sec:visual} discusses the rendering of parallel coordinate plots and factors such as plotting order and tie-breaking which are important for the design of PCPs.}
-\svp{\autoref{sec:examples} provides three examples which highlight the use of generalized PCPs in exploratory settings.}
+\svp{\Cref{sec:usage} introduces the \pkg{ggpcp} syntax and explains the improvements in \pkg{ggpcp} over other parallel coordinate plot software packages.}
+\Cref{sec:wrangling} describes the data processing for parallel coordinate plots \svp{and how this wrangling is separated from the plot rendering in \pkg{ggpcp}.}
+\svp{\Cref{sec:visual} discusses the rendering of parallel coordinate plots and factors such as plotting order and tie-breaking which are important for the design of PCPs.}
+\svp{\Cref{sec:examples} provides three examples which highlight the use of generalized PCPs in exploratory settings.}
 % Section 3  presents the conceptual framework of  generalized parallel coordinate plots and general principles informing their construction. Section 4 describes the connection between generalized parallel coordinates and the grammar of graphics. Section 5 provides three examples highlighting different aspects of the use of  generalized parallel coordinate plots in an exploratory setting.
 
 \section{Motivation and Package Usage}\label{sec:usage}
@@ -271,12 +269,9 @@ An important motivation for the \pkg{ggpcp} package is that other implementation
 %One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots
 make it difficult to follow a single observation across the chart. \pkg{ggpcp} alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow individual cases  across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.
 
-% \au{XXX Gestalt motivation of what makes this package unique - ability to follow a single data point through the parallel coordinate plot.XXX}
-% \hh{XXX We need to state what this code is about: paper structured along how code is used.}
-
 \begin{minipage}[b]{.94\linewidth}
 \captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API.}\label{lst:ggpcp-api}
-<<echo=TRUE, reset=TRUE,  results = 'hold', error=FALSE, warning=FALSE>>=
+<<api-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE>>=
 pcp <- penguins %>%                       # data management:
   pcp_select(sex, 3:6, species) %>%       #   variable selection, see section 3.1
   pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
@@ -285,27 +280,29 @@ pcp <- penguins %>%                       # data management:
     geom_pcp_axes() +                     #   vertical lines for axes
     geom_pcp(aes(colour = species))       #   parallel coordinate line segments
 @
+
+\hh{XXX the results from the code should be shown somewhere, so the code is not so unmotivated.}
+\svp{I wish I could think of a good way to do a very small inset plot, but it just ends up looking blurry and weird.}
+
+\includegraphics[keepaspectratio=T,width=\linewidth]{figures/api-fig-print-1.pdf}
+\captionof{figure}{The code in \Cref{lst:ggpcp-api} generates this parallel coordinate plot with both categorical and continuous data shown on vertical axes.}
 \end{minipage}
-<<echo=FALSE, eval=FALSE, results = 'hide', error=FALSE, warning=FALSE, cache=FALSE>>=
-#library(GGally)
-#data(flea)
+<<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3>>=
+pcp +
+  scale_color_manual("Species", values = cols)
 @
 
-% \svp{XXX Make the code into a subfigure and put alongside figure 1. Switch to penguins data, select 2 penguins from the set. XXX} % I no longer really understand why we'd have this with Fig 1, since it's entirely different?
-\hh{XXX the results from the code should be shown somewhere, so the code is not so unmotivated.}
-
-
 In addition, \pkg{ggpcp} leverages  the full ggplot2 philosophy instead of using highly specific wrapper functions, allowing users to focus on the data, rather than the names of various parameters used for customization.
-\pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering.
+\pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering, \svp{as shown in \Cref{lst:ggpcp-api}}.
 Scaling, ordering of cases, and the arrangement of the parallel axes are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale},respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
 During the plotting state, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
 The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}), but there are additional advantages to the use of \pkg{ggplot2}.
 Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
 
 One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
-
-In addition, basing \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as \pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web
- and \pkg{gridSVG}~\citep{gridsvg} \hh{which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements}.
+In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as
+\pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web and
+\pkg{gridSVG}~\citep{gridsvg} \hh{which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements}.
 
 %------------------------------------------------
 
@@ -319,9 +316,9 @@ In addition, basing \pkg{ggpcp} on \pkg{ggplot2} expands the functionality avail
 \item Scaling of axes, both at the individual level and in the relationship of the axes to each other, and
 \item Treatment of ties in categorical axes.
 \end{enumerate}
-\svp{XXX Cite subfigure above with code XXX}
+\svp{The code corresponding to each of these steps is shown in lines 2-4 of \Cref{lst:ggpcp-api}.}
 
-\hh{The modularization of the data wrangling process has the additional advantage of laying out the necessary elements in successive steps. Some of these steps are optional - e.g. scaling variables might not be necessary, if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if there are any factor variables, and if we actively want to spread these observations out. }
+\hh{The modularization of the data wrangling process has the additional advantage of laying out the necessary elements in successive steps. Some of these steps are optional: scaling variables might not be necessary if all variables are already on the same scale (i.e. method `raw` in GGally); similarly, using pcp\_arrange to break ties is only necessary if}  \svp{categorical variables are present and we want to spread these observations out so that individual lines are visible.}
 \svp{In addition, by exposing these elements of the pcp data wrangling process, we allow users to create additional functions for handling these tasks.}
 
 \hh{The treatment of ties is an aspect not generally addressed in the original parallel coordinate plots of \citet{Inselberg:1985} and \citet{Wegman:1990}. We have found a need to deal with ties, because ties are visually the main obstacle of allowing the viewer to follow an observation from axis to axis through the high-dimensional space.}
