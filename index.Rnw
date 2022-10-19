@@ -512,14 +512,10 @@ dt %>%
 
 \subsection{Scaling}
 
-\code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other.
-
-\code{method} is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable onto a range of [0,1] with the minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes onto a an interval of [0,1]. This method should only be used if the values across all variables are comparable. %\svp{XXX Need to discuss \code{std} here if you're going to use it in \autoref{fig:scale}.}\hh{XXX switched to more interesting scaling and explained it :) }
+\code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other. \svp{The} \code{method} \svp{argument} is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable onto a range of [0,1] with the minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes onto a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
 The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and a robust 95\% confidence interval (based on the median absolute deviation) to an interval of 0 to 1.
 
 %\hh{Does the method 'raw' do anything? I think we could have the same effect by simply skipping this part of the processing. It's a nice example, where something that needed para metrization in another implementation is automatically implemented here by not doing anything. }
-
-
 
 \autoref{fig:scale} shows  two of the scaling methods applied to the olive oil data  \citep{forina, tourr}: Measurements of fatty acids in 572 olive oils from three different regions in Italy are visualized as parallel coordinate plots. Similar to the findings in \citet{ggobi}, we see that eicosenoic acid is only found in increased quantities in olive oils from Southern Italy. Quantities of oleic and linoleic acids allow a separation between olive oils from Sardinia and Northern Italy. Both scaling methods enable us to find these conclusions. While uniminmax scaling uses the space allotted to the chart most efficiently, the robust normalization method emphasizes the heavy tails and skewness of some of the measurements, such as the percentages of stearic and arachidic fatty acids.
 
@@ -529,16 +525,23 @@ The method \code{robust} normalizes values univariately by mapping the median va
 
 \subsection{Breaking ties on categorical axes}\label{sec:ties}
 
-\hh{XXX How to deal with ties has a huge visual impact. In order to get to that we need to do some more data wrangling. This subsection is somewhere between data management and visualization. }
+% Assigning all cases of the same level to the same point on the axis of a categorical variable makes it impossible to distinguish them. The approach of \pkg{ggpcp} is to draw boxes proportional to the numbers of cases in each level and to order the cases within their boxes so that visual clutter is minimised and individual cases can be followed.
 
-\hh{XXX it might be good to separate the section into 'how' (data) and 'why' (visual aspects).}
+\svp{One of the primary advantages of \pkg{ggpcp} over previous parallel coordinate plot software packages is that \pkg{ggpcp} handles categorical and continuous data in a way that allows users to trace a single observation through the projective space.
+This is accomplished through a tie-breaking algorithm: different categorical levels are grouped along the vertical axis in boxes proportional to the number of cases in each level. Within the box for a level, individual observations are arranged} so that visual clutter is minimized and individual cases can be followed.
 
-Assigning all cases of the same level to the same point on the axis of a categorical variable makes it impossible to distinguish them.  The approach of \pkg{ggpcp} is to draw boxes proportional to the numbers of cases in each level and to order the cases within their boxes so that visual clutter is minimised and individual cases can be followed.
-This idea is implemented in the \pkg{ggpcp} function \code{pcp\_arrange(data, method, space)}.
-The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering determined by variables’ values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
+% \hh{XXX How to deal with ties has a huge visual impact. In order to get to that we need to do some more data wrangling. This subsection is somewhere between data management and visualization. }
 
+% \hh{XXX it might be good to separate the section into 'how' (data) and 'why' (visual aspects).} % I've done this implicitly, but hopefully the sentence below structures readers' expectations? Third-level headings seem a bit excessive since I think we can get the logical flow without that...
 
-\hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}
+\svp{The specific method used to arrange observations within levels has a large visual impact; we will first explain the ordering approach and associated data management, and then we will assess the implications for construction of generalized PCPs.}
+
+\svp{Tie-breaking (and the associated observation ordering)} is implemented in the \pkg{ggpcp} function \code{pcp\_arrange(data, method, space)}.
+The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering determined by variables' values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
+
+\hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here} % This is nerd sniping in the extreme... lol.
+% Susan stopped editing here %%
+
 
 \autoref{fig:alignment} shows several approaches of dealing with categorical variables in parallel coordinate plots.
 The left-most panel shows two categorical variables and the typical net of lines that forms between them in an original parallel coordinate plot. The other three panels show three different approaches of breaking the ties resulting from the categorical variables, with our favored solution shown on the right: all observations are spaced out evenly. This results in a natural visualization of the marginal frequencies along each axis (additionally enhanced by the lightly greyed boxes grouping observations in the same category). The ordering of the observations within the level is such that a minimal number of line crossings occurs between the axes. This method of dealing with categorical variables is the one we propose in the generalized parallel coordinate plot. While it is aesthetically pleasing, it also allows us, in the spirit of the original parallel coordinate plots,  to follow an individual observation from left to right through the plot even for  categorical variables.
