@@ -68,7 +68,8 @@
 
 
 \usepackage{hyperref} % For hyperlinks in the PDF
-\usepackage{nameref} % \Cref command automatically handles figure/table/etc refs
+\usepackage{nameref}
+\usepackage{cleveref}% \Cref command automatically handles figure/table/etc refs
 
 \usepackage{natbib}
 \bibliographystyle{abbrvnat}
