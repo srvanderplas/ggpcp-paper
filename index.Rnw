@@ -388,22 +388,7 @@ As a consequence of these design decisions, users have several ways of performin
 % @
 % \hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.} % I think that it's a lot more complicated to reorder pcp_x, to be honest. I've written the code to do it, but it's ugly.
 
-\svp{Users can transform individual variables, reordering factors or reversing an axis, using a mutate statement bfeore variable selection, as shown in \autoref{lst:reverse-axis}, which generates \autoref{fig:reordering-variables-axis1}. Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of anticorrelated axes in sequence.}
-
-
-<<reordering-variables-axis1-flea, fig.width = 8, fig.height = 4, eval = F>>=
-flea %>%
-  mutate(
-    species_inv = factor(species, levels = rev(levels(.$species))),
-    head_log = log(head)) %>%
-  pcp_select(species, 2:4, head_log, 5:7, species_inv) %>%
-  pcp_scale(method="uniminmax") %>%
-  pcp_arrange() %>%
-  ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp(aes(colour = species)) +
-    geom_pcp_labels()
-@
+\svp{Users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection, as shown in \autoref{lst:reverse-axis}, which generates \autoref{fig:reordering-variables-axis1}. Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow.}
 
 
 \begin{minipage}[b]{.94\linewidth}
@@ -411,9 +396,9 @@ flea %>%
 <<reordering-variables-axis1-code, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
 penguins %>%
   mutate(
-    species_inv = factor(species, levels = rev(levels(.$species))),
-    neg_bill_depth_mm = -bill_depth_mm) %>%
-  pcp_select(species, neg_bill_depth_mm, 3, 6, 5, species_inv) %>%
+    spec_reord = factor(species, levels = c("Adelie", "Gentoo", "Chinstrap"))
+  ) %>%
+  pcp_select( 4, spec_reord, 3, 5, species, 6) %>%
   pcp_scale(method="uniminmax") %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
@@ -423,12 +408,12 @@ penguins %>%
 @
 \end{minipage}
 
-<<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The left-most axis shows species, where the right-most axis shows the same variable with categories reordered; similarly, \\texttt{neg\\_bill\\_depth\\_mm} shows the bill depth, multiplied by -1 to invert the order of data points.">>=
+<<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The second axis shows species ordered by bill length and depth, where the fifth axis shows species with categories in the default (alphabetical) ordering. The ability to reorder variables allows the reader to assess clusters of lines `moving together' through the vertical axis space, leveraging the Gestalt principle of common fate to reduce the plot's complexity.">>=
 penguins_pcp2 <- penguins %>%
   mutate(
-    species_inv = factor(species, levels = rev(levels(.$species))),
-    neg_bill_depth_mm = -bill_depth_mm) %>%
-  pcp_select(species, neg_bill_depth_mm, 3, 6, 5, species_inv) %>%
+    spec_reord = factor(species, levels = c("Adelie", "Gentoo", "Chinstrap"))
+  ) %>%
+  pcp_select(4, spec_reord, 3, 5, species, 6) %>%
   pcp_scale(method="uniminmax") %>%
   pcp_arrange()
 
@@ -437,14 +422,20 @@ penguins_pcp2 %>%
     geom_pcp_axes() +
     geom_pcp(aes(colour = species), alpha = 0.6,
              overplot="none") +
+    geom_pcp_labels() +
   xlab("") + ylab("") + scale_x_discrete(expand = c(0.05, 0)) +
   theme(axis.text.y=element_blank(), legend.position="bottom") +
-  scale_color_manual("Species", values = cols)
+  scale_color_manual("Species", values = cols, guide = 'none')
 @
 
-\hh{Ordering of levels in factor variables (XXX not sure where to put this, yet):
-  What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels. Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise.} %This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
-\au{Ordered factors are plotted from the lowest level upwards.  If a factor legend is included, it will need to be reversed to match this order.  Use \code{guides(color = guide\_legend(reverse=TRUE))} as shown in the example in \autoref{sec:carcinoma}.}
+\svp{As in previous implementations of parallel coordinate plots which attempted to accommodate categorical variables, we treat factor variables as variables with labels and an associated (numerical) ordering of those labels.}
+\hh{
+% Ordering of levels in factor variables (XXX not sure where to put this, yet):
+%   What we are doing with the ordering of levels in factor variables, is to stick with the basic interpretation of factor variables as a type of variable that has both labels and an ordering of those labels.
+Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise.} %This means in particular, that the first level of a categorical variable is mapped to the lowest value along the $y$ axis rather than the `top` value as e.g. when mapped to `fill`  in a barchart. }
+\au{Ordered factors are plotted from the lowest level upwards.  If a factor legend is included, it will need to be reversed to match this order by using \code{guides(color = guide\_legend(reverse=TRUE))}, as shown in the example in \Cref{sec:carcinoma}.}
+\svp{Where \pkg{ggpcp} differs from previous implementations of parallel coordinate plots is in the assignment of numerical values to individual observations within a factor level. This ordering is discussed further in \Cref{sec:ties}.}
+
 <<colorscheme>>=
 #####  Color Palette by Paletton.com
 #####  Palette URL: http://paletton.com/#uid=3140R0kllllaFw0g0qFqFg0w0aF
@@ -536,7 +527,7 @@ The method \code{robust} normalizes values univariately by mapping the median va
 \section{Visual Rendering}\label{sec:visual}
 
 
-\subsection{Breaking ties on categorical axes}
+\subsection{Breaking ties on categorical axes}\label{sec:ties}
 
 \hh{XXX How to deal with ties has a huge visual impact. In order to get to that we need to do some more data wrangling. This subsection is somewhere between data management and visualization. }
 
