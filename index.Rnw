@@ -331,7 +331,9 @@ One of the biggest strengths of the Grammar of Graphics is its mapping between d
 In standard plots any mapping is a function between one data variable and one aesthetic.
 In a parallel coordinate plot, this one-to-one mapping between data and plot aesthetics is seemingly turned into a one-to-many mapping between arbitrarily many data variables to the $x$ axis.
 By transforming the wide form of the data set into a long form %\citep{reshape, dplyr} % HH: older references updated by
-\citep{jss.tidy, hadley.tidy}, we get to a version of the dataset in which we achieve a one-to-one mapping to a now discrete $x$ axis consisting of the (names of the) original data variables.
+\citep{jss.tidy, hadley.tidy}, we \svp{obtain}
+% get to a version of the dataset in which we achieve
+a one-to-one mapping to a now discrete $x$ axis consisting of the (names of the) original data variables.
 
 \begin{figure}
 %\includegraphics[width=\linewidth]{sketches/data-wrangling.pdf}
@@ -339,9 +341,7 @@ By transforming the wide form of the data set into a long form %\citep{reshape, 
 \caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step  before a parallel coordinate plot can be drawn (bottom left). Note that the order in which variables are selected is reflected in the order in which variables are included in the parallel coordinate plot. }%\\au{Ordering in RH graphic should be the same as explanations below - start w/ pcp\_id, then pcp\_x, ...}}
 \end{figure}
 
-From the user's perspective this data reshaping is purely a form of a data selection, while the data wrangling is going on behind the scenes in \code{pcp\_select}:
-
-\code{pcp\_select(data, ...)} selects the variables to be included in the parallel coordinate plot.
+From the user's perspective this data reshaping is \svp{simply} data selection: the data wrangling \svp{takes place} behind the scenes in \code{pcp\_select(data, ...)}, \svp{which} selects the variables to be included in the parallel coordinate plot.
 Variables can be specified by any combination of the following methods:
 
 \begin{itemize}
