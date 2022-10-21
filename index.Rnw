@@ -779,11 +779,11 @@ pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 \paragraph{Distinguishing species}\hfill\newline
 % In addition to the ordering of factor levels,
 \svp{Factor level ordering is but one consideration when constructing parallel coordinate plots.}
-It is also important to carefully order the variables on the $x$-axis, as shown in \Cref{fig:penguins-variable-order}, where the variables have been re-ordered \svp{from \Cref{fig:penguins-ordering}}
+It is also important to carefully order the variables on the $x$-axis, as shown in \Cref{fig:penguins-variable-order}, where the variables have been re-ordered \svp{from \Cref{fig:ordering}}
 to allow the viewer to \au{identify which} body measurements distinguish the species. \svp{In addition to} \au{the re-ordering, the axis for bill depth has been reversed. } \au{Both changes help to separate the species.} \hh{ Gentoo penguins have the lowest bill depth, while generally having the longest flippers and \svp{largest mass}. Reversing the axis for bill depths aligns the smallest bill depths with the longest flippers, moving Gentoo penguins closer together as a group. }
 The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, and, finally, that Adelie and Chinstrap are distinguished by the lengths of their bills.
 
-\svp{As \pkg{ggpcp} uses the ggplot2 API, faceting is fully supported. \Cref{fig:ordering} is faceted by gender:}
+\svp{As \pkg{ggpcp} uses the ggplot2 API, faceting is fully supported. \Cref{fig:penguins-variable-order} is faceted by gender:}
 % \au{
 % % As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in \Cref{fig:ordering}
 % to show that the patterns are similar for both males and females.}
