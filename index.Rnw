@@ -272,22 +272,24 @@ make it difficult to follow a single observation across the chart. \pkg{ggpcp} a
 \begin{minipage}[b]{.94\linewidth}
 \captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API.}\label{lst:ggpcp-api}
 <<api-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE>>=
-pcp <- penguins %>%                       # data management:
+pcpenguins <- penguins %>%                # data management:
   pcp_select(sex, 3:6, species) %>%       #   variable selection, see section 3.1
   pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
-  pcp_arrange() %>%                       #   arranging categorical data
+  pcp_arrange()                           #   arranging categorical data
+pcp <- pcpenguins %>%
   ggplot(aes_pcp()) +                     # plotting the chart:
     geom_pcp_axes() +                     #   vertical lines for axes
-    geom_pcp(aes(colour = species))       #   parallel coordinate line segments
+    geom_pcp(aes(colour = species)) +     #   parallel coordinate line segments
+    geom_pcp_labels()                     #   labels for categorical variables
 @
 
 \hh{XXX the results from the code should be shown somewhere, so the code is not so unmotivated.}
 \svp{I wish I could think of a good way to do a very small inset plot, but it just ends up looking blurry and weird.}
 
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/api-fig-print-1.pdf}
-\captionof{figure}{The code in \Cref{lst:ggpcp-api} generates this parallel coordinate plot with both categorical and continuous data shown on vertical axes.}
+\captionof{figure}{The code in \Cref{lst:ggpcp-api} generates this parallel coordinate plot with both categorical and continuous data shown on vertical axes.\label{fig:api-fig-print}}
 \end{minipage}
-<<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3>>=
+<<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='api-listing-code'>>=
 pcp +
   scale_color_manual("Species", values = cols)
 @
