@@ -363,7 +363,7 @@ Note that the order in which variables are selected determines the order in whic
 \item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form). \svp{The ordering of factor variables will be discussed below but is implemented using this added variable.}
 \end{itemize}
 
-As a consequence of these design decisions, users have several ways of performing different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable.
+As a consequence of these design decisions, users have several ways of performing different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable. \svp{Motivations for reordering factors in parallel coordinate plots are discussed in more detail in \Cref{sec:ties}.}
 
 % <<reordering-variables-axis1>>=
 % flea %>%
