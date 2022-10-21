@@ -593,34 +593,61 @@ The two implemented methods are \code{"from-left"} and \code{"from-right"}, mean
 \svp{While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing functions as ``external cognition" \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the data as displayed in the chart.}
 
 % \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol.
- \svp{\citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical ordering minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes.} % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
+ \svp{\citet{} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical ordering minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes.} % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
 
 % \hh{XXX Order of levels and order of variables are important. } \au{Drawing pcps depends on what your goal might be.}
 
-\svp{There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance. For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot: while hierarchical sorting reduces the number of line crossings, it does so conditional on the pre-specified factor order. Reordering factors can reduce the number of line crossings even further: for example, in the last panel of \Cref{fig:alignment}, a reordering of the second factor so that the purple lines are on the bottom could reduce the overall number of line crossings to 2, once the hierarchical sorting is updated to accommodate the new factor order.} % I have a plot for this (p5, above) but don't really think it's essential to show it...
+\subsection{Variable Ordering and Transformations}
+
+\svp{There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance. For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot: while hierarchical sorting reduces the number of line crossings, it does so conditional on the pre-specified factor order. Arranging the levels of $k$ factor variables to minimize line crossings is equivalent to the problem of ordering directed acyclic graph nodes along $k$ axes, which is NP hard \citep{martiHeuristicsMetaheuristics2layer2003}.}
+\svp{While automatic sorting of factor levels is computationally difficult and statistically undesirable given that many factors have some implicit or explicit ordering that should not be automatically optimized, reordering factors can reduce the number of line crossings to produce a simpler and more comprehensible PCP. For example, in the last panel of \Cref{fig:alignment}, a reordering of the second factor so that the purple lines are on the bottom could reduce the overall number of line crossings to 2, once the hierarchical sorting is updated to accommodate the new factor order.}
+
+% I have a plot for this (p5, above) but don't really think it's essential to show it...
+
+\svp{As briefly discussed in \Cref{sec:variable-order}, users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection.
+% , as shown in \Cref{lst:reverse-axis}, which generates \Cref{fig:reordering-variables-axis1}.
+Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow. An example showing the benefits of reordering and transforming variables for visual clarity is provided in \Cref{fig:penguins-variable-order}.}
+% I think the example here is repetitive and not particularly useful. We show why in the examples and we tell them how to do it in the text. Do we really need to show the code?
+%
+% \begin{minipage}[b]{.94\linewidth}
+% \captionof{lstlisting}{Mutations before the \code{pcp\_select} stage can be used to reorder factors or transform numerical variables, as shown in \Cref{fig:reordering-variables-axis1}.}\label{lst:reverse-axis}
+% <<reordering-variables-axis1-code, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
+% penguins %>%
+%   mutate(
+%     spec_reord = factor(species, levels = c("Adelie", "Gentoo", "Chinstrap"))
+%   ) %>%
+%   pcp_select( 4, spec_reord, 3, 5, species, 6) %>%
+%   pcp_scale(method="uniminmax") %>%
+%   pcp_arrange() %>%
+%   ggplot(aes_pcp()) +
+%     geom_pcp_axes() +
+%     geom_pcp(aes(colour = species), alpha = 0.6) +
+%     geom_pcp_labels()
+% @
+% \end{minipage}
+%
+% <<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The second axis shows species ordered by bill length and depth, where the fifth axis shows species with categories in the default (alphabetical) ordering. The ability to reorder variables allows the reader to assess clusters of lines `moving together' through the vertical axis space, leveraging the Gestalt principle of common fate to reduce the plot's complexity.">>=
+% penguins_pcp2 <- penguins %>%
+%   mutate(
+%     spec_reord = factor(species, levels = c("Adelie", "Gentoo", "Chinstrap"))
+%   ) %>%
+%   pcp_select(4, spec_reord, 3, 5, species, 6) %>%
+%   pcp_scale(method="uniminmax") %>%
+%   pcp_arrange()
+%
+% penguins_pcp2 %>%
+%   ggplot(aes_pcp()) +
+%     geom_pcp_axes() +
+%     geom_pcp(aes(colour = species), alpha = 0.6,
+%              overplot="none") +
+%     geom_pcp_labels() +
+%   xlab("") + ylab("") + scale_x_discrete(expand = c(0.05, 0)) +
+%   theme(axis.text.y=element_blank(), legend.position="bottom") +
+%   scale_color_manual("Species", values = cols, guide = 'none')
+% @
+%
 
 \subsection{Line Segment Plotting Order}
-
-\hh{XXX We need to include some code somewhere to also show the 'how'.} % I've done this below, and I recognize that it's not ideal to reference a figure from that much earlier in the paper, but this plot + code takes up a lot of space relative to
-
-\begin{minipage}[b]{.94\linewidth}
-\captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API.}\label{lst:ggpcp-line-order}
-<<order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE>>=
-pcp <- pcpenguins %>%
-  ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp(aes(colour = species),
-             overplot = "none") +   #   plot the dataset in the provided order
-    geom_pcp_labels()
-@
-
-\includegraphics[keepaspectratio=T,width=\linewidth]{figures/order-fig-print-1.pdf}
-\captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates a parallel coordinate plot using the ordering of the dataset, rather than the ``small-on-top" default. As a result, Chinstrap penguins can be seen more clearly, but penguins with indeterminate sex are difficult to follow across the plot.\label{fig:order-fig-print}}
-\end{minipage}
-<<order-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='order-listing-code'>>=
-pcp +
-  scale_color_manual("Species", values = cols)
-@
 
 One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot. As the number of observations increases, this becomes less feasible because of overplotting of line segments, particularly for larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other. %\hh{XXX the order in which crossing lines are drawn is only visible when the lines have different colors.}
 
