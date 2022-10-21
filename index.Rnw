@@ -661,10 +661,51 @@ One of the primary advantages of the generalized approach to dealing with catego
 % \item \code{"none"} the order of the observations is left un-touched by the data wrangling process. This option allows the user to specify a certain  order before plotting.
 % \end{enumerate}
 
-\au{As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} \svp{defaults to} option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest is on top.
+\au{As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} \svp{defaults to} option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest is \svp{plotted last}.
 % The default setting
-\svp{An alternative setting,} "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset.}
+\svp{An alternative setting,} "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.}
 % \svp{XXX Should we mention that if another option besides "none" or "small-on-top" is specified, we default to arranging by color? XXX} % No, just change ggpcp to issue messages and leave it be.
+
+% \hh{XXX We need to include some code somewhere to also show the 'how'.} % I've done this below, and I recognize that it's not ideal to reference a figure from that much earlier in the paper, but this plot + code takes up a lot of space relative to what it's showing
+
+\begin{minipage}[b]{.94\linewidth}
+<<order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE, fig.show ='hide'>>=
+pcp_df <- penguins %>%
+  arrange(sex) %>% # NA last = top of PCP axis
+  pcp_select(sex, species) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange()
+ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw lines in the provided order
+  geom_pcp(aes(colour = species), overplot = "none") +
+  geom_pcp_labels()
+ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw the smallest category last
+  geom_pcp(aes(colour = species), overplot = "small-on-top") +
+  geom_pcp_labels()
+@
+
+\captionof{lstlisting}{The \code{overplot} parameter can be used to control the order in which lines are plotted, affecting the visual appearance and emphasis of parallel coordinate plots. The line 2 specifies the order of the dataset; lines 6-8 plot the data using the user-specified ordering while lines 9-11 plot the data using the default `small-on-top' ordering.\label{lst:ggpcp-line-order}}
+
+\includegraphics[keepaspectratio=T,width=\linewidth]{figures/order-fig-print-1.pdf}
+\captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates two parallel coordinate plots. The plot on the left uses the ordering of the dataset to determine line plotting order; as a result, lines with sex = NA are plotted last (on top). On the right, we use the  ``small-on-top" default; this ensures that the smallest category, Chinstrap, is plotted last.\label{fig:order-fig-print}}
+\end{minipage}
+<<order-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='order-listing-code'>>=
+pp1 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
+  # plot the dataset in the provided order
+  geom_pcp(aes(colour = species), overplot = "none") +
+  geom_pcp_labels() +
+  scale_color_manual("Species", values = cols, guide = 'none') +
+  ggtitle("Overplot = 'none'")
+
+pp2 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
+  # plot the smallest category (chinstrap) on top
+  geom_pcp(aes(colour = species), overplot = "small-on-top") +
+  geom_pcp_labels() +
+  scale_color_manual("Species", values = cols, guide = 'none') +
+  ggtitle("Overplot = 'small-on-top'")
+
+library(patchwork)
+pp1 + pp2 + plot_layout(nrow = 1, byrow = FALSE)
+@
 
 \section{Examples}\label{sec:examples}
 \subsection{Palmers Penguins}
