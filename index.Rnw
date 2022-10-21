@@ -771,18 +771,25 @@ library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 @
 
-\au{As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in \autoref{fig:ordering} to show that the patterns are similar for both males and females.}
+% \au{figure 6 and 7 look quite similar, but are quite different - visual emphasis? Maybe use colors[1] and colors [3]?}
 
-\au{figure 6 and 7 look quite similar, but are quite different - visual emphasis? Maybe use colors[1] and colors [3]?}
 
-In addition to the ordering of factor levels, it is also important to carefully order the variables on the $x$-axis, as shown in \autoref{fig:penguins-variable-order}, where the variables have been re-ordered
-to allow the viewer \au{identify which} body measurements distinguish the species. \au{Besides the re-ordering, the axis for bill depth has been reversed. } \au{Both changes help to separate the species.} \hh{ Gentoo penguins have the lowest bill depth, while generally having the longest flippers and being heaviest. Reversing the axis for bill depths, aligns the smallest bill depths with the longest flippers, thereby moving Gentoo penguins closer together as a group. }
+\paragraph{Distinguishing species}\hfill\newline
+% In addition to the ordering of factor levels,
+\svp{Factor level ordering is but one consideration when constructing parallel coordinate plots.}
+It is also important to carefully order the variables on the $x$-axis, as shown in \Cref{fig:penguins-variable-order}, where the variables have been re-ordered \svp{from \Cref{fig:penguins-ordering}}
+to allow the viewer to \au{identify which} body measurements distinguish the species. \svp{In addition to} \au{the re-ordering, the axis for bill depth has been reversed. } \au{Both changes help to separate the species.} \hh{ Gentoo penguins have the lowest bill depth, while generally having the longest flippers and \svp{largest mass}. Reversing the axis for bill depths aligns the smallest bill depths with the longest flippers, moving Gentoo penguins closer together as a group. }
 The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, and, finally, that Adelie and Chinstrap are distinguished by the lengths of their bills.
 
-\hh{Note that we are using facetting by penguins' sex} in \autoref{fig:penguins-variable-order}. \hh{While all of the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.}
+\svp{As \pkg{ggpcp} uses the ggplot2 API, faceting is fully supported. \Cref{fig:ordering} is faceted by gender:}
+% \au{
+% % As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in \Cref{fig:ordering}
+% to show that the patterns are similar for both males and females.}
+% % \hh{Note that we are using facetting by penguins' sex} in \Cref{fig:penguins-variable-order}.
+\hh{while the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.}
+Interestingly, some potential outliers that were not visible previously now become visible. \au{Note for example the two Gentoo males with particularly short flippers}, \svp{and the Chinstrap female with an exceptionally long bill.}
 
 %The plot does not show anything about the differences between male and female penguins.  Given the greater size of the males \au{we don't know that yet} in general it may be better to split by male and female, ignoring the missing values.  The results are the same for both sexes and stand out more.
-Interestingly,  some potential outliers that were not visible previously, now become visible. \au{Note for example the two Gentoo males with particularly short flippers.}
 
 %\au{XXX Possible other ordering approaches would be to use some kind of association measure or a matrix reordering algorithm for two categorical variables, medians by category or R2 from a linear model for continuous and categorical, correlations for two continuous variables.}
 
@@ -864,6 +871,11 @@ penguins1 %>%
 
 %\subsubsection{}
 \paragraph{Determining sex}\hfill\newline
+\au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \Cref{fig:penguins}.  This also helps to %investigate
+% which sex might be the few penguins whose sex is not given
+}
+\svp{provisionally determine the sex of the few penguins whose sex is not explicitly identified}\citep{renner1998}.
+%\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 
 %
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). \\hh{XXX reason for that here or in the text?}", fig.height=4, fig.width=8>>=
@@ -904,19 +916,15 @@ penguins_pcp %>%
 #  facet_wrap(~sex)
 @
 
-\au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \autoref{fig:penguins}.  This also helps to investigate which sex might be the few penguins whose sex is not given \citep{renner1998}.
-}
-%\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
-
- \autoref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. \au{Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.} %Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
-In \autoref{fig:penguins2b} we explore this idea a bit further. This figure is based on the same data as \autoref{fig:penguins}, however, we exclude Chinstrap penguins  as researchers were able to sex all of those penguins. The body measurements of all sexed penguins are summarised by two ribbons for each sex and species. The inner ribbons are bounded by the 25\% and the 75\% percentile values on each axis.  The lighter ribbon covers 95\% of observations on each variable. We use these ribbons to reduce the noise introduced by individual lines.
+\Cref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. \au{Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.} %Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
+In \Cref{fig:penguins2b} we explore this idea a bit further. This figure is based on the same data as \Cref{fig:penguins}, however, we exclude Chinstrap penguins  as researchers were able to sex all of those penguins. The body measurements of all sexed penguins are summarised by two ribbons for each sex and species. The inner ribbons are bounded by the 25\% and the 75\% percentile values on each axis.  The lighter ribbon covers 95\% of observations on each variable. We use these ribbons to reduce the noise introduced by individual lines.
  Body measurements of the unsexed animals are represented as line segments on top of the ribbons.
  This helps us to evaluate and assess the lines drawn for individual, unsexed penguins within the context of the marginal distributions (in this case their putative sex and species).
 
-While we facet both by species and sex, note that the axes are re-scaled within each species  to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of facetting variables is achieved by the use of the grouping variable.  The listing below shows the code for prepping the data shown in \autoref{fig:penguins2b}. By grouping on species but not on sex (see line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of inter-quantile ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
+While we facet both by species and sex, note that the axes are re-scaled within each species  to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of facetting variables is achieved by the use of the grouping variable.  The listing below shows the code for prepping the data shown in \Cref{fig:penguins2b}. By grouping on species but not on sex (see line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of inter-quantile ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
 
 \begin{minipage}[b]{.95\linewidth}
-\captionof{lstlisting}{Code to prepare data for \autoref{fig:penguins} by relabling penguins with NA sex as `?' and ordering sex so that penguins of unknown sex are between the male and female labels.}
+\captionof{lstlisting}{Code to prepare data for \Cref{fig:penguins} by relabling penguins with NA sex as `?' and ordering sex so that penguins of unknown sex are between the male and female labels.}
 % : \caption{fig:penguins2a}}
 <<penguins2a, echo=TRUE, reset=TRUE>>=
 penguins_pcp <- penguins %>%
