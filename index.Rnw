@@ -390,11 +390,11 @@ As a consequence of these design decisions, users have several ways of performin
 % @
 % \hh{XXX reordering variables in the parallel coordinate plot could be done before the selection by pcp\_select or after it by re-ordering the levels in the pcp\_x variable. We should probably include an example.} % I think that it's a lot more complicated to reorder pcp_x, to be honest. I've written the code to do it, but it's ugly.
 
-\svp{Users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection, as shown in \autoref{lst:reverse-axis}, which generates \autoref{fig:reordering-variables-axis1}. Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow.}
+\svp{Users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection, as shown in \Cref{lst:reverse-axis}, which generates \Cref{fig:reordering-variables-axis1}. Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow.}
 
 
 \begin{minipage}[b]{.94\linewidth}
-\captionof{lstlisting}{Mutations before the \code{pcp\_select} stage can be used to reorder factors or transform numerical variables, as shown in \autoref{fig:reordering-variables-axis1}.}\label{lst:reverse-axis}
+\captionof{lstlisting}{Mutations before the \code{pcp\_select} stage can be used to reorder factors or transform numerical variables, as shown in \Cref{fig:reordering-variables-axis1}.}\label{lst:reverse-axis}
 <<reordering-variables-axis1-code, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
 penguins %>%
   mutate(
