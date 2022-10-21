@@ -1545,9 +1545,12 @@ penguins_complete %>%
 
 \section{Discussion}
 
-\au{generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots the use of color to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play, the ordering of levels of categorical variables and the ordering of cases within those levels.
-The ideas described here have been implemented in the R package ggpcp.  There are two central features.  Data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy.  Both these features contribute to the power and flexibility of the software.
+\au{Generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots, the use of color to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play: the ordering of levels of categorical variables, and the ordering of cases within those levels.}
+
+\au{The ideas described here have been implemented in the R package ggpcp.  There are two central features: data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy. Both these features contribute to the power and flexibility of the software.
 }
+
+\svp{In our demonstration of generalized parallel coordinate plots as implemented in \pkg{ggpcp}, we have also explored the use of generalized parallel coordinate plots for assessing inter-rater agreement, cluster stability, and assessment of missing information. GPCPs are a powerful tool for exploring high-dimensional data.}
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
 %----------------------------------------------------------------------------------------
