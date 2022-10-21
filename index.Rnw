@@ -326,7 +326,7 @@ In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality a
 \svp{If we can track a single observation through the high-dimensional space, we have the ability to look beyond the two-variable associations  of adjacent axes. This allows users to more easily summarize main trends and identify observations which do not follow those trends. When ties cannot be separated and users cannot follow individual observations, higher-dimensional insights are next to impossible.}
 % \hh{Once this assessment is broken for the individual observation, the  we cannot reasonably expect to gain much more information by plotting more data in the plot. XXX this is clumsy - what I am really aiming for needs a bit more: the way plots should be used in order to make sense of complicated situations is  to provide (1) a visual summary of the main trends and (2) allow us to identify observations that do not follow those trends. By mapping all plots that have the same value on one dimension into a single point on an axis, we hinder any higher-dimensional insights.}
 
-\subsection{Variable Selection and Order of the Variables}
+\subsection{Variable Selection and Order of the Variables} \label{sec:variable-selection}
 
 One of the biggest strengths of the Grammar of Graphics is its mapping between data variables and visual aesthetics.
 In standard plots any mapping is a function between one data variable and one aesthetic.
