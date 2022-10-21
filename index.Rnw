@@ -873,13 +873,16 @@ penguins1 %>%
 
 %\subsubsection{}
 \paragraph{Determining sex}\hfill\newline
-\au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \Cref{fig:penguins}.  This also helps to %investigate
-% which sex might be the few penguins whose sex is not given
-}
-\svp{provisionally determine the sex of the few penguins whose sex is not explicitly identified}\citep{renner1998}.
-%\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
-
+% \au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \Cref{fig:penguins}.  This also helps to %investigate
+% % which sex might be the few penguins whose sex is not given
+% }
+% \svp{provisionally determine the sex of the few penguins whose sex is not explicitly identified}\citep{renner1998}.
+% %\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
 %
+% %
+
+\Cref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. \au{Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.} %Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
+
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). \\hh{XXX reason for that here or in the text?}", fig.height=4, fig.width=8>>=
  penguins <- penguins %>%
    mutate(
@@ -918,15 +921,14 @@ penguins_pcp %>%
 #  facet_wrap(~sex)
 @
 
-\Cref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. \au{Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.} %Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
-In \Cref{fig:penguins2b} we explore this idea a bit further. This figure is based on the same data as \Cref{fig:penguins}, however, we exclude Chinstrap penguins  as researchers were able to sex all of those penguins. The body measurements of all sexed penguins are summarised by two ribbons for each sex and species. The inner ribbons are bounded by the 25\% and the 75\% percentile values on each axis.  The lighter ribbon covers 95\% of observations on each variable. We use these ribbons to reduce the noise introduced by individual lines.
- Body measurements of the unsexed animals are represented as line segments on top of the ribbons.
- This helps us to evaluate and assess the lines drawn for individual, unsexed penguins within the context of the marginal distributions (in this case their putative sex and species).
+In \Cref{fig:penguins2b} we explore this idea a bit further. This figure is based on the same data as \Cref{fig:penguins}, however, we exclude Chinstrap penguins as researchers were able to sex all of those penguins. The body measurements of all sexed penguins are summarised by two ribbons for each sex and species. The inner ribbons are bounded by the 25\% and the 75\% percentile values on each axis.  The lighter ribbon covers 95\% of observations on each variable. We use these ribbons to reduce the noise introduced by individual lines.
+Body measurements of the unsexed animals are represented as line segments on top of the ribbons.
+This helps us to evaluate and assess the lines drawn for individual, unsexed penguins within the context of the marginal distributions (in this case their putative sex and species).
 
-While we facet both by species and sex, note that the axes are re-scaled within each species  to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of facetting variables is achieved by the use of the grouping variable.  The listing below shows the code for prepping the data shown in \Cref{fig:penguins2b}. By grouping on species but not on sex (see line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of inter-quantile ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
+While we facet both by species and sex, note that the axes are re-scaled within each species to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of faceting variables is achieved by the use of \svp{a \code{group\_by} statement before \code{pcp\_scale}}. \svp{\Cref{lst:pcp_relabel_group}} shows the code for prepping the data shown in \Cref{fig:penguins2b}. By grouping on species but not on sex (line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of inter-quantile ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
 
 \begin{minipage}[b]{.95\linewidth}
-\captionof{lstlisting}{Code to prepare data for \Cref{fig:penguins} by relabling penguins with NA sex as `?' and ordering sex so that penguins of unknown sex are between the male and female labels.}
+\captionof{lstlisting}{Code to prepare data for \Cref{fig:penguins} by relabling penguins with NA sex as `?' and ordering sex so that penguins of unknown sex are between the male and female labels.\label{lst:pcp_relabel_group}}
 % : \caption{fig:penguins2a}}
 <<penguins2a, echo=TRUE, reset=TRUE>>=
 penguins_pcp <- penguins %>%
@@ -945,204 +947,7 @@ penguins_pcp <- penguins %>%
 
 Chinstrap penguins are excluded (line 2) because all of their individuals in the data have a sex assigned.
 The general pattern of measurements of the Gentoo penguins suggests that three of the four individuals with missing sex information are female (the three with the lowest bill depth). The fourth animal has an exceptionally deep bill, however, all other measurements suggest that this animal, too, is female. For further evidence, we find from the original data  that their nest partners are all sexed as male; this additional information is shown in \Cref{fig:penguins2b}. While assuming that nest partners are male and female is not a perfect method, in particular, for penguins, which have been shown to live in same-sex partnerships, in  all three of the studies considered for this data only nests with breeding successes have been considered. More details can be found in \citet{penguins2}.
-For Adelie penguins determining sex is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin exhibits measurements that are neither typically male not typically female. Trying to confirm these putative assignments is a bit more tricky, because four of the five unsexed penguins are nest partners. The lightest unsexed penguin is the partner of a sexed male penguin. The putative assignments do not contradict the hypothesis that each nest is host to a male and a female penguin. Using this assumption, the last unsexed penguin would be resolved as  the male of the nest.
-
-
-<<penguins2c, eval=FALSE, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. \\hh{The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The markers on the right indicate two pairs of unsexed penguins that are nest partners. }", fig.height = 6, fig.width = 8>>=
-
-# making ribbons
-# probs <- seq(0,1,by=0.1)
-# probs <- c(0.025, 0.25, 0.75, 0.975)
-#
-# dframe <-
-#   penguins_pcp %>% filter(sex!="?") %>% group_by(species, sex, pcp_x) %>%
-#   summarise(value = quantile(pcp_y, prob=probs),
-#             quantile=probs,
-#             lower = probs<0.5,
-#             level = round(10*abs(quantile-0.5), digits = 1))  %>%
-#   select(-quantile) %>%
-#   mutate(lower = factor(lower, labels=c("upper", "lower"))) %>%
-#   pivot_wider(names_from="lower", values_from="value") %>%
-#   ungroup() %>%
-#   mutate(
-#     level = ifelse(level > 2.5, "Inner 95%", "Inner 50%"),
-#     level = factor(level, levels=c("Inner 50%", "Inner 95%"))
-#   ) # %>% filter(level <= 4)
-
-# for annotations
-annotate_dframe <- penguins_pcp %>%
-  filter(sex=="?", !is.na(body_mass_g), pcp_x == "body_mass_g")
-
-library(emojifont)
-load.fontawesome()
-labels <- fontawesome(c('fa-venus','fa-mars', "fa-question"))
-
-annotate_dframe$putative <- labels[1]
-annotate_dframe <- annotate_dframe %>% mutate(
-  putative = ifelse(pcp_y > 0.4, labels[3], putative),
-  putative = ifelse(pcp_y > 0.5, labels[2], putative)
-)
-
-circle <- fontawesome(c( 'fa-star', 'fa-github'))
-
-
-
-
-gg_p1 <- penguins %>%
-  filter(species != "Chinstrap", !is.na(sex)) %>%
-  ggplot(aes(x = body_mass_g, y = flipper_length_mm)) +
-  facet_wrap(species~sex)+
-  ggdensity::geom_hdr(probs =c(0.5, 0.95))
-
-gg_df <- gg_p1 %>% ggplot_build()
-
-
-gg_p2 <- penguins %>%
-  filter(species != "Chinstrap", !is.na(sex)) %>%
-  ggplot(aes(x = flipper_length_mm, y = bill_length_mm)) +
-  facet_wrap(species~sex)+
-  ggdensity::geom_hdr(probs =c(0.5, 0.95))
-
-gg_df2 <- gg_p2 %>% ggplot_build()
-
-gg_p3 <- penguins %>%
-  filter(species != "Chinstrap", !is.na(sex)) %>%
-  ggplot(aes(x = bill_length_mm, y = bill_depth_mm)) +
-  facet_wrap(species~sex)+
-  ggdensity::geom_hdr(probs =c(0.5, 0.95))
-
-gg_df3 <- gg_p3 %>% ggplot_build()
-
-gg_p1_pcp <- gg_df$data[[1]] %>%
-  #  filter(nlevel==1) %>%
-  select(x, y, PANEL, order) %>%
-  rename(body_mass_g = x, flipper_length_mm = y) %>%
-  mutate(type = "contour",
-         sex = ifelse(PANEL %in% c(1,3), "female", "male"),
-         species = ifelse(PANEL %in% c(1,2), "Adelie", "Gentoo"),
-         bill_length_mm = NA,
-         bill_depth_mm = NA
-  ) %>% select(-PANEL) %>%
-  rbind2(
-    gg_df2$data[[1]] %>%
-      #  filter(nlevel==1) %>%
-      select(x, y, PANEL, order) %>%
-      rename(flipper_length_mm = x, bill_length_mm = y) %>%
-      mutate(type = "contour",
-             sex = ifelse(PANEL %in% c(1,3), "female", "male"),
-             species = ifelse(PANEL %in% c(1,2), "Adelie", "Gentoo"),
-             body_mass_g = NA,
-             bill_depth_mm = NA
-      ) %>% select(-PANEL)
-  ) %>%
-  rbind2(
-    gg_df3$data[[1]] %>%
-      #  filter(nlevel==1) %>%
-      select(x, y, PANEL, order) %>%
-      rename(bill_length_mm = x, bill_depth_mm = y) %>%
-      mutate(type = "contour",
-             sex = ifelse(PANEL %in% c(1,3), "female", "male"),
-             species = ifelse(PANEL %in% c(1,2), "Adelie", "Gentoo"),
-             body_mass_g = NA,
-             flipper_length_mm = NA
-      ) %>% select(-PANEL)
-  ) %>%
-  rbind2(penguins %>% select(body_mass_g, flipper_length_mm, bill_length_mm,bill_depth_mm, sex, species) %>%
-           mutate(type = "observed", order=NA)) %>%
-  filter(species !="Chinstrap", !is.na(order)) %>%
-  mutate(
-    sex = ifelse(is.na(sex),"?", as.character(sex)), # make assignment more readable
-    sex = factor(sex, levels = c("female", "?", "male"))
-  )
-
-gg_p1_pcp <- gg_p1_pcp %>% ungroup() %>%
-  select(body_mass_g, flipper_length_mm, bill_length_mm,bill_depth_mm, order, type, species, sex) %>%
-  pcp_select(body_mass_g, flipper_length_mm, bill_length_mm,bill_depth_mm) %>%
-  group_by(species) %>%                                  # re-scale by species
-  pcp_scale() %>%
-  pcp_arrange()
-
-
-contours <- gg_p1_pcp %>% filter(type=="contour") %>%
-  ungroup() %>%
-  group_by(sex, species, order, pcp_x) %>%
-  summarize(
-    pcp_y = range(pcp_y, na.rm = TRUE),
-    range = c("lower", "upper")
-  )
-
-contours <- contours %>%
-  pivot_wider(values_from = pcp_y, names_from = range)
-
-
-gg_p1_pcp <- filter(gg_p1_pcp, type != "contour")
-
-# gg_p1_pcp %>%
-#   ggplot(aes_pcp()) +
-#   geom_ribbon(aes(x = pcp_x, ymin=lower, ymax=upper, fill=sex,
-#                   group = order), alpha = 0.25, data = contours) +
-#   facet_grid(species~sex) +
-#   geom_pcp(aes(colour = sex, colour = "?"), colour = "#8b4950dd", size = 0.9,
-#            data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "female")) +
-#   geom_pcp(aes(colour = sex, colour = "?"), colour = "#8b4950dd", size = 0.9,
-#            data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "male")) +
-#   theme_bw() +
-#   scale_fill_manual("Sex",values=c( "#FAA404", "#008080",  "#8b4950")) +
-#   scale_alpha_manual("Inter-quantile Range", values = c(0.05, 0.15)) +
-#   guides(
-#     colour = guide_legend(override.aes = list(alpha = 0.5)),
-#     alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
-#   ) +
-#   theme(legend.position = "bottom")
-#
-
-# recalculate position by group
-# XXXX pcp_arrange has to also do the tie-breaking by group.
-gg_p1_pcp %>%
-  filter(sex!= "?") %>%
-  ggplot(aes_pcp()) +
-  geom_pcp_axes() +
-  geom_pcp_boxes(boxwidth=0.1) +
-#  geom_pcp(aes(colour = sex), alpha = 0.4) +
-  geom_ribbon(aes( ymin = lower, ymax=upper, group=interaction(sex,order), fill = sex, alpha=order),
-              #alpha = 0.25,
-              data = contours) +
-  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
-           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "female")) +
-  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
-           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "male")) +
-  geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
-  theme_bw() +
-  scale_fill_manual("Sex", values=c( "#8b4950", "#FAA404", "#008080")) + # lighter yellow "#FFCD70"
-  facet_grid(species~sex) +
-  scale_x_discrete(expand = expansion(add=0.25)) +
-  scale_alpha_manual("Inter-quantile Range", values = c(0.25, 0.25)) +
-  guides(
-    fill = guide_legend(override.aes = list(alpha = 0.5)),
-    alpha = guide_legend(override.aes = list(alpha =  c(0.25, 0.5)))
-  ) +
-  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
-           data = annotate_dframe %>% mutate(sex = "male"), nudge_x = -0.125,
-           family='fontawesome-webfont', size=5) +
-  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
-           data = annotate_dframe %>% mutate(sex = "female"), nudge_x = -0.125,
-           family='fontawesome-webfont', size=5) +
-  geom_text(aes(label=marker),
-            data = data.frame(
-                 species="Adelie",
-                 marker = c(circle[1], circle[1], circle[2], circle[2]),
-                              pcp_y = c(0.783, 0.433, 0.3, 0.267),
-                              pcp_x = "bill_depth_mm",
-                 nest = c("N5", "N5", "N6", "N6")),
-            colour = "#8b4950",
-           nudge_x = 0.1,
-           family='fontawesome-webfont', size=3) +
-  theme(legend.position="bottom") +
-  xlab(NULL) + ylab(NULL) +
-  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
-
-@
-
+For Adelie penguins determining sex is not quite as clear-cut, but based on body mass and bill length measurements the three lightest penguins might be female, while the heaviest one could be male. The fifth penguin exhibits measurements that are neither typically male not typically female. Trying to confirm these putative assignments is a bit more tricky, because four of the five unsexed penguins are nest partners. \svp{XXX the lightest unsexed penguin doesn't have a nest partner, at least from how I'm reading the graph? I suggest instead: The un-partnered penguin is the lightest and has measurements which are more consistent with female penguins. The Adelie penguin indicated by ? is the partner of a female penguin and might be assumed to be male.} The lightest unsexed penguin is the partner of a sexed male penguin. The putative assignments do not contradict the hypothesis that each nest is host to a male and a female penguin. Using this assumption, the last unsexed penguin would be resolved as the male of the nest.
 
 
 
@@ -1237,7 +1042,7 @@ penguins_pcp %>%
 
 \Cref{fig:carcinoma} shows data from \citet{agresti} published as part of the \code{poLCA} package \citep{polca}. Seven pathologists were asked to assess the same 118 slides for the presence or absence of carcinoma in the uterine cervix. Binary responses for each slide were recorded (yes/no).  Pathologists all agreed on about 25\% of slides, which they  considered to be carcinoma free, and a further 12.5\% of slides, which were considered to show carcinoma by all pathologists.
 \au{For the remaining 62.5\% of slides there was some disagreement and it is clear that this disagreement is not random.} \au{The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.}
-%When pathologists are ordered (by moving the corresponding axes) left to right from fewest number of overall carcinoma diagnoses to highest number, we see that generally for a slide more pathologists make a carcinoma diagnosis  from left to right.
+Note, in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way.
 <<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a poly-line.", fig.height = 4, fig.width = 8>>=
 data("carcinoma", package = "poLCA")
 carcinoma$numdiag <- rowSums(carcinoma) - 7
@@ -1264,18 +1069,18 @@ carcinoma %>%
   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
 @
 
-Note, in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way.
 
-\citet{carcinoma} (Table 1) allow us a closer look at this data.
+\citet[Table 1]{carcinoma}  allow us a closer look at this data.
 \au{The pathologists evaluated the slides using five levels from 1 to 5}, given as:
 (1) Negative, (2) Atypical Squamous Hyperplasia, (3) Carcinoma in Situ, (4) Squamous Carcinoma with Early Stromal Invasion, and (5) Invasive Carcinoma.
 \citet{agresti} \au{classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".}
-\Cref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \Cref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \Cref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. \au{Mostly, the variability between pathologists’ scores stems from a difference in applying the scores rather than from an actual difference of opinions.} %Overall, the variability between pathologists' scores stems froma difference in applying the scores rather than an actual difference of opinions. \hh{XXX this needs to be phrased differently. What I mean is that we see a lot of agreement in the parallel lines, but the boxes are shifted from one pathologist to another.}
+\Cref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \Cref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \Cref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. \au{Mostly, the variability between pathologists' scores stems from a difference in applying the scores \svp{XXX categories? XXX} rather than from an actual difference of opinions.} %Overall, the variability between pathologists' scores stems from a difference in applying the scores rather than an actual difference of opinions. \hh{XXX this needs to be phrased differently. What I mean is that we see a lot of agreement in the parallel lines, but the boxes are shifted from one pathologist to another.}
 The similarity in evaluations is particularly striking between pathologists A, G, E, and B.
 
-\hh{XXX very unpolished idea, but I think worthwhile exploring XXX The generalized parallel coordinate plot gives us a visual tool for assessing the similarity between evaluations by different pathologists that moves beyond a mere correspondence of scores to an analysis that is based on ranks. Tie-breaks in the ranks are featured as the $y$ coordinate.
+% \hh{XXX very unpolished idea, but I think worthwhile exploring XXX} % I like it! - svp
+\svp{In this example,} \hh{the generalized parallel coordinate plot gives us a visual tool for assessing the similarity between evaluations by different pathologists that moves beyond a mere correspondence of scores to an analysis that is based on ranks. Tie-breaks in the ranks are featured as the $y$ coordinate.
 When the poly-lines additionally are relatively flat, this means that  pathologists can either agree on the score of these scans or agree at least on the relative severity of carcinomas in the scans.
-Obviously, we can assess 'flat-ness' of the poly-lines  as the variance of the calculated variable `pcp\_y`. }
+Obviously, we can assess `flat-ness' of the poly-lines \svp{numerically} as the variance of the calculated variable \code{pcp\_y}. }
 
 <<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Rounded average scores are mapped to color to help distinguish severity of scan evaluations.", fig.height = 4.25, fig.width = 7, out.width='0.9\\textwidth', fig.align='center'>>=
 data(Carcinoma, package="ggpcp")
@@ -1400,7 +1205,7 @@ gpcp + hist +  ggvars +
 Let's revisit the penguins data for an example of working with clusters in the framework of generalized parallel coordinate plots. We use $k$-means clustering on all numeric body measurements and investigate which observations are generally captured in each of the clusters.
 
 \au{$k$-means clustering assigns cluster labels arbitrarily based on random cluster centers.}
-In order to maintain a persistent ordering over different values of $k$ we reorder the clusters by the value of \code{body\_mass\_g}. This helps us to compare between $k$ and $k+1$ clusters.
+In order to maintain a persistent ordering over different values of $k$ we reorder the cluster \svp{labels} by the value of \code{body\_mass\_g}. This helps us to compare between $k$ and $k+1$ clusters.
 %
 \Cref{fig:kmean-penguins} shows the numeric measurements along with the assigned clusters, with categorical variables species and sex on the right. Each line is colored by the assigned cluster, allowing us to determine how the categorical variables relate to the quantitative variables and the resulting clusters.
 %
