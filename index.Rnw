@@ -269,6 +269,19 @@ An important motivation for the \pkg{ggpcp} package is that other implementation
 %One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots
 make it difficult to follow a single observation across the chart. \pkg{ggpcp} alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow individual cases  across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.
 
+In addition, \pkg{ggpcp} leverages  the full ggplot2 philosophy instead of using highly specific wrapper functions, allowing users to focus on the data, rather than the names of various parameters used for customization.
+\pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering.
+Scaling, ordering of cases, and the arrangement of the parallel axes are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale},respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
+During the plotting state, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
+The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}), but there are additional advantages to the use of \pkg{ggplot2}.
+Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
+
+One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
+In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as
+\pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web and
+\pkg{gridSVG}~\citep{gridsvg} \hh{which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements}.
+
+
 \begin{minipage}[b]{.94\linewidth}
 \captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API. }\label{lst:ggpcp-api}
 <<prep-data, echo=FALSE>>=
@@ -287,19 +300,23 @@ pcp <- penguins %>%                       # data management:
   pcp_arrange() %>%                       #   arranging categorical data
   ggplot(aes_pcp()) +                     # plotting the chart:
     geom_pcp_axes() +                     #   vertical lines for axes
-    geom_pcp(aes(colour = species), alpha = 0.8, overplot="none") +         #   parallel coordinate line segments
+    geom_pcp(aes(colour = species)) +     #   parallel coordinate line segments
     geom_pcp_labels()                     #   labels for categorical variables
 @
 
-%\hh{XXX the results from the code should be shown somewhere, so the code is not so unmotivated.}
-%\svp{I wish I could think of a good way to do a very small inset plot, but it just ends up looking blurry and weird.}
-\hh{XXX We still need a line of what we see from the plot.}
-
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/api-fig-print-1.pdf}
-\captionof{figure}{The code in \Cref{lst:ggpcp-api} generates this parallel coordinate plot with both categorical and continuous data shown on vertical axes.\label{fig:api-fig-print}}
+\captionof{figure}{The code in \Cref{lst:ggpcp-api} generates this parallel coordinate plot with both categorical and continuous data shown on vertical axes.\label{fig:api-fig-print} }
 \end{minipage}
 <<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='api-listing-code'>>=
-pcp +
+penguins %>%
+  filter(!is.na(sex)) %>%
+  pcp_select(3:6, sex, species) %>%
+  pcp_scale(method="uniminmax") %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+    geom_pcp_axes() +
+    geom_pcp(aes(colour = species), alpha = 0.8, overplot="none") +
+    geom_pcp_labels() +
   scale_color_manual("Species", values = cols) +
   theme_bw() +
   scale_x_discrete(expand = expansion(add=0.3)) +
@@ -308,17 +325,8 @@ pcp +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none")
 @
 
-In addition, \pkg{ggpcp} leverages  the full ggplot2 philosophy instead of using highly specific wrapper functions, allowing users to focus on the data, rather than the names of various parameters used for customization.
-\pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering, \svp{as shown in \Cref{lst:ggpcp-api}}.
-Scaling, ordering of cases, and the arrangement of the parallel axes are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale},respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
-During the plotting state, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
-The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}), but there are additional advantages to the use of \pkg{ggplot2}.
-Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
 
-One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
-In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as
-\pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web and
-\pkg{gridSVG}~\citep{gridsvg} \hh{which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements}.
+\svp{An example parallel coordinate plot is shown in \Cref{fig:api-fig-print}, along with the \pkg{ggpcp} code to generate the plot in \Cref{lst:ggpcp-api}. We can see that Gentoo penguins have smaller bill depth and larger flipper length and body mass than Chinstrap and Adelie penguins. Chinstrap penguins have longer bills than Adelie penguins, but are similar to Adelie penguins across most other measurements. Males tend to be larger than females across all three species. In addition, it is clear from \Cref{lst:ggpcp-api} that the data management process (lines 2-5) is entirely distinct from the plotting process in lines 6-9. This separation makes plots generated with \pkg{ggpcp} easy to prepare, use, and customize.}
 
 %------------------------------------------------
 
