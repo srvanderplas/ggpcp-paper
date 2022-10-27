@@ -295,7 +295,7 @@ penguins <- rbind(
 <<api-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE>>=
 pcp <- penguins %>%                       # data management:
   filter(!is.na(sex)) %>%                 #   seamless integration with tidy workflow
-  pcp_select(3:6, sex, species) %>%       #   variable selection, see section 3.1
+  pcp_select(4,3,5:6, sex, species) %>%   #   variable selection, see section 3.1
   pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
   pcp_arrange() %>%                       #   arranging categorical data
   ggplot(aes_pcp()) +                     # plotting the chart:
@@ -311,7 +311,7 @@ pcp <- penguins %>%                       # data management:
 <<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='api-listing-code'>>=
 penguins %>%
   filter(!is.na(sex)) %>%
-  pcp_select(3:6, sex, species) %>%
+  pcp_select(4,3,5:6, sex, species) %>%
   pcp_scale(method="uniminmax") %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
@@ -474,11 +474,10 @@ dt %>%
 
 \subsection{Scaling}
 
-\code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other. \svp{The} \code{method} \svp{argument} is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable onto a range of [0,1] with the minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes onto a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
+\code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other. The \code{method} argument is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable onto a range of [0,1] with the minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes onto a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
 The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and a robust 95\% confidence interval (based on the median absolute deviation) to an interval of 0 to 1.
-%\hh{Values outside this range, as can be seen for several acid measurements in \autoref{fig:scale} indicate a variability in the measurements  larger than that of a normal distribution. }
+\hh{Values outside this range, as can be seen for several acid measurements in \autoref{fig:scale} indicate a variability in the measurements  larger than that of a normal distribution. }
 
-%\hh{Does the method 'raw' do anything? I think we could have the same effect by simply skipping this part of the processing. It's a nice example, where something that needed para metrization in another implementation is automatically implemented here by not doing anything. }
 
 \Cref{fig:scale} shows  two of the scaling methods applied to the olive oil data  \citep{forina, tourr}: Measurements of fatty acids in 572 olive oils from three different regions in Italy are visualized as parallel coordinate plots. Similar to the findings by \citet{ggobi}, we see that eicosenoic acid is only found in increased quantities in olive oils from Southern Italy. Quantities of oleic and linoleic acids allow a separation between olive oils from Sardinia and Northern Italy. Both scaling methods enable us to find these conclusions. While uniminmax scaling uses the space allotted to the chart most efficiently, the robust normalization method emphasizes the heavy tails and skewness of some of the measurements, such as the percentages of stearic and arachidic fatty acids.
 
@@ -614,19 +613,20 @@ When extended over multiple axes, the equispaced tie-breaking solution that redu
 The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering determined by variables' values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
 While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing functions \hh{XXX I mistook this 'functions' as a noun in my first read, probably triggered by the hierarchical sorting. How about 'works' or 'serves as'?} as ``external cognition" \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the data as displayed in the chart.
 
-% \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol.
- \svp{\citet{} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical ordering minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes.} % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
+% \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol. %HH: sorry.
+ \citet{martiHeuristicsMetaheuristics2layer2003}  discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical ordering minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes. % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
+% HH: let's keep that for the next paper and compare it to manual orderings
 
 \subsection{Variable Ordering and Transformations}
 
-\svp{There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance. For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot: while hierarchical sorting reduces the number of line crossings, it does so conditional on the pre-specified factor order. Arranging the levels of $k$ factor variables to minimize line crossings is equivalent to the problem of ordering directed acyclic graph nodes along $k$ axes, which is NP hard \citep{martiHeuristicsMetaheuristics2layer2003}.}
-\svp{While automatic sorting of factor levels is computationally difficult and statistically undesirable given that many factors have some implicit or explicit ordering that should not be automatically optimized, reordering factors can reduce the number of line crossings to produce a simpler and more comprehensible PCP. For example, in the last panel of \Cref{fig:alignment}, a reordering of the second factor so that the purple lines are on the bottom could reduce the overall number of line crossings to 2, once the hierarchical sorting is updated to accommodate the new factor order.}
+There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance. For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot: while hierarchical sorting reduces the number of line crossings, it does so conditional on the pre-specified factor order. Arranging the levels of $k$ factor variables to minimize line crossings is equivalent to the problem of ordering directed acyclic graph nodes along $k$ axes, which is NP hard \citep{martiHeuristicsMetaheuristics2layer2003}. \hh{XXX the last two paragraphs read very similarly - do we need both? }
+While automatic sorting of factor levels is computationally difficult and statistically undesirable given that many factors have some implicit or explicit ordering that should not be automatically optimized, reordering factors can reduce the number of line crossings to produce a simpler and more comprehensible PCP. For example, in the last panel of \Cref{fig:alignment}, a reordering of the second factor so that the purple lines are on the bottom could reduce the overall number of line crossings to just two crossings, once the hierarchical sorting is updated to accommodate the new factor order.
 
 % I have a plot for this (p5, above) but don't really think it's essential to show it...
 
-\svp{As briefly discussed in \Cref{sec:variable-order}, users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection.
+As briefly discussed in \Cref{sec:variable-order} \hh{XXX did this reference get deleted?}, users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection.
 % , as shown in \Cref{lst:reverse-axis}, which generates \Cref{fig:reordering-variables-axis1}.
-Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow. An example showing the benefits of reordering and transforming variables for visual clarity is provided in \Cref{fig:penguins-variable-order}.}
+Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow. An example showing the benefits of reordering and transforming variables for visual clarity is provided in \Cref{fig:penguins-variable-order}.
 % I think the example here is repetitive and not particularly useful. We show why in the examples and we tell them how to do it in the text. Do we really need to show the code?
 %
 % \begin{minipage}[b]{.94\linewidth}
