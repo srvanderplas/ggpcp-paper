@@ -1567,18 +1567,26 @@ penguins_complete %>%
 
 \section{Discussion}
 
-ggpcp contributions
+\svp{This paper describes generalized parallel coordinate plots, which extend parallel coordinate plots to include categorical variables. This extension is a significant development: GPCPs are useful in a wide variety of scenarios where standard PCPs were insufficient; in addition, the handling of categorical variables introduced as part of the \pkg{ggpcp} implementation of GPCPs opens up many new areas for PCP-related research.}
 
-- The generalized framework includes other styles of PCPs as edge cases, but we open up so many more applications for PCPs with the generalized framework. The potential uses of parallel coordinate plots are much broader than previously demonstrated. In this paper, we attempt to showcase some of these new applications, and we expect that we have missed the opportunity to use PCPs in many other areas.
+\svp{The most consequential feature of GPCPs as implemented in the \pkg{ggpcp} package is the ability to follow a single observation through multiple categorical and continuous axes. This continuity provides a perceptual advantage over other alternatives even for plots of only categorical variables, as it is possible to visually assess $N>2$-dimensional contingent relationships using GPCPs, as demonstrated in \Cref{fig:cl-overview-2}. Throughout the examples in this paper, we have attempted to showcase the impacts of this visual continuity through a range of different applications of GPCPs; while we have attempted to assemble a broad set of such examples, we expect that GPCPs will be useful in many other applications which we may have overlooked.}
 
-- The addition of line continuity by generalized PCPs emphasizes the importance of the ordering of axes, factors, lines, and plotting. ggpcp's framework adds additional dimensions of complexity to PCP creation that should be studied more carefully. Axis ordering has been previously studied, but the ggpcp framework allows the ordering of factors, lines, and plotting to carry additional information that affects the user's ability to understand the data.
+\svp{As a consequence of the line continuity in generalized PCPs, we also highlight the importance of four different types of ordering: axes, factors, lines, and plotting. While previous papers have examined the impact of axis ordering, there is a large increase in the importance of factor, line, and plotting order to preserve the line continuity afforded by GPCPs. The \pkg{ggpcp} framework allows the ordering of factors, lines, and plotting to carry additional information which affects the user's ability to understand the data. These factors, along with the use of color in PCPs, deserve much more investigation and consideration than the brief overview provided in this paper, which is focused on demonstrating the \pkg{ggpcp} API.}
 
-\au{Generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots, the use of color to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play: the ordering of levels of categorical variables, and the ordering of cases within those levels.}
+\svp{In addition, the implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates data management from visual rendering while leveraging the \pkg{ggplot2} API. Both of these features contribute to the power and flexibility of the \pkg{ggpcp} package.}
 
-\au{The ideas described here have been implemented in the R package ggpcp.  There are two central features: data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy. Both these features contribute to the power and flexibility of the software.
-}
-
-\svp{In our demonstration of generalized parallel coordinate plots as implemented in \pkg{ggpcp}, we have also explored the use of generalized parallel coordinate plots for assessing inter-rater agreement, cluster stability, and assessment of missing information. GPCPs are a powerful tool for exploring high-dimensional data.}
+% ggpcp contributions
+%
+% - The generalized framework includes other styles of PCPs as edge cases, but we open up so many more applications for PCPs with the generalized framework. The potential uses of parallel coordinate plots are much broader than previously demonstrated. In this paper, we attempt to showcase some of these new applications, and we expect that we have missed the opportunity to use PCPs in many other areas.
+%
+% - The addition of line continuity by generalized PCPs emphasizes the importance of the ordering of axes, factors, lines, and plotting. ggpcp's framework adds additional dimensions of complexity to PCP creation that should be studied more carefully. Axis ordering has been previously studied, but the ggpcp framework allows the ordering of factors, lines, and plotting to carry additional information that affects the user's ability to understand the data.
+%
+% \au{Generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots, the use of color to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play: the ordering of levels of categorical variables, and the ordering of cases within those levels.}
+%
+% \au{The ideas described here have been implemented in the R package ggpcp.  There are two central features: data management has been separated from visual rendering, and the package follows the full ggplot2 philosophy. Both these features contribute to the power and flexibility of the software.
+% }
+%
+% \svp{In our demonstration of generalized parallel coordinate plots as implemented in \pkg{ggpcp}, we have also explored the use of generalized parallel coordinate plots for assessing inter-rater agreement, cluster stability, and assessment of missing information. GPCPs are a powerful tool for exploring high-dimensional data.}
 
 
 
