@@ -374,7 +374,7 @@ a one-to-one mapping to a now discrete $x$ axis consisting of the (names of the)
 \caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step  before a parallel coordinate plot can be drawn (bottom left). Note that the order in which variables are selected is reflected in the order in which variables are included in the parallel coordinate plot. }%\\au{Ordering in RH graphic should be the same as explanations below - start w/ pcp\_id, then pcp\_x, ...}}
 \end{figure}
 
-From the user's perspective this data reshaping is simply \hh{a ??} data selection: the data wrangling takes place behind the scenes in \code{pcp\_select(data, ...)}, which selects the variables to be included in the parallel coordinate plot.
+From the user's perspective, this data reshaping is data selection; the data wrangling takes place behind the scenes in \code{pcp\_select(data, ...)}, which selects the variables to be included in the parallel coordinate plot.
 Variables can be specified by any combination of the following methods:
 
 \begin{itemize}
@@ -391,7 +391,7 @@ Note that the order in which variables are selected determines the order in whic
 \item \code{pcp\_x}: discrete variable consisting of the names of the selected variables in the order that they were selected - this is the order in which the variables will be included in the plot.
 \item \code{pcp\_y}: numeric variable containing the values of all of the selected variables. In case a selected variable is not numeric, it is converted to a factor variable and the (numeric) factor levels are saved in \code{pcp\_y}.
 \item \code{pcp\_class}: character variable containing the class information of a selected variable.
-\item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form). The ordering of factor variables will be discussed below but \hh{it} is implemented using this added variable.
+\item \code{pcp\_level}: character variable containing the factor levels of selected data variables. In case of numeric variables, the data values are stored (in textual form). The ordering of factor variables will be discussed below but it is implemented using this added variable.
 \end{itemize}
 
 As a consequence of these design decisions, users have several ways of performing different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable. Motivations for reordering factors in parallel coordinate plots are discussed in more detail in \Cref{sec:ties}.
@@ -479,7 +479,7 @@ dt %>%
 
 \code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other. The \code{method} argument is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. By default, the method \code{uniminmax} is chosen, which univariately scales each variable onto a range of [0,1] with the minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes onto a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
 The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and a robust 95\% confidence interval (based on the median absolute deviation) to an interval of 0 to 1.
-\hh{Values outside this range, as can be seen for several acid measurements in \autoref{fig:scale} indicate a variability in the measurements  larger than that of a normal distribution. }
+\svp{Values outside this range \autoref{fig:scale} indicate a variability in the measurements  larger than that of a normal distribution, as can be seen for several acid measurements.}
 
 
 \Cref{fig:scale} shows  two of the scaling methods applied to the olive oil data  \citep{forina, tourr}: Measurements of fatty acids in 572 olive oils from three different regions in Italy are visualized as parallel coordinate plots. Similar to the findings by \citet{ggobi}, we see that eicosenoic acid is only found in increased quantities in olive oils from Southern Italy. Quantities of oleic and linoleic acids allow a separation between olive oils from Sardinia and Northern Italy. Both scaling methods enable us to find these conclusions. While uniminmax scaling uses the space allotted to the chart most efficiently, the robust normalization method emphasizes the heavy tails and skewness of some of the measurements, such as the percentages of stearic and arachidic fatty acids.
