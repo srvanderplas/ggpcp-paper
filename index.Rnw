@@ -1346,7 +1346,6 @@ penguins_complete_pcp %>%
 
 @
 
-
 <<cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8, include = F>>=
 penguins_complete %>%
   mutate(
@@ -1440,7 +1439,6 @@ penguins_complete_pcp %>%
                             "k=6 Clusters", "Species")) +
   ggtitle("Clustering into 6 groups")
 @
-
 
 % \Cref{fig:cl2} shows a parallel coordinate plot relating the separation of body measurements into two main groups to each measurement variable and the three species.
 \begin{figure}
@@ -1568,6 +1566,12 @@ penguins_complete %>%
 
 
 \section{Discussion}
+
+ggpcp contributions
+
+- The generalized framework includes other styles of PCPs as edge cases, but we open up so many more applications for PCPs with the generalized framework. The potential uses of parallel coordinate plots are much broader than previously demonstrated. In this paper, we attempt to showcase some of these new applications, and we expect that we have missed the opportunity to use PCPs in many other areas.
+
+- The addition of line continuity by generalized PCPs emphasizes the importance of the ordering of axes, factors, lines, and plotting. ggpcp's framework adds additional dimensions of complexity to PCP creation that should be studied more carefully. Axis ordering has been previously studied, but the ggpcp framework allows the ordering of factors, lines, and plotting to carry additional information that affects the user's ability to understand the data.
 
 \au{Generalized parallel coordinate plots offer a constructive solution to incorporating categorical variables in parallel coordinate plots.  In particular, they preserve the key idea of being able to follow individual cases across the plot.  As always with parallel coordinate plots, the use of color to distinguish groups, the ordering of the axes, and the ordering of drawing the lines play key roles.  With generalized parallel coordinate plots two additional kinds of ordering have a part to play: the ordering of levels of categorical variables, and the ordering of cases within those levels.}
 
