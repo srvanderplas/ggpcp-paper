@@ -320,7 +320,10 @@ penguins %>%
     geom_pcp_labels() +
   scale_color_manual("Species", values = cols) +
   theme_bw() +
-  scale_x_discrete(expand = expansion(add=0.3)) +
+  scale_x_discrete(expand = expansion(add=0.3),
+                   labels = c("Bill Depth (mm)", "Bill Length (mm)",
+                              "Flipper Length (mm)", "Body Mass (g)",
+                              "Sex", "Species")) +
   xlab("") +
   ylab("") +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none")
