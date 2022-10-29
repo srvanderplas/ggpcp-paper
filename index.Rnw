@@ -1104,7 +1104,7 @@ The similarity in evaluations is particularly striking between pathologists A, G
 \svp{The hierarchical sorting used in ggpcp assigns ranks to each observation which provides additional information about the agreement between pathologists, which is graphically represented as the variability in line slope (that is, whether the $y$ coordinate on each vertical axis is similar).}
 When the poly-lines are relatively flat, this means that  pathologists agree on the relative severity of the carcinoma in the scan.
 Obviously, we can assess `flat-ness' of the poly-lines \svp{numerically} as the variance of the calculated variable \code{pcp\_y}.
-\Cref{fig:carcinoma3} highlights the controversial scans, and provides additional visualizations assessing the frequency of difficult scans and the variability in \code{pcp_y} and in the numerical scores assigned.
+\Cref{fig:carcinoma3} highlights the controversial scans, and provides additional visualizations assessing the frequency of difficult scans and the variability in \code{pcp\_y} and in the numerical scores assigned.
 
 <<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Rounded average scores are mapped to color to help distinguish severity of scan evaluations.", fig.height = 4.25, fig.width = 7, out.width='0.9\\textwidth', fig.align='center'>>=
 data(Carcinoma, package="ggpcp")
