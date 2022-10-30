@@ -631,12 +631,12 @@ The two implemented methods are \code{"from-left"} and \code{"from-right"}, mean
 While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as ``external cognition" \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the data as displayed in the chart.
 
 % \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol. %HH: sorry.
-\citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical sorting \svp{of individual observations} minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes. % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
+\citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical sorting of individual observations minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes. % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
 % HH: let's keep that for the next paper and compare it to manual orderings
 
 \subsection{Variable Ordering and Transformations}
 
-There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance. For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot. \svp{As previously discussed, some line crossings can be removed by sorting, however, others can only be removed through reordering of factor levels.}
+There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance. For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot. As previously discussed, some line crossings can be removed by sorting, however, others can only be removed through reordering of factor levels.
 While \textit{automatic} sorting of factor levels is computationally difficult and statistically undesirable given that many factors have some implicit or explicit ordering that should not be automatically optimized, reordering factors can reduce the number of line crossings to produce a simpler and more comprehensible PCP. For example, in the last panel of \Cref{fig:alignment}, a reordering of the second factor so that the dark (purple) lines are on the bottom could reduce the overall number of line crossings to just two crossings, once the hierarchical sorting is updated to accommodate the new factor order.
 
 % I have a plot for this (p5, above) but don't really think it's essential to show it...
@@ -644,66 +644,13 @@ While \textit{automatic} sorting of factor levels is computationally difficult a
 As briefly discussed in \Cref{sec:variable-selection}, users can transform individual variables, reordering factors or reversing an axis, using a mutate statement before variable selection.
 % , as shown in \Cref{lst:reverse-axis}, which generates \Cref{fig:reordering-variables-axis1}.
 Univariate transformations like these may be useful to reduce the overall visual complexity of a parallel coordinate plot by reducing the number of negatively correlated axes and crossing lines which are hard to follow. An example showing the benefits of reordering and transforming variables for visual clarity is provided in \Cref{fig:penguins-variable-order}.
-% I think the example here is repetitive and not particularly useful. We show why in the examples and we tell them how to do it in the text. Do we really need to show the code?
-%
-% \begin{minipage}[b]{.94\linewidth}
-% \captionof{lstlisting}{Mutations before the \code{pcp\_select} stage can be used to reorder factors or transform numerical variables, as shown in \Cref{fig:reordering-variables-axis1}.}\label{lst:reverse-axis}
-% <<reordering-variables-axis1-code, fig.width = 8, fig.height = 4,  echo = TRUE, reset = TRUE,  collapse = T, fig.show='hide'>>=
-% penguins %>%
-%   mutate(
-%     spec_reord = factor(species, levels = c("Adelie", "Gentoo", "Chinstrap"))
-%   ) %>%
-%   pcp_select( 4, spec_reord, 3, 5, species, 6) %>%
-%   pcp_scale(method="uniminmax") %>%
-%   pcp_arrange() %>%
-%   ggplot(aes_pcp()) +
-%     geom_pcp_axes() +
-%     geom_pcp(aes(colour = species), alpha = 0.6) +
-%     geom_pcp_labels()
-% @
-% \end{minipage}
-%
-% <<reordering-variables-axis1, fig.width = 8, fig.height = 4, include = T, echo = F, fig.cap = "The second axis shows species ordered by bill length and depth, where the fifth axis shows species with categories in the default (alphabetical) ordering. The ability to reorder variables allows the reader to assess clusters of lines `moving together' through the vertical axis space, leveraging the Gestalt principle of common fate to reduce the plot's complexity.">>=
-% penguins_pcp2 <- penguins %>%
-%   mutate(
-%     spec_reord = factor(species, levels = c("Adelie", "Gentoo", "Chinstrap"))
-%   ) %>%
-%   pcp_select(4, spec_reord, 3, 5, species, 6) %>%
-%   pcp_scale(method="uniminmax") %>%
-%   pcp_arrange()
-%
-% penguins_pcp2 %>%
-%   ggplot(aes_pcp()) +
-%     geom_pcp_axes() +
-%     geom_pcp(aes(colour = species), alpha = 0.6,
-%              overplot="none") +
-%     geom_pcp_labels() +
-%   xlab("") + ylab("") + scale_x_discrete(expand = c(0.05, 0)) +
-%   theme(axis.text.y=element_blank(), legend.position="bottom") +
-%   scale_color_manual("Species", values = cols, guide = 'none')
-% @
-%
+
 
 \subsection{Line Segment Plotting Order}
 
-One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot. As the number of observations increases, this becomes less feasible because of overplotting of line segments, particularly for larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other. %\hh{XXX the order in which crossing lines are drawn is only visible when the lines have different colors.}
+One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot. As the number of observations increases, this becomes less feasible because of overplotting of line segments, particularly for larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other.
+Coloring by groups and utilizing $\alpha$-blending improves the readability of plots.  However, the order of drawing the cases  affects what can be seen due to overplotting.
 
-% \hh{XXX additional counter-measures: use $\alpha$-blending}
-\au{Coloring by groups \svp{and utilizing $\alpha$-blending} improves the readability of plots.  However, the order of drawing the cases may affect what can be seen due to overplotting.}
-
-% Two methods to control this order are implemented and are regulated by the parameter \code{overplot}:
-%
-% \begin{enumerate}
-% \item \code{"small-on-top"} groups of lines (defined by the same color) between categorical variables are are ordered by size and drawn from largest to smallest group.
-% \item \code{"none"} the order of the observations is left un-touched by the data wrangling process. This option allows the user to specify a certain  order before plotting.
-% \end{enumerate}
-
-\au{As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} \svp{defaults to} option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest is \svp{plotted last}.
-% The default setting
-\svp{An alternative setting,} "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.}
-% \svp{XXX Should we mention that if another option besides "none" or "small-on-top" is specified, we default to arranging by color? XXX} % No, just change ggpcp to issue messages and leave it be.
-
-% \hh{XXX We need to include some code somewhere to also show the 'how'.} % I've done this below, and I recognize that it's not ideal to reference a figure from that much earlier in the paper, but this plot + code takes up a lot of space relative to what it's showing
 
 \begin{minipage}[b]{.94\linewidth}
 <<order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE, fig.show ='hide'>>=
@@ -727,6 +674,11 @@ ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw the smallest category last
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/order-fig-print-1.pdf}
 \captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates two parallel coordinate plots. The plot on the left uses the ordering of the dataset to determine line plotting order; as a result, lines with sex = NA are plotted last (on top). On the right, we use the  ``small-on-top" default; this ensures that the smallest category, Chinstrap, is plotted last.\label{fig:order-fig-print}}
 \end{minipage}
+
+As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} defaults to option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest group is plotted last -- \hh{effectively putting the small group on top}.
+
+An alternative setting, "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.
+
 <<order-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='order-listing-code'>>=
 
 pp1 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
@@ -752,24 +704,19 @@ pp1 + pp2 + plot_layout(nrow = 1, byrow = FALSE) + theme_pcp()
 \section{Examples}\label{sec:examples}
 \subsection{Palmers Penguins}
 
-\au{
-Several aspects in Parallel Coordinate Plots depend on orderings: the order of variables along the x axis, the order of levels in a categorical variable, the orderings of cases within categorical variable levels, and the order in which lines are drawn.
-Orderings should therefore (a) have good defaults, and (b) be easily changeable. }
+Several aspects in Parallel Coordinate Plots depend on orderings: the order of variables along the $x$ axis, the order of levels in a categorical variable, the orderings of cases within categorical variable levels, and the order in which lines are drawn.
+Orderings should therefore (a) have good defaults, and (b) be easily changeable.
 
 
-\au{The top of} \Cref{fig:ordering} shows a  generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}.
-\au{The numeric data consists of body measurements of three species of penguins: bill length, bill depth, flipper length, body weight.}
+The top of \Cref{fig:ordering} shows a  generalized parallel coordinate plot of the Palmer penguins data \citep{penguins}.
+The numeric data consists of body measurements of three species of penguins: bill length, bill depth, flipper length, body weight.
 Adelie penguins generally have smaller bill lengths than the other two species, while Gentoo penguins can be distinguished by their relatively large flipper lengths.
-\au{The bottom of} \Cref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variables in the generalized parallel coordinate plots. \svp{This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.}
-\svp{In addition,} \hh{only after levels of `island` and `species` are re-ordered} %, we can see}
-\svp{can we see}
-\au{%It further clarifies
-that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.}
-
-%\au{study ID is what? ordering in second plot allows us to see that about the same amount of datat from penguins in each species was collected. }
+The bottom of \Cref{fig:ordering} shows the effect of re-ordering the levels of both the `species` and the `island` variables in the generalized parallel coordinate plots. This re-ordering of factor levels has the effect of emphasizing that Gentoo penguins and Chinstrap penguins are each found on only one island, while Adelie penguins are found on all three islands.
+In addition, only after levels of `island` and `species` are re-ordered
+can we see
+that for each species the numbers of penguins in the three years of the study (the study ID variable) were roughly the same.
 
 <<ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island. ", fig.height=6, fig.width=8>>=
-
 penguins1 <- penguins1 %>%
   rename(`study ID` = studyName, `Bill Length` = CulmenL,
              `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
@@ -815,28 +762,17 @@ library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 @
 
-% \au{figure 6 and 7 look quite similar, but are quite different - visual emphasis? Maybe use colors[1] and colors [3]?}
 
 
 \paragraph{Distinguishing species}\hfill\newline
-% In addition to the ordering of factor levels,
-\svp{Factor level ordering is but one consideration when constructing parallel coordinate plots.}
-It is also important to carefully order the variables on the $x$-axis, as shown in \Cref{fig:penguins-variable-order}, where the variables have been re-ordered \svp{from \Cref{fig:ordering}}
-to allow the viewer to \au{identify which} body measurements distinguish the species. \svp{In addition to} \au{the re-ordering, the axis for bill depth has been reversed. } \au{Both changes help to separate the species.} \hh{ Gentoo penguins have the lowest bill depth, while generally having the longest flippers and \svp{largest mass}. Reversing the axis for bill depths aligns the smallest bill depths with the longest flippers, moving Gentoo penguins closer together as a group. }
+Factor level ordering is but one consideration when constructing parallel coordinate plots.
+It is also important to carefully order the variables on the $x$-axis, as shown in \Cref{fig:penguins-variable-order}, where the variables have been re-ordered from \Cref{fig:ordering}
+to allow the viewer to identify which body measurements distinguish the species. In addition to the re-ordering, the axis for bill depth has been reversed. Both changes help to separate the species. Gentoo penguins have the lowest bill depth, while generally having the longest flippers and largest mass. Reversing the axis for bill depths aligns the smallest bill depths with the longest flippers, moving Gentoo penguins closer together as a group.
 The plot shows that the Gentoo penguins are bigger, that Gentoo and Chinstrap are both only found on single islands, and, finally, that Adelie and Chinstrap are distinguished by the lengths of their bills.
 
-\svp{As \pkg{ggpcp} uses the ggplot2 API, faceting is fully supported. \Cref{fig:penguins-variable-order} is faceted by gender:}
-% \au{
-% % As already explained, ggpcp is part of the ggplot2 family, so faceting is easy.  This has been done in \Cref{fig:ordering}
-% to show that the patterns are similar for both males and females.}
-% % \hh{Note that we are using facetting by penguins' sex} in \Cref{fig:penguins-variable-order}.
-\hh{while the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.}
-Interestingly, some potential outliers that were not visible previously now become visible. \au{Note for example the two Gentoo males with particularly short flippers}, \svp{and the Chinstrap female with an exceptionally long bill.}
-
-%The plot does not show anything about the differences between male and female penguins.  Given the greater size of the males \au{we don't know that yet} in general it may be better to split by male and female, ignoring the missing values.  The results are the same for both sexes and stand out more.
-
-%\au{XXX Possible other ordering approaches would be to use some kind of association measure or a matrix reordering algorithm for two categorical variables, medians by category or R2 from a linear model for continuous and categorical, correlations for two continuous variables.}
-
+As \pkg{ggpcp} uses the ggplot2 API, faceting is fully supported. \Cref{fig:penguins-variable-order} is faceted by gender:
+while the results are the same for the two sexes, any variability of body measures due to sex is removed from the plot by facetting. This makes the results stand out more.
+Interestingly, some potential outliers that were not visible previously now become visible. Note for example the two Gentoo males with particularly short flippers, and the Chinstrap female with an exceptionally long bill.
 
 
 <<penguins-variable-order, fig.cap="Changing the order of the variables along the x-axis emphasizes the differences in body measurements between the species.", fig.height=6, fig.width=8>>=
@@ -913,17 +849,9 @@ penguins1 %>%
   facet_grid(Sex~.)
 @
 
-%\subsubsection{}
 \paragraph{Determining sex}\hfill\newline
-% \au{Instead of coloring by species, we can color by sex and compare the distributions of the measurements for males and females, as is done in \Cref{fig:penguins}.  This also helps to %investigate
-% % which sex might be the few penguins whose sex is not given
-% }
-% \svp{provisionally determine the sex of the few penguins whose sex is not explicitly identified}\citep{renner1998}.
-% %\hh{XXX intro to ... now we are shifting focus to draw generalized pcps to determine sex. }
-%
-% %
 
-\Cref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. \au{Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.} %Based on these penguins' body measurements within the context of the other penguins, we can make some suggestions regarding their sex.
+\Cref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.
 
 <<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). \\hh{XXX reason for that here or in the text?}", fig.height=4, fig.width=8>>=
  penguins <- penguins %>%
@@ -968,11 +896,10 @@ In \Cref{fig:penguins2b} we explore this idea a bit further. This figure is base
 Body measurements of the unsexed animals are represented as line segments on top of the ribbons.
 This helps us to evaluate and assess the lines drawn for individual, unsexed penguins within the context of the marginal distributions (in this case their putative sex and species).
 
-While we facet both by species and sex, note that the axes are re-scaled within each species to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of faceting variables is achieved by the use of \svp{a \code{group\_by} statement before \code{pcp\_scale}}. \svp{\Cref{lst:pcp_relabel_group}} shows the code for prepping the data shown in \Cref{fig:penguins2b}. By grouping on species but not on sex (line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of inter-quantile ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
+While we facet both by species and sex, note that the axes are re-scaled within each species to make use of the full range in $y$. However, we use the same scale between the two sexes of each species. This different treatment of faceting variables is achieved by the use of a \code{group\_by} statement before \code{pcp\_scale}. \Cref{lst:pcp_relabel_group} shows the code for prepping the data shown in \Cref{fig:penguins2b}. By grouping on species but not on sex (line 9), data is being rescaled within species but the same scaling is used across males and females. Measurements for unsexed animals are shown as line segments on top of inter-quantile ribbons of both sexes. Viewers are encouraged to draw a conclusion about an animal's sex based on their values within the (2d density) context of their species and putative sex. Statistically, this comparison relates to a likelihood ratio test: the viewer is asked to make an assessment of the likelihood to observe the measurements of an animal under each of the two competing hypotheses of sex.
 
 \begin{minipage}[b]{.95\linewidth}
 \captionof{lstlisting}{Code to prepare data for \Cref{fig:penguins} by relabling penguins with NA sex as `?' and ordering sex so that penguins of unknown sex are between the male and female labels.\label{lst:pcp_relabel_group}}
-% : \caption{fig:penguins2a}}
 <<penguins2a, echo=TRUE, reset=TRUE>>=
 penguins_pcp <- penguins %>%
   filter(species != "Chinstrap") %>%                  # no unsexed animals in Chinstrap
@@ -1076,17 +1003,16 @@ penguins_pcp %>%
             colour = "#8b4950",
            nudge_x = 0.1, size = 3) +
   theme_pcp() +
-  scale_x_discrete("Body Mass (g)", "Flipper Length (mm)",
-                   "Bill Length (mm)", "Bill Depth (mm)")
-
-
+  scale_x_discrete(expand = expansion(add=0.2),
+                   labels = c("Body Mass (g)", "Flipper Length (mm)",
+                   "Bill Length (mm)", "Bill Depth (mm)"))
 @
 
 
 \subsection{Getting a second, third, ... and seventh opinion}\label{sec:carcinoma}
 
 \Cref{fig:carcinoma} shows data from \citet{agresti} published as part of the \code{poLCA} package \citep{polca}. Seven pathologists were asked to assess the same 118 slides for the presence or absence of carcinoma in the uterine cervix. Binary responses for each slide were recorded (yes/no).  Pathologists all agreed on about 25\% of slides, which they  considered to be carcinoma free, and a further 12.5\% of slides, which were considered to show carcinoma by all pathologists.
-\au{For the remaining 62.5\% of slides there was some disagreement and it is clear that this disagreement is not random.} \au{The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.}
+For the remaining 62.5\% of slides there was some disagreement and it is clear that this disagreement is not random. The pathologists have been ordered from left to right from the fewest number of overall carcinoma diagnoses made to the highest number.  This shows a strong level of agreement between adjacent axes.
 Note, in this example we do not need to scale the variables. Aside from the actual scale the values are ordered in the same way.
 <<carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a poly-line.", fig.height = 4, fig.width = 8>>=
 data("carcinoma", package = "poLCA")
@@ -1116,17 +1042,16 @@ carcinoma %>%
 
 
 \citet[Table 1]{carcinoma}  allow us a closer look at this data.
-\au{The pathologists evaluated the slides using five levels from 1 to 5}, given as:
+The pathologists evaluated the slides using five levels from 1 to 5, given as:
 (1) Negative, (2) Atypical Squamous Hyperplasia, (3) Carcinoma in Situ, (4) Squamous Carcinoma with Early Stromal Invasion, and (5) Invasive Carcinoma.
-\citet{agresti} \au{classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".}
-\Cref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \Cref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \Cref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. \au{Mostly, the variability between pathologists' scores stems from a difference in applying the scores \svp{XXX categories? XXX} rather than from an actual difference of opinions.} %Overall, the variability between pathologists' scores stems from a difference in applying the scores rather than an actual difference of opinions. \hh{XXX this needs to be phrased differently. What I mean is that we see a lot of agreement in the parallel lines, but the boxes are shifted from one pathologist to another.}
+\citet{agresti} classified levels 1 and 2 as "no" and levels 3 to 5 as "yes".
+\Cref{fig:carcinoma2} gives an overview of this more detailed data. The different pathologists are drawn in the same order as in \Cref{fig:carcinoma}. The results for each scan are colored by the overall average score (rounded to the closest integer). Compared to the previous figure, \Cref{fig:carcinoma2} shows more variability between pathologists' evaluations, but only few scans have vastly different scores assigned to them. Pathologist C, in particular, rates two scans as negative, that all other pathologists rate as quite advanced cancer. Mostly, the variability between pathologists' assessments stems from a difference in applying the categories rather than from an actual difference of opinions.
 The similarity in evaluations is particularly striking between pathologists A, G, E, and B.
 
-% \hh{XXX very unpolished idea, but I think worthwhile exploring XXX} % I like it! - svp
-\svp{In this example,} \hh{the generalized parallel coordinate plot gives us a visual tool for assessing the similarity between evaluations by different pathologists that moves beyond a mere correspondence of scores to an analysis that is based on ranks.}
-\svp{The hierarchical sorting used in ggpcp assigns ranks to each observation which provides additional information about the agreement between pathologists, which is graphically represented as the variability in line slope (that is, whether the $y$ coordinate on each vertical axis is similar).}
+In this example, the generalized parallel coordinate plot gives us a visual tool for assessing the similarity between evaluations by different pathologists that moves beyond a mere correspondence of scores to an analysis that is based on ranks.
+The hierarchical sorting used in \code{pcp\_arrange} assigns ranks to each observation. This provides additional information about the agreement between pathologists, which is graphically represented as the variability in line slope (that is, whether the $y$ coordinate on each vertical axis is similar).
 When the poly-lines are relatively flat, this means that  pathologists agree on the relative severity of the carcinoma in the scan.
-Obviously, we can assess `flat-ness' of the poly-lines \svp{numerically} as the variance of the calculated variable \code{pcp\_y}.
+Obviously, we can assess `flat-ness' of the poly-lines numerically as the variance of the calculated variable \code{pcp\_y}.
 \Cref{fig:carcinoma3} highlights the controversial scans, and provides additional visualizations assessing the frequency of difficult scans and the variability in \code{pcp\_y} and in the numerical scores assigned.
 
 <<carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Rounded average scores are mapped to color to help distinguish severity of scan evaluations.", fig.height = 4.25, fig.width = 7, out.width='0.9\\textwidth', fig.align='center'>>=
@@ -1251,8 +1176,8 @@ gpcp + hist +  ggvars +
 
 PCPs can also be used to assess, explain, and explore statistical methods. In the penguins example, we can use $k$-means clustering on all numeric body measurements and investigate which observations are generally captured in each of the clusters, as well as which categorical variables are most associated with membership in each cluster.
 
-\au{$k$-means clustering assigns cluster labels arbitrarily based on random cluster centers.}
-In order to maintain a persistent ordering over different values of $k$ we reorder the cluster \svp{labels} by the value of \code{body\_mass\_g}. This helps us to compare between $k$ and $k+1$ clusters.
+$k$-means clustering assigns cluster labels arbitrarily based on random cluster centers.
+In order to maintain a persistent ordering over different values of $k$ we reorder the cluster labels by the value of \code{body\_mass\_g}. This helps us to compare between $k$ and $k+1$ clusters.
 %
 \Cref{fig:kmean-penguins} shows the numeric measurements along with the assigned clusters, with categorical variables species and sex on the right. Each line is colored by the assigned cluster, allowing us to determine how the categorical variables relate to the quantitative variables and the resulting clusters.
 %
@@ -1261,7 +1186,7 @@ though again there are some penguins that are misclassified. The addition of a f
 
 What is clear from this exercise is that Adelie and Chinstrap penguins are much more similar to each other than they are to Gentoo penguins, but that there is still noticeable sexual dimorphism within each species.
 
-We also see from the figure \au{that some of the separation into sexes} is lost from one clustering to the next. This is typical for non-hierarchical clustering algorithms. Rather than refining a previous cluster, a switch from $k$ clusters to $k+1$ clusters starts the clustering process anew. If the signal in the data to separate into $k$ clusters is not strong or is ambiguous, we will see this reflected in the results; observations might be quite arbitrarily put together into groups, or a group of observations might be split into multiple clusters.
+We also see from the figure that some of the separation into sexes is lost from one clustering to the next. This is typical for non-hierarchical clustering algorithms. Rather than refining a previous cluster, a switch from $k$ clusters to $k+1$ clusters starts the clustering process anew. If the signal in the data to separate into $k$ clusters is not strong or is ambiguous, we will see this reflected in the results; observations might be quite arbitrarily put together into groups, or a group of observations might be split into multiple clusters.
 %
 In the Hartigan-Wong \citep{hartigan1979} algorithm used here for the clustering, points are assigned to random clusters in the initialization. In order to assess the effect of this non-deterministic start on the results, it is good practice to investigate the cluster stability by repeating the clustering multiple times for the same number of classes $k$ (if $k > 1$). \Cref{fig:cl-overview-2} shows a comparison of the results from multiple runs of the $k$-means algorithm for $k = 6$. The lines in this figure are colored by species and sex. We see that the splits by species are relatively stable -- there are only a few cases across all results in which individuals end up in clusters with individuals from another species, and if they do, it is the same individuals across different results. Splits by sex show more variability: Chinstrap penguins rarely split into male/female clusters, while Gentoo penguins shows a relatively stable separation into males and females. The Adelie population has subsets of individuals that are separated into males only, females only, and a third, more variable subset of a combination of the two.
 
@@ -1590,13 +1515,13 @@ penguins_complete %>%
 
 \section{Discussion}
 
-\svp{This paper describes generalized parallel coordinate plots, which extend parallel coordinate plots to include categorical variables. This extension is a significant development: GPCPs are useful in a wide variety of scenarios where standard PCPs were insufficient; in addition, the handling of categorical variables introduced as part of the \pkg{ggpcp} implementation of GPCPs opens up many new areas for PCP-related research.}
+This paper describes generalized parallel coordinate plots, which extend parallel coordinate plots to include categorical variables. This extension is a significant development: GPCPs are useful in a wide variety of scenarios where standard PCPs were insufficient; in addition, the handling of categorical variables introduced as part of the \pkg{ggpcp} implementation of GPCPs opens up many new areas for PCP-related research.
 
-\svp{The most consequential feature of GPCPs as implemented in the \pkg{ggpcp} package is the ability to follow a single observation through multiple categorical and continuous axes. This continuity provides a perceptual advantage over other alternatives even for plots of only categorical variables, as it is possible to visually assess $N>2$-dimensional contingent relationships using GPCPs, as demonstrated in \Cref{fig:cl-overview-2}. Throughout the examples in this paper, we have attempted to showcase the impacts of this visual continuity through a range of different applications of GPCPs; while we have attempted to assemble a broad set of such examples, we expect that GPCPs will be useful in many other applications which we may have overlooked.}
+The most consequential feature of GPCPs as implemented in the \pkg{ggpcp} package is the ability to follow a single observation through multiple categorical and continuous axes. This continuity provides a perceptual advantage over other alternatives even for plots of only categorical variables, as it is possible to visually assess $N>2$-dimensional contingent relationships using GPCPs, as demonstrated in \Cref{fig:cl-overview-2}. Throughout the examples in this paper, we have attempted to showcase the impacts of this visual continuity through a range of different applications of GPCPs; while we have attempted to assemble a broad set of such examples, we expect that GPCPs will be useful in many other applications which we may have overlooked.
 
-\svp{As a consequence of the line continuity in generalized PCPs, we also highlight the importance of four different types of ordering: axes, factors, lines, and plotting. While previous papers have examined the impact of axis ordering, there is a large increase in the importance of factor, line, and plotting order to preserve the line continuity afforded by GPCPs. The \pkg{ggpcp} framework allows the ordering of factors, lines, and plotting to carry additional information which affects the user's ability to understand the data. These factors, along with the use of color in PCPs, deserve much more investigation and consideration than the brief overview provided in this paper, which is focused on demonstrating the \pkg{ggpcp} API.}
+As a consequence of the line continuity in generalized PCPs, we also highlight the importance of four different types of ordering: axes, factors, lines, and plotting. While previous papers have examined the impact of axis ordering, there is a large increase in the importance of factor, line, and plotting order to preserve the line continuity afforded by GPCPs. The \pkg{ggpcp} framework allows the ordering of factors, lines, and plotting to carry additional information which affects the user's ability to understand the data. These factors, along with the use of color in PCPs, deserve much more investigation and consideration than the brief overview provided in this paper, which is focused on demonstrating the \pkg{ggpcp} API.
 
-\svp{In addition, the implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates data management from visual rendering while leveraging the \pkg{ggplot2} API. Both of these features contribute to the power and flexibility of the \pkg{ggpcp} package.}
+In addition, the implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates data management from visual rendering while leveraging the \pkg{ggplot2} API. Both of these features contribute to the power and flexibility of the \pkg{ggpcp} package.
 
 % ggpcp contributions
 %
@@ -1621,40 +1546,40 @@ penguins_complete %>%
 \bibliography{refs.bib}
 
 %----------------------------------------------------------------------------------------
-\begin{appendix}
-\section{Example usage}
-Commented code for \Cref{fig:carcinoma}:
-<<code-figure, eval=FALSE, echo=TRUE, reset=TRUE>>=
-data(carcinoma, package = "poLCA")
-
-# Prepping the Dataset
-carcinoma$total <- rowSums(carcinoma) - 7
-carcinoma <- carcinoma %>% mutate(
-  across(A:G, .fns = as.factor)
-)
-
-carcinoma %>%
-
-# Selecting and scaling variables
-pcp_select(F, D, C, A, G, E, B, tot) %>%
-pcp_scale(method="uniminmax") %>%
-pcp_arrange() %>%
-
-# Setting up ggplot for pcp and setting pcp display options
-ggplot(aes_pcp()) +
-geom_pcp_axes() +
-geom_pcp_boxes(colour="black", alpha=0) +
-geom_pcp(aes(colour = tot)) +
-geom_pcp_labels(aes(label = pcp_level), fill="white", alpha = 1) +
-
-# Choosing general ggplot display options
-scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette ="Dark2") +
-theme_bw() +
-guides(color = guide_legend(reverse=TRUE, override.aes = list(size = 5))) +
-scale_x_discrete(expand = expansion(add=0.25)) +
-xlab(NULL) + ylab(NULL) +
-theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
-@
-\end{appendix}
+% \begin{appendix}
+% \section{Example usage}
+% Commented code for \Cref{fig:carcinoma}:
+% <<code-figure, eval=FALSE, echo=TRUE, reset=TRUE>>=
+% data(carcinoma, package = "poLCA")
+%
+% # Prepping the Dataset
+% carcinoma$total <- rowSums(carcinoma) - 7
+% carcinoma <- carcinoma %>% mutate(
+%   across(A:G, .fns = as.factor)
+% )
+%
+% carcinoma %>%
+%
+% # Selecting and scaling variables
+% pcp_select(F, D, C, A, G, E, B, tot) %>%
+% pcp_scale(method="uniminmax") %>%
+% pcp_arrange() %>%
+%
+% # Setting up ggplot for pcp and setting pcp display options
+% ggplot(aes_pcp()) +
+% geom_pcp_axes() +
+% geom_pcp_boxes(colour="black", alpha=0) +
+% geom_pcp(aes(colour = tot)) +
+% geom_pcp_labels(aes(label = pcp_level), fill="white", alpha = 1) +
+%
+% # Choosing general ggplot display options
+% scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette ="Dark2") +
+% theme_bw() +
+% guides(color = guide_legend(reverse=TRUE, override.aes = list(size = 5))) +
+% scale_x_discrete(expand = expansion(add=0.25)) +
+% xlab(NULL) + ylab(NULL) +
+% theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
+% @
+% \end{appendix}
 
 \end{document}
