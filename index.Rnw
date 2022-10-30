@@ -123,7 +123,7 @@ knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth'
 @
 
 
-\hh{XXX polyline or poly-line?}
+%\hh{XXX polyline or poly-line?} % going with poly-line
 
 
 <<setup2, echo=FALSE, cache=FALSE>>=
@@ -208,14 +208,14 @@ penguins1 <- penguins1 %>% separate(Species, into=c("species", "foo2", "foo3", "
 \section{Introduction}
 
 Few approaches in data visualization exist that are truly high-dimensional. Most visualizations are projections of data into two or three dimensions enhanced by facetting or additional mappings to plot aesthetics, such as point size and color.
-Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using polylines (cf. \Cref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the projective space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the projective space.
+Parallel coordinate plots are one of the exceptions: in parallel coordinate plots we can actually visualize an arbitrary number of variables to get a visual summary of a high-dimensional data set. In a parallel coordinate plot, each variable takes the role of a vertical (or parallel) axis; giving the visualization its name. Multivariate observations are then plotted by connecting their respective values on each axis across all axes using poly-lines (cf. \Cref{fig:sketch}). For just two variables this switch from orthogonal axes to parallel axes is equivalent to a switch from the familiar Euclidean geometry to the projective space. In the projective space, points take the role of lines, while lines are replaced by points, i.e. points falling on a line in the Euclidean space correspond to lines crossing in a single point in the projective space.
 This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot \citep{Inselberg:1985}.
 
 The origins of parallel coordinate plots date back to the 19th century and are, depending on the source, either attributed to  \citet{dOcagne:1885} or  \citet{Gannett:1880}.
 Modern era parallel coordinate plots go back to  \citet{Inselberg:1985} and \citet{Wegman:1990}. Parallel coordinate plots are used in an exploratory setting as a way of getting a high-level overview of the marginal distributions involved, identifying outliers in the data, and  finding potential clusters of points. In the absence of those, Parallel Coordinate Plots are often criticized for the amount of clutter they produce, resembling a game of mikado (also known as pickup-sticks -- if you are not familiar with the game, imagine spilling a box of  spaghetti) rather than organized data.
 This clutter is sometimes mitigated by the use of $\alpha$-blending \citep{alpha-blending}, density estimation \citep{density-pcp}, or edge-bundling parallel coordinate plots \citep{edge-bundling}. For a detailed overview of these and other techniques see \citet{review}.
 
-<<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by polylines from one axis to the next. Two penguins from the Palmer Penguin data set (see section 5.1) were sampled for this example.">>=
+<<sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by poly-lines from one axis to the next. Two penguins from the Palmer Penguin data set (see section 5.1) were sampled for this example.">>=
 #df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
 df <- penguins
 df_pcp <- df %>%
@@ -276,10 +276,7 @@ During the plotting state, the only modification from default \pkg{ggplot2} synt
 The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}), but there are additional advantages to the use of \pkg{ggplot2}.
 Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
 
-One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
-In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as
-\pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web and
-\pkg{gridSVG}~\citep{gridsvg} \hh{which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements}.
+
 
 
 \begin{minipage}[b]{.94\linewidth}
@@ -308,6 +305,11 @@ pcp <- penguins %>%                       # data management:
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/api-fig-print-1.pdf}
 \captionof{figure}{The code in \Cref{lst:ggpcp-api} describes the data handling and basic structure of this parallel coordinate plot with both categorical and continuous data shown on vertical axes. Some minor modifications have been made to the plot for aesthetic purposes.\label{fig:api-fig-print}}
 \end{minipage}
+
+One of the strengths of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
+In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as
+\pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web and
+\pkg{gridSVG}~\citep{gridsvg} which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements.
 <<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='api-listing-code'>>=
 penguins %>%
   filter(!is.na(sex)) %>%
@@ -651,6 +653,9 @@ Univariate transformations like these may be useful to reduce the overall visual
 One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot. As the number of observations increases, this becomes less feasible because of overplotting of line segments, particularly for larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other.
 Coloring by groups and utilizing $\alpha$-blending improves the readability of plots.  However, the order of drawing the cases  affects what can be seen due to overplotting.
 
+As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} defaults to option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest group is plotted last -- \hh{effectively putting the small group on top}.
+
+An alternative setting, "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.
 
 \begin{minipage}[b]{.94\linewidth}
 <<order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE, fig.show ='hide'>>=
@@ -674,11 +679,6 @@ ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw the smallest category last
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/order-fig-print-1.pdf}
 \captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates two parallel coordinate plots. The plot on the left uses the ordering of the dataset to determine line plotting order; as a result, lines with sex = NA are plotted last (on top). On the right, we use the  ``small-on-top" default; this ensures that the smallest category, Chinstrap, is plotted last.\label{fig:order-fig-print}}
 \end{minipage}
-
-As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} defaults to option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest group is plotted last -- \hh{effectively putting the small group on top}.
-
-An alternative setting, "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.
-
 <<order-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='order-listing-code'>>=
 
 pp1 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
@@ -853,7 +853,7 @@ penguins1 %>%
 
 \Cref{fig:penguins} shows that within each species, the males tend to be larger in size and heavier than the females. For several of the penguins, sex could not be determined because either the sexing primer did not amplify or no blood sample was obtained \citep{penguins2}. These penguins are represented by dark lines. Comparing these penguins' body measurements to those of the other penguins, we can make suggestions regarding their sex.
 
-<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). \\hh{XXX reason for that here or in the text?}", fig.height=4, fig.width=8>>=
+<<penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). ", fig.height=4, fig.width=8>>=
  penguins <- penguins %>%
    mutate(
      species = factor(species, c("Chinstrap", "Adelie", "Gentoo")),
@@ -1190,8 +1190,6 @@ We also see from the figure that some of the separation into sexes is lost from 
 %
 In the Hartigan-Wong \citep{hartigan1979} algorithm used here for the clustering, points are assigned to random clusters in the initialization. In order to assess the effect of this non-deterministic start on the results, it is good practice to investigate the cluster stability by repeating the clustering multiple times for the same number of classes $k$ (if $k > 1$). \Cref{fig:cl-overview-2} shows a comparison of the results from multiple runs of the $k$-means algorithm for $k = 6$. The lines in this figure are colored by species and sex. We see that the splits by species are relatively stable -- there are only a few cases across all results in which individuals end up in clusters with individuals from another species, and if they do, it is the same individuals across different results. Splits by sex show more variability: Chinstrap penguins rarely split into male/female clusters, while Gentoo penguins shows a relatively stable separation into males and females. The Adelie population has subsets of individuals that are separated into males only, females only, and a third, more variable subset of a combination of the two.
 
-\hh{For the conclusion? XXX Using generalized parallel coordinate plots and item sorting allows us to assess the stability of clustering results.}
-
 <<cluster-setup>>=
 penguins_complete <- penguins %>% na.omit()
 
@@ -1517,7 +1515,9 @@ penguins_complete %>%
 
 This paper describes generalized parallel coordinate plots, which extend parallel coordinate plots to include categorical variables. This extension is a significant development: GPCPs are useful in a wide variety of scenarios where standard PCPs were insufficient; in addition, the handling of categorical variables introduced as part of the \pkg{ggpcp} implementation of GPCPs opens up many new areas for PCP-related research.
 
-The most consequential feature of GPCPs as implemented in the \pkg{ggpcp} package is the ability to follow a single observation through multiple categorical and continuous axes. This continuity provides a perceptual advantage over other alternatives even for plots of only categorical variables, as it is possible to visually assess $N>2$-dimensional contingent relationships using GPCPs, as demonstrated in \Cref{fig:cl-overview-2}. Throughout the examples in this paper, we have attempted to showcase the impacts of this visual continuity through a range of different applications of GPCPs; while we have attempted to assemble a broad set of such examples, we expect that GPCPs will be useful in many other applications which we may have overlooked.
+The most consequential feature of GPCPs as implemented in the \pkg{ggpcp} package is the ability to follow a single observation through multiple categorical and continuous axes. This continuity provides a perceptual advantage over other alternatives even for plots of only categorical variables, as it is possible to visually assess $N>2$-dimensional contingent relationships using GPCPs, as demonstrated in \Cref{fig:cl-overview-2}. Throughout the examples in this paper, we have attempted to showcase the impacts of this visual continuity through a range of different applications of GPCPs. We have attempted to assemble a broad set of such examples, but we expect that GPCPs will be useful in many other applications.
+
+%\hh{XXX We could expand on each of the examples, but I don't think we actually have to.  XXX Using generalized parallel coordinate plots and item sorting allows us to assess the stability of clustering results.}
 
 As a consequence of the line continuity in generalized PCPs, we also highlight the importance of four different types of ordering: axes, factors, lines, and plotting. While previous papers have examined the impact of axis ordering, there is a large increase in the importance of factor, line, and plotting order to preserve the line continuity afforded by GPCPs. The \pkg{ggpcp} framework allows the ordering of factors, lines, and plotting to carry additional information which affects the user's ability to understand the data. These factors, along with the use of color in PCPs, deserve much more investigation and consideration than the brief overview provided in this paper, which is focused on demonstrating the \pkg{ggpcp} API.
 
