@@ -1521,7 +1521,34 @@ The most consequential feature of GPCPs as implemented in the \pkg{ggpcp} packag
 
 As a consequence of the line continuity in generalized PCPs, we also highlight the importance of four different types of ordering: axes, factors, lines, and plotting. While previous papers have examined the impact of axis ordering, there is a large increase in the importance of factor, line, and plotting order to preserve the line continuity afforded by GPCPs. The \pkg{ggpcp} framework allows the ordering of factors, lines, and plotting to carry additional information which affects the user's ability to understand the data. These factors, along with the use of color in PCPs, deserve much more investigation and consideration than the brief overview provided in this paper, which is focused on demonstrating the \pkg{ggpcp} API.
 
-In addition, the implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates data management from visual rendering while leveraging the \pkg{ggplot2} API. Both of these features contribute to the power and flexibility of the \pkg{ggpcp} package.
+
+\hh{While the decision to move the data wrangling ahead of the call to `ggplot` was initially a technical work-around to comply with the grammar based restriction of the one-to-one mapping of one variable to one aesthetic, this split provides us with a slew of benefits.}
+
+\begin{enumerate}
+\item {\bf Speed: } \hh{moving the data wrangling out of the inner workings of `ggplot2` removes the necessity to repeat this step each layer. This results in a considerable speed up for larger datasets or more intricate plots with multiple layers.
+}
+
+\hh{Generally,
+any data summary or modifications needed to be made of the data, are implemented in so called *statistics* functions, named `stat\_xxx`, where `xxx` is usually the name of the corresponding geom to capture the close relationship between the `geom\_xxx` and the `stat\_xxx` functions.
+For example, in `stat\_boxplot` the summaries necessary for visualizing the corresponding boxplot are calculated.
+ `stat\_bin` is the default statistics associated with histograms: continuous variables are binned and a frequency count is being visualized.
+A `stat\_pcp` data function would therefore have to deal with the translation from a the user-friendly wide dataset to the technically motivated  long form of the data that allows a direct mapping of one variable to the $x$ axis (implemented as `pcp\_x`) and another variable to the $y$ axis (implemented as `pcp\_y`).}
+
+\hh{
+Obviously, we decided against an implementation of this `stat\_pcp` function, resulting in the need to wrangle the original data into the correct format ahead of the call to ggplot. However, this leads to a second benefit:}
+\item{\bf Transparency and Flexibility: }\hh{
+by modularizing and exposing the data wrangling pipeline into individual steps, we  created a better conceptual framework and  allow more flexibility for users to make changes:  the user can interact with and modify intermediate results at each step.
+}
+\item{\bf Reducing the clutter: }\hh{
+most parallel coordinate plot functions come with a LOT of parameters -- many of them aimed at controlling the exact layout of the plot, dealing with considerations such  as e.g. `showPoints`  draw points?  or `boxplot` draw a boxplot?
+All of these parameters become unnecessary in the ggpcp implementation because of the direct availability of the ggplot2 layer system. So, should there be a need for boxplot, a simple call to `geom\_boxplot` will draw them, and depending on whether this call happens before or after a call to `geom\_pcp`, the boxplots end up in the back or on top of the lines. Similarly, we can deal with points, or separately drawn lines on top (e.g. to show a median cluster point).}
+
+\hh{Modularizing the code for data wrangling and visualizing has the additional advantage that remaining  parameters for parallel coordinate plots can now be moved directly into the relevant functions. This helps with the meaning of the parameter as well as seemingly redundant calls to parameters in every layer when defaults are changed to ensure that all layers are based on the same data. XXX is that too cryptic?
+}
+\end{enumerate}
+
+The implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates data management from visual rendering while leveraging the \pkg{ggplot2} API. Both of these features contribute to the power and flexibility of the \pkg{ggpcp} package.
+
 
 % ggpcp contributions
 %
