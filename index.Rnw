@@ -1550,6 +1550,7 @@ All of these parameters become unnecessary in the ggpcp implementation because o
 The implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates data management from visual rendering while leveraging the \pkg{ggplot2} API. Both of these features contribute to the power and flexibility of the \pkg{ggpcp} package.
 
 
+
 % ggpcp contributions
 %
 % - The generalized framework includes other styles of PCPs as edge cases, but we open up so many more applications for PCPs with the generalized framework. The potential uses of parallel coordinate plots are much broader than previously demonstrated. In this paper, we attempt to showcase some of these new applications, and we expect that we have missed the opportunity to use PCPs in many other areas.
@@ -1563,7 +1564,10 @@ The implementation of GPCPs provided in the \pkg{ggpcp} package neatly separates
 %
 % \svp{In our demonstration of generalized parallel coordinate plots as implemented in \pkg{ggpcp}, we have also explored the use of generalized parallel coordinate plots for assessing inter-rater agreement, cluster stability, and assessment of missing information. GPCPs are a powerful tool for exploring high-dimensional data.}
 
-
+\subsection*{Online Material}
+\hh{This manuscript has been created in the reproducible Rweave format \citep{knitr1, knitr2} in R \citep{R} using the RStudio IDE (version Spotted Wakerobin). All original files, data, and code can be found at \url{https://github.com/srvanderplas/ggpcp-paper}. The `ggpcp` package  is available from CRAN (XXX will be).
+We would like to thank all the contributors to open software, in particular, the authors behind any  `tidyverse` packages \citep{tidyverse}. We acknowledge that a lot of this work is only possible with the help of unpaid volunteers.
+}
 
 %----------------------------------------------------------------------------------------
 %	REFERENCE LIST
