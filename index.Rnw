@@ -269,16 +269,6 @@ An important motivation for the \pkg{ggpcp} package is that other implementation
 %One significant motivation for adding another parallel coordinate package to CRAN is that other implementations of parallel coordinate plots
 make it difficult to follow a single observation across the chart. \pkg{ggpcp} alleviates this difficulty with two new developments: careful treatment of categorical variables to prevent line intersections at vertical axes, which maintains the visual ability to follow individual cases  across the chart, and methods for ordering observations within categorical variables to reduce the amount of visual clutter. Together, these features allow for easier perception of lines in generalized parallel coordinate plots: by reducing the number of intersecting lines at pivot points along the vertical axes, we allow our brains to leverage the gestalt principle of good continuation to follow one line across the plot. Reducing the number of line crossings at non-axis points simplifies the plot, reducing the overall cognitive load required to "untangle" (literally and metaphorically) the individual observations.
 
-In addition, \pkg{ggpcp} leverages  the full ggplot2 philosophy instead of using highly specific wrapper functions, allowing users to focus on the data, rather than the names of various parameters used for customization.
-\pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering.
-Scaling, ordering of cases, and the arrangement of the parallel axes are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale},respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
-During the plotting state, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
-The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}), but there are additional advantages to the use of \pkg{ggplot2}.
-Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
-
-
-
-
 \begin{minipage}[b]{.94\linewidth}
 \captionof{lstlisting}{A demonstration of ggpcp's data wrangling and plotting API. }\label{lst:ggpcp-api}
 <<prep-data, echo=FALSE>>=
