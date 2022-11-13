@@ -300,6 +300,7 @@ One of the strengths of \pkg{ggplot2} is its handling of small multiple plots wi
 In addition, leveraging \pkg{ggpcp} on \pkg{ggplot2} expands the functionality available to users without much additional code, thanks to other packages such as
 \pkg{plotly}~\citep{plotly-book}  which leverage \pkg{ggplot2} to create interactive graphics for the web and
 \pkg{gridSVG}~\citep{gridsvg} which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements.
+
 <<api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='api-listing-code'>>=
 penguins %>%
   filter(!is.na(sex)) %>%
@@ -647,18 +648,21 @@ As a countermeasure, the order in which line segments are plotted should be care
 
 An alternative setting, "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.
 
-\begin{minipage}[b]{.94\linewidth}
+%\begin{minipage}[b]{.94\linewidth}
 <<order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE, fig.show ='hide'>>=
 pcp_df <- penguins %>%
   arrange(sex) %>% # NA last = top of PCP axis
   pcp_select(sex, species) %>%
   pcp_scale(method="uniminmax") %>%
   pcp_arrange()
-ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw lines in the provided order
+ggplot(pcp_df, aes_pcp()) + # draw lines in the provided order
+  geom_pcp_axes() +
   geom_pcp(aes(colour = species), overplot = "none") +
   geom_pcp_labels() +
   theme_pcp()
-ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw the smallest category last
+
+ggplot(pcp_df, aes_pcp()) + # draw the smallest category last
+  geom_pcp_axes() +
   geom_pcp(aes(colour = species), overplot = "small-on-top") +
   geom_pcp_labels() +
   theme_pcp()
@@ -668,7 +672,7 @@ ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() + # draw the smallest category last
 
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/order-fig-print-1.pdf}
 \captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates two parallel coordinate plots. The plot on the left uses the ordering of the dataset to determine line plotting order; as a result, lines with sex = NA are plotted last (on top). On the right, we use the  ``small-on-top" default; this ensures that the smallest category, Chinstrap, is plotted last.\label{fig:order-fig-print}}
-\end{minipage}
+%\end{minipage}
 <<order-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='order-listing-code'>>=
 
 pp1 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
