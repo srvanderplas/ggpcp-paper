@@ -1608,3 +1608,65 @@ We would like to thank all the contributors to open software, in particular, the
 % \end{appendix}
 
 \end{document}
+
+p1 "This duality provides a good basis for interpreting geometric features observed in a parallel coordinate plot"
+Maybe in a 2-d plot, but I never liked this statement of Al's
+
+1st para: projection/projective used in two different ways
+
+p3
+"Scaling, ordering of cases, and the arrangement of the parallel axes are completed using pcp_select, pcp_arrange, and pcp_scale,respectively"
+This can't be right! And there should be a space after the last comma.
+
+p4 Duplicate para you already found
+
+p4 "Males tend to be larger than females across all three species."
+True, but we can't see that in Figure 2
+
+p4 "because ties are visually the main obstacle of allowing"
+should be "to allowing"
+
+p6 "The method robust normalizes values univariately by mapping the median value to 0.5 and a robust 95% confidence interval (based on the median absolute deviation) to an interval of 0 to 1."
+Is this really what is done?  Why a confidence interval?  That does not match Figure 4
+
+p6 "Values outside this range Figure 4 indicate a variability in the measurements larger than that of a normal distribution, as can be seen for several acid measurements."
+Should "top plot in Figure 4" be in brackets at the end of the sentence?
+
+p 6 "For convenience, text labels instead of numeric values are shown along the y axis in Figure 4."  Is this sentence needed?  Numeric values would be incomprehensible (and different for each axis).
+
+p8 "different approaches of breaking"
+I'd prefer "different approaches for breaking"
+
+p10 "The line 2 "
+Just "Line 2 " ?
+
+p10 Fig 6  NA is still plotted last in the plot on the right.  The example is confusing.
+
+p10 "Several aspects in "
+Better "Several aspects of “ ?
+
+p18 "While the decision to move the data wrangling ahead of the call to ‘ggplot‘ was initially a technical work-around to comply with the grammar based restriction of the one-to-one mapping of one variable to one aesthetic, this split provides us with a slew of benefits."
+How about just "Splitting data wrangling and plotting provides several benefits." ?
+
+p18-20 Remove the stat_pcp paragraph.  It is too technical (and negative) for what is in effect the summary of the paper.  If you want to keep it, move it to the body of the paper.
+
+p20 "Transparency and Flexibility: by modularizing and exposing the data wrangling pipeline into individual steps, we created a better conceptual framework and allow more flexibility for users to make changes: the user can interact with and modify intermediate results at each step."
+How about
+"Transparency and Flexibility: modularizing and exposing the data wrangling pipeline into individual steps creates a better conceptual framework and gives users more flexibility to make changes: users can interact with and modify intermediate results at each step." ?
+
+p20 "such as e.g. ‘showPoints‘ draw points? or ‘boxplot‘ draw a boxplot?"
+How about
+"such as 'showPoints' for drawing points or 'boxplot' for drawing a boxplot" ?
+
+p20 "All of these parameters become unnecessary"
+Better "These parameters become unnecessary"
+
+p20 "So, should there be a need for boxplot, a simple call to ‘geom_boxplot‘ will draw them"
+Better "Should there be a need for boxplots, a simple call to ‘geom_boxplot‘ will draw them"
+
+p20 "Similarly, we can deal with points, or separately drawn lines on top (e.g. to show a median cluster point)."
+If this is wanted, then rewrite, but I don't think it is necessary.
+
+p20 "Modularizing the code for data wrangling and visualizing has the additional advantage that remaining parameters for parallel coordinate plots can now be moved directly into the relevant functions. This helps with the meaning of the parameter as well as seemingly redundant calls to parameters in every layer when defaults are changed to ensure that all layers are based on the same data. XXX is that too cryptic?"
+How about
+"Modularizing the code for data wrangling and visualizing means that parameters for parallel coordinate plots can be placed directly in their relevant functions. This helps with interpreting parameters as well as removing the need for calling the same parameters in multiple layers to ensure that all layers are based on the same data." ?
