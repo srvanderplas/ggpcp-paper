@@ -2,17 +2,35 @@
 %	PA%----------------------------------------------------------------------------------------
 %	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
-
 \documentclass{article}
-\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage{amsmath}
+\usepackage{graphicx}
+%\usepackage{enumerate}
+\usepackage{url} % not crucial - just used below for the URL
+
+%\pdfminorversion=4
+% NOTE: To produce blinded version, replace "0" with "1" below.
+\newcommand{\blind}{0}
+
+% DON'T change margins - should be 1 inch all around.
+\addtolength{\oddsidemargin}{-.5in}%
+\addtolength{\evensidemargin}{-.5in}%
+\addtolength{\textwidth}{1in}%
+\addtolength{\textheight}{1.3in}%
+\addtolength{\topmargin}{-.8in}%
+
+\def\spacingset#1{\renewcommand{\baselinestretch}%
+{#1}\small\normalsize} \spacingset{1}
+
+%\usepackage[sc]{mathpazo} % Use the Palatino font
 \usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
-\linespread{1.05} % Line spacing - Palatino needs more space between lines
+%\linespread{1.05} % Line spacing - Palatino needs more space between lines
 \usepackage{microtype} % Slightly tweak font spacing for aesthetics
 \usepackage{amsmath,amssymb,array}
 
 \usepackage[english]{babel} % Language hyphenation and typographical rules
 
-\usepackage[margin=1in,columnsep=20pt]{geometry} % Document margins
+%\usepackage[margin=1in,columnsep=20pt]{geometry} % Document margins
 \usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions
 \usepackage{booktabs} % Horizontal rules in tables
 % \usepackage{subfig} % Sub figures
@@ -72,7 +90,6 @@
 \usepackage{cleveref}% \autoref command automatically handles figure/table/etc refs
 
 \usepackage{natbib}
-\bibliographystyle{abbrvnat}
 
 % Commands for editing
 \newcommand{\hh}[1]{{\textcolor{orange}{#1}}}
@@ -81,27 +98,47 @@
 
 \newcommand{\code}[1]{\texttt{{#1}}}
 \newcommand{\pkg}[1]{\texttt{{#1}}}
+
+\begin{document}
+\bibliographystyle{abbrvnat}
+
 %----------------------------------------------------------------------------------------
 %	TITLE SECTION
 %----------------------------------------------------------------------------------------
 
-\title{Penguins Go Parallel: a grammar of graphics framework for generalized parallel coordinate plots} % Article title
-\author{%
-\textsc{Susan Vander Plas}$^1$\thanks{Corresponding author: \href{mailto:xxx}{xxx}}\hspace{2em}
-\textsc{Yawei Ge}$^2$\hspace{2em}
-\textsc{Antony Unwin}$^3$\hspace{2em}
-\textsc{Heike Hofmann}$^2$\\[1ex] % Your name
-{\footnotesize
-$^1$ University of Nebraska Lincoln;
-$^2$ Iowa State University;
-$^3$ Augsburg University, Germany
-} %
-}
-\date{\today} % Leave empty to omit a date
+\if0\blind
+{
+  \title{\bf Penguins Go Parallel: a grammar of graphics framework for generalized parallel coordinate plots}
+  \author{Susan Vander Plas\thanks{
+    The authors gratefully acknowledge \textit{please remember to list all relevant funding sources in the unblinded version}}\hspace{.2cm}\\
+    Department of Statistics, University of Nebraska-Lincoln\\
+    and \\
+    Yawei Ge \\
+    Department of Statistics, Iowa State University \\
+    and \\
+    Antony Unwin \\
+    Mathematisch-naturwissenschaftliche Fakult\"at, Universit\"at Augsburg\\
+    and \\
+    Heike Hofmann \\
+    Department of Statistics, Iowa State University}
+  \maketitle
+} \fi
+
+\if1\blind
+{
+  \bigskip
+  \bigskip
+  \bigskip
+  \begin{center}
+    {\LARGE\bf Penguins Go Parallel: a grammar of graphics framework for generalized parallel coordinate plots}
+\end{center}
+  \medskip
+} \fi
+
+%\date{\today} % Leave empty to omit a date
 
 %----------------------------------------------------------------------------------------
 
-\begin{document}
 
 % Print the title
 \maketitle
@@ -293,15 +330,15 @@ penguins <- rbind(
 
 <<api-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE>>=
 pcp <- penguins %>%                       # data management:
-  filter(!is.na(sex)) %>%                 #   seamless integration with tidy workflow
-  pcp_select(4,3,5:6, sex, species) %>%   #   variable selection, see section 3.1
-  pcp_scale(method="uniminmax") %>%       #   setting scaling method, see section 3.2
-  pcp_arrange() %>%                       #   arranging categorical data
-  ggplot(aes_pcp()) +                     # plotting the chart:
+  filter(!is.na(sex)) %>%                 #   tidy workflow
+  pcp_select(4,3,5:6, sex, species) %>%   #   variable selection (sec 3.1)
+  pcp_scale(method="uniminmax") %>%       #   scale values (sec 3.2)
+  pcp_arrange() %>%                       #   arrange categorical data
+  ggplot(aes_pcp()) +                     # create chart layers:
     geom_pcp_axes() +                     #   vertical lines for axes
-    geom_pcp(aes(colour = species),       #   parallel coordinate line  segments
+    geom_pcp(aes(colour = species),       #   line  segments
             alpha = 0.8, overplot="none") +
-    geom_pcp_labels()                     #   labels for categorical variables
+    geom_pcp_labels()                     #   label categories
 @
 
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/api-fig-print-1.pdf}
@@ -330,9 +367,9 @@ penguins %>%
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none")
 @
 
-In addition, \pkg{ggpcp} \svp{uses} the full \svp{grammar of graphics} philosophy instead of
+In addition, \pkg{ggpcp} uses the full grammar of graphics philosophy instead of
 %using
-highly specific wrapper functions, allowing users to focus on the data, rather than the names of various parameters used for customization.
+highly specific wrapper functions. This allows users to focus on the data, rather than the names of various parameters used for customization.
 \pkg{ggpcp} adopts tidy conventions for data wrangling, separating the necessary data manipulation to generate a parallel coordinate plot from the visual rendering, as shown in \Cref{lst:ggpcp-api}.
 %p3
 %"Scaling, ordering of cases, and the arrangement of the parallel axes are completed using %pcp_select, pcp_arrange, and pcp_scale,respectively"
@@ -340,7 +377,7 @@ highly specific wrapper functions, allowing users to focus on the data, rather t
 The arrangement of the parallel axes, ordering of cases, and scaling of variables are completed using  \code{pcp\_select}, \code{pcp\_arrange}, and \code{pcp\_scale}, respectively; the resulting data frame is then passed directly into the familiar \code{ggplot()} call.
 During the plotting stage, the only modification from default \pkg{ggplot2} syntax is the use of \code{aes\_pcp()} in place of \code{aes()}; this is necessary to handle the multiple axes in a parallel coordinate plot while maintaining the ability to map all other variables of the original data frame to aesthetics such as linetype and color.
 The user has complete control over layers such as PCP lines (\code{geom\_pcp}), labels (\code{geom\_pcp\_labels}), and boxes around categorical variables (\code{geom\_pcp\_boxes}).
-\svp{The consequences of the choice to base \pkg{ggpcp} on the grammar of graphics framework, and the separation of the data wrangling and plotting, are discussed in \Cref{sec-api-consequences}.}
+The consequences of the choice to base \pkg{ggpcp} on the grammar of graphics framework, and the separation of the data wrangling and plotting, are discussed in \Cref{sec-api-consequences}.
 
 An example parallel coordinate plot is shown in \Cref{fig:api-fig-print}, along with the \pkg{ggpcp} code to generate the plot in \Cref{lst:ggpcp-api}. We can see that Gentoo penguins have smaller bill depth and larger flipper length and body mass than Chinstrap and Adelie penguins. Chinstrap penguins have longer bills than Adelie penguins, but are similar to Adelie penguins across most other measurements.
 Males tend to be larger than females across all three species.
@@ -406,11 +443,11 @@ Note that the order in which variables are selected determines the order in whic
 
 As a consequence of these design decisions, users have several ways of performing different tasks within the flow of generating data for a parallel coordinate plot. For instance, users can reorder variables using \code{pcp\_select} or after variable selection using the \code{pcp\_x} variable. Motivations for reordering factors in parallel coordinate plots are discussed in more detail in \Cref{sec:ties}.
 
-Similarly to previous implementations of parallel coordinate plots which attempted to accommodate categorical variables, we \svp{initially} treat factor variables as variables with labels and an associated (numerical) ordering of those labels.
+Similarly to previous implementations of parallel coordinate plots which attempted to accommodate categorical variables, we initially treat factor variables as variables with labels and an associated (numerical) ordering of those labels.
 Whenever we assign a numeric value to the ordering, we refer to the associated score, which is an integer value from one to the number of categories, if not specified explicitly otherwise.
 Ordered factors are plotted from the lowest level upwards.  If a factor legend is included, it will need to be reversed to match this order by using \code{guides(color = guide\_legend(reverse=TRUE))}, as shown in the example in \Cref{sec:carcinoma}.
-Where \pkg{ggpcp} differs from previous implementations of parallel coordinate plots is in the assignment of numerical values to individual observations within a factor level. This
-\svp{process} % ordering
+Where \pkg{ggpcp} differs from previous implementations of parallel coordinate plots is in the assignment of numerical values to individual observations within each factor level. This
+process % ordering
 is discussed further in \Cref{sec:ties}.
 
 <<colorscheme>>=
@@ -432,7 +469,7 @@ tertiary = c("#277552", "#75B095", "#499371", "#0F5837", "#003B20")
 #####  Generated by Paletton.com (c) 2002-2014
 @
 
-<<scale, fig.cap="Two scaling methods showing fatty acid compositions of  olive oils from different regions in Italy, areas within each region are colored using similar hues within region (green for Northern Italy, purple for Sardinia, and tans for Southern Italy). The two scaling methods roughly allow the same conclusions.", fig.height = 8, fig.width = 8, fig.pos='htbp'>>=
+<<scale, fig.cap="Two scaling methods showing fatty acid compositions of  olive oils from different regions in Italy, areas within each region are colored using similar hues within region (green for Northern Italy, purple for Sardinia, and tans for Southern Italy). The two scaling methods roughly allow the same conclusions. For readability, the y scale shows textual values rather numbers.", fig.height = 8, fig.width = 8, fig.pos='htbp'>>=
 #crabs <- read.csv("http://ggobi.org/book/data/australian-crabs.csv")
 #prim7 <- read.csv("http://ggobi.org/book/data/prim7.csv")
 data("olive", package="tourr")
@@ -503,29 +540,27 @@ oils1/oils2
 
 \subsection{Scaling}
 
-\code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other. The \code{method} argument is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. \svp{The} default, \code{uniminmax}, univariately scales each variable onto a range of [0,1] with the minimum at 0 and the maximum at 1. \code{globalminmax} maps the values across all axes onto a an interval of [0,1]. This method should only be used if the values across all variables are comparable.
-The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and a robust 95\% confidence interval (based on the median absolute deviation) to an interval of 0 to 1.
-\au{XXX Is this really what is done?  Why a confidence interval?  That does not match Figure 4 XXX}
-Values outside this range, \svp{as in the top plot in} \Cref{fig:scale}, indicate a variability in the measurements  larger than that of a normal distribution, as can be seen for several acid measurements.
-% Should "top plot in Figure 4" be in brackets at the end of the sentence?
-\hh{For convenience, text labels instead of numeric values are shown along the $y$ axis in \Cref{fig:scale}.} \au{XXX Is this sentence needed?  Numeric values would be incomprehensible (and different for each axis). XXX}
+\Cref{fig:scale} shows  two of the scaling methods applied to the olive oil data  \citep{forina, tourr}: Measurements of fatty acids in 572 olive oils from three different regions in Italy are visualized as parallel coordinate plots. Similar to the findings by \citet{ggobi}, we see that eicosenoic acid is only found in increased quantities in olive oils from Southern Italy. Quantities of oleic and linoleic acids allow a separation between olive oils from Sardinia and Northern Italy. Both scaling methods enable us to come to these conclusions. While uniminmax scaling uses the space allotted to the chart most efficiently, the robust normalization method emphasizes the heavy tails and skewness of some of the measurements, such as the percentages of stearic and arachidic fatty acids.
+\hh{Both scaling methods are implemented as part of } \code{pcp\_scale}.
 
+\code{pcp\_scale(data, method)} scales the values on each axis and determines the relative relationship of the axes to each other. The \code{method} argument is a character string specifying the method to be used when transforming the values of each variable onto a common y axis. The default, \code{uniminmax}, univariately scales each variable onto a range of [0,1] with the minimum at zero and the maximum at one. \code{globalminmax} maps the values across all axes onto an interval of [0,1]. This method should only be used if the values across all variables are comparable.
+The method \code{robust} normalizes values univariately by mapping the median value to 0.5 and divide by four times the median absolute deviation. This corresponds to a  mapping of a 95\% confidence interval to an interval of 0 to 1.
+Values outside this range, as in the top plot in \Cref{fig:scale}, indicate a variability in the measurements  larger than that of a normal distribution, as can be seen for several acid measurements.
 
-\Cref{fig:scale} shows  two of the scaling methods applied to the olive oil data  \citep{forina, tourr}: Measurements of fatty acids in 572 olive oils from three different regions in Italy are visualized as parallel coordinate plots. Similar to the findings by \citet{ggobi}, we see that eicosenoic acid is only found in increased quantities in olive oils from Southern Italy. Quantities of oleic and linoleic acids allow a separation between olive oils from Sardinia and Northern Italy. Both scaling methods enable us to find these conclusions. While uniminmax scaling uses the space allotted to the chart most efficiently, the robust normalization method emphasizes the heavy tails and skewness of some of the measurements, such as the percentages of stearic and arachidic fatty acids. \svp{XXX I almost prefer this paragraph first in this section, thoughts? XXX}
 
 \section{Visual Rendering}\label{sec:visual}
 
 
 \subsection{Breaking ties on categorical axes}\label{sec:ties}
 
-\svp{As discussed previously, o}ne of the primary advantages of \pkg{ggpcp} over previous parallel coordinate plot software packages is that \pkg{ggpcp} handles categorical and continuous data in a way that allows users to trace a single observation through the projective space.
+As discussed previously, one of the primary advantages of \pkg{ggpcp} over previous parallel coordinate plot software packages is that \pkg{ggpcp} handles categorical and continuous data in a way that allows users to trace a single observation through the projective space.
 This is accomplished through a tie-breaking algorithm: different categorical levels are grouped along the vertical axis in boxes proportional to the number of cases in each level.
 Within the box for a level, individual observations are arranged so that visual clutter is minimized and individual cases can be followed.
 
-\svp{An interesting consequence of this treatment of case ordering with categorical variables is that with large data sets, our approach looks extremely similar to existing solutions for categorical-only parallel set plots. This effect can be seen clearly in the first two vertical axes of \Cref{fig:scale}: similarly colored bands of lines are perceptually grouped using the Gestalt principle of common fate and, when observations are sufficiently dense, become perceptually similar to the parallelograms used in parallel set plots.} % This opens up the possibility of using other modifications to handle the line width illusion, if we wanted to...?
+An interesting consequence of this treatment of case ordering with categorical variables is that with large data sets, our approach looks extremely similar to existing solutions for categorical-only parallel set plots. This effect can be seen clearly in the first two vertical axes of \Cref{fig:scale}: similarly colored bands of lines are perceptually grouped using the Gestalt principle of common fate and, when observations are sufficiently dense, become perceptually similar to the parallelograms used in parallel set plots. % This opens up the possibility of using other modifications to handle the line width illusion, if we wanted to...?
 
 \Cref{fig:alignment} shows several approaches of dealing with categorical variables in parallel coordinate plots.
-The left-most panel shows two categorical variables and the typical net of lines that forms between them in an original parallel coordinate plot. The other three panels show three different approaches \au{for} breaking the ties resulting from the categorical variables, with our favored solution shown on the right: all observations are spaced out evenly.
+The left-most panel shows two categorical variables and the typical net of lines that forms between them in an original parallel coordinate plot. The other three panels show three different approaches for breaking the ties resulting from the categorical variables, with our favored solution shown on the right: all observations are spaced out evenly.
 This results in a natural visualization of the marginal frequencies along each axis (additionally enhanced by the light gray boxes grouping observations in the same category).
 The ordering of the observations within the level is such that a minimal number of line crossings occurs between the axes.
 This method of dealing with categorical variables is the one we propose in the generalized parallel coordinate plot.
@@ -647,7 +682,7 @@ grid.arrange(p1, p3, p4, p2, nrow=1)
 @
 
 When extended over multiple axes, the equispaced tie-breaking solution that reduces line crossings requires hierarchical sorting, which is implemented in the \pkg{ggpcp} function \code{pcp\_arrange(data, method, space)}.
-The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that ties are broken using a hierarchical ordering determined by variables' values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
+The two implemented methods are \code{"from-left"} and \code{"from-right"}, meaning that tie breaks are determined hierarchically by variables' values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
 While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as ``external cognition" \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the data as displayed in the chart.
 
 % \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol. %HH: sorry.
@@ -659,7 +694,7 @@ While hierarchical sorting requires additional computations relative to the jitt
 There are many different goals one might have when drawing a PCP; these goals shape any effort the designer might put into optimization of visual appearance.
 For instance, the order of factor levels is an important consideration if the goal is to minimize line crossings and thus the visual complexity of the parallel coordinate plot.
 As previously discussed, some line crossings can be removed by sorting, however, others can only be removed through reordering of factor levels.
-While \textit{automatic} sorting of factor levels is computationally difficult and statistically undesirable given that many factors have some implicit or explicit ordering that should not be automatically optimized, \svp{\textit{manually}} reordering factors can reduce the number of line crossings to produce a simpler and more comprehensible PCP.
+While \textit{automatic} sorting of factor levels is computationally difficult and statistically undesirable given that many factors have some implicit or explicit ordering that should not be automatically optimized, \textit{manually} reordering factors can reduce the number of line crossings to produce a simpler and more comprehensible PCP.
 For example, in the last panel of \Cref{fig:alignment}, a reordering of the second factor so that the dark (purple) lines are on the bottom could reduce the overall number of line crossings to just two crossings, once the hierarchical sorting is updated to accommodate the new factor order.
 
 % I have a plot for this (p5, above) but don't really think it's essential to show it...
@@ -672,15 +707,14 @@ Univariate transformations like these may be useful to reduce the overall visual
 \subsection{Line Segment Plotting Order}
 
 % One of the primary advantages of the generalized approach to dealing with categorical variables is the ability to follow a single observation throughout the plot.
-\svp{While \pkg{ggpcp} allows us to follow a single observation through a plot, a}s the number of observations increases, this becomes
-\svp{more difficult} %less feasible
-\svp{due to overplotting} %because of overplotting of line segments
-, particularly for larger data sets. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other.
+While \pkg{ggpcp} allows us to follow a single observation through a plot, as the number of observations increases, this becomes
+more difficult %less feasible
+due to overplotting. As more observations and line segments are drawn, more lines cross each other, increasing the effort required to follow a poly-line from one side of the plot to the other.
 Coloring by groups and utilizing $\alpha$-blending improves the readability of plots.  However, the order of drawing the cases  affects what can be seen due to overplotting.
 
-As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} defaults to option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest group is plotted last -- \hh{effectively putting the small group on top}.
+As a countermeasure, the order in which line segments are plotted should be carefully chosen. The parameter \code{overplot} defaults to option "small-on-top", where groups are plotted in order of size from largest to smallest so that the smallest group is plotted last -- effectively putting the small group on top.
 
-An alternative setting, "none", is very flexible, but requires the user to specify the order they want before plotting--or just accept the current order of the dataset. The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.
+An alternative setting, "none", is very flexible, but requires the user to specify the order \hh{in which observations are drawn in the data processing step. The order in which observations are listed in the original data is preserved throughout the data wrangling process and directly informs the order in which lines are rendered in the layers.}  The use and effect of \code{overplot} are demonstrated in \Cref{lst:ggpcp-line-order} and \Cref{fig:order-fig-print}, respectively.
 
 %\begin{minipage}[b]{.94\linewidth}
 <<order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE, fig.show ='hide'>>=
@@ -1141,7 +1175,7 @@ Carcinoma_pcp %>%
   guides(color = guide_legend(override.aes = list(size = 2)))
 @
 
-<<carcinoma3, dependson='carcinoma2', fig.cap="Highlighting lines with high variability. XXX Need more of a description here! What are the benefits of looking at the variability of pcpy compared to the scores?", fig.height = 6, fig.width = 8>>=
+<<carcinoma3, dependson='carcinoma2', fig.cap="Highlighting scans with high variability in line segments. Var(pcp\\_y) captures line variability.  XXX Need more of a description here! What are the benefits of looking at the variability of pcpy compared to the scores?", fig.height = 6, fig.width = 8>>=
 Carcinoma_pcp2 <- Carcinoma_pcp %>%
   left_join(var_id %>% select(pcp_id, var_scores, var_y), by = "pcp_id")
 
@@ -1540,15 +1574,16 @@ penguins_complete %>%
 #006400 "darkgreen"
 @
 
-\section{\pkg{ggpcp} API Design}\label{sec-api-consequences}
+\section{Design of the \pkg{ggpcp} API}\label{sec-api-consequences}
 \svp{Now that we have demonstrated the \pkg{ggpcp} API and several examples of how \pkg{ggpcp} can be used to create plots which allow users to investigate and explore multivariate data in new ways, it is useful to take a moment to reflect on the design of the \pkg{ggpcp} API and how it differs from past implementations of parallel coordinate plots.}
 
-\svp{Using the \pkg{ggplot2} grammar of graphics API as a foundation has several benefits: users can make use of small multiple plots using familiar functions like \texttt{facet\_wrap} and \texttt{facet\_grid}, as in \Cref{fig:penguins-variable-order}.}
+\svp{Using the \pkg{ggplot2} grammar of graphics API as a foundation has several benefits: \hh{users of ggplot2 and the  tidyverse  come with a general understanding of how an API is set up and **should** work.
+Aesthetically, users can make use of all of the `ggplot2` functionality for customizing plots. Functionally, `ggpcp` interfaces seamlessly with `ggplot2` and can therefore leverage existing infrastructure, such as} facetting, as used in \Cref{fig:penguins-variable-order}.}
 
 % , but there are additional advantages to the use of \pkg{ggplot2}.
 % Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
 
-In addition, \svp{designing} \pkg{ggpcp} \svp{using the} \pkg{ggplot2} \svp{framework} expands the functionality available to users without much additional code, thanks to other packages (\pkg{plotly}~\citep{plotly-book}, \pkg{gridSVG}~\citep{gridsvg}) which extend \pkg{ggplot2} to create interactive graphics for the web.
+In addition, \svp{designing} \pkg{ggpcp} \svp{using the} \pkg{ggplot2} \svp{framework} expands the functionality available to users without much additional code, thanks to other packages, such as \pkg{plotly}~\citep{plotly-book} and \pkg{gridSVG}~\citep{gridsvg}, which extend \pkg{ggplot2} to create interactive graphics for the web.
 
 % \pkg{gridSVG}~\citep{gridsvg} which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements.
 
@@ -1574,16 +1609,16 @@ Obviously, we decided against an implementation of this `stat\_pcp` function, re
 \au{modularizing and exposing the data wrangling pipeline into individual steps creates a better conceptual framework and gives users more flexibility to make changes: users can interact with and modify intermediate results at each step.}
 \item{\bf Reducing the \svp{function} clutter: }\hh{
 most parallel coordinate plot functions come with a LOT of parameters -- many of them aimed at controlling the exact layout of the plot, dealing with considerations
-\au{such as 'showPoints' for drawing points or 'boxplot' for drawing a boxplot.}
-\au{These parameters become unnecessary} in the ggpcp implementation because of the direct availability of the ggplot2 layer system.
-Should there be a need for boxplots \svp{on top of the default PCPs}, a simple call to `geom\_boxplot` will draw them, and depending on whether this call happens before or after a call to `geom\_pcp`, the boxplots end up \svp{behind} %in the back
-or \svp{in front of} %on top of
+such as 'showPoints' for drawing points or 'boxplot' for drawing a boxplot.
+These parameters become unnecessary in the ggpcp implementation because of the direct availability of the ggplot2 layer system.
+Should there be a need for boxplots on top of the default PCPs, a simple call to `geom\_boxplot` will draw them, and depending on whether this call happens before or after a call to `geom\_pcp`, the boxplots end up behind %in the back
+or in front of %on top of
 the lines.}
 %Similarly, we can deal with points, or separately drawn lines on top (e.g. to show a median cluster point).
 \au{Modularizing the code for data wrangling and visualizing means that parameters for parallel coordinate plots can be placed directly in their relevant functions. This helps with interpreting parameters as well as removing the need for calling the same parameters in multiple layers to ensure that all layers are based on the same data.}
 \end{enumerate}
 
-\svp{The use of data wrangling functions outside of the plotting apparatus allows us to format the data in a consistent way (and complete that operation once). This is somewhat analogous to the way the \pkg{sf} package handles plotting based on different geometries: by customizing the format of the data that is passed into the ggplot extensions, we can write plotting functions that conform to the expected use of ggplot2 layers that use data with a somewhat different underlying structure.}
+\svp{The use of data wrangling functions outside of the plotting apparatus allows us to format the data in a consistent way (and execute that operation only once). This is somewhat analogous to the way the \pkg{sf}  package \citep{sf} handles plotting based on different geometries: by customizing the format of the data that is passed into the ggplot extensions, we can write plotting functions that conform to the expected use of ggplot2 layers that use data with a  different underlying structure.}
 
 \section{Discussion}
 
