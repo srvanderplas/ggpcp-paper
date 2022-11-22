@@ -1,20 +1,20 @@
-## ----setup, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE---------
-library(knitr)
-knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
-
-
-
-
-## ----setup2, echo=FALSE, cache=FALSE--------------------------------------
-knit_hooks$set(source = function(x, options) {
-    paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x,
-        "\\end{lstlisting}\n", sep = "")
-})
-knit_hooks$set(reset = function(before, options, envir){
-if(before){
-    return("\\setcounter{lstnumber}{1}")
-}
-})
+# ## ----setup, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE---------
+# library(knitr)
+# knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
+#
+#
+#
+#
+# ## ----setup2, echo=FALSE, cache=FALSE--------------------------------------
+# knit_hooks$set(source = function(x, options) {
+#     paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x,
+#         "\\end{lstlisting}\n", sep = "")
+# })
+# knit_hooks$set(reset = function(before, options, envir){
+# if(before){
+#     return("\\setcounter{lstnumber}{1}")
+# }
+# })
 
 
 ## ----packages, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE------
@@ -32,38 +32,7 @@ oranges <- c("#FDBF6F", "#F89D38", "#F37A00")
 purples <- c("#CAB2D6", "#9A78B8", "#6A3D9A")
 greens <- c("#b2df8a", "#73C05B", "#33a02c")
 
-#cols <- hue_pal()(3)
-# cols <- rev(c("#535993", "#C5D068", "#D4856A"))
 cols <-  c(oranges[2], greens[2], purples[2])
-
-# #####  Color Palette by Paletton.com
-# #####  Palette URL: http://paletton.com/#uid=33W0V0kllllaFw0g0qFqFg0w0aF
-#
-#
-# *** Primary color:
-#
-#    shade 0 = #323875 = rgb( 50, 56,117) = rgba( 50, 56,117,1) = rgb0(0.196,0.22,0.459)
-#    shade 1 = #7D82B0 = rgb(125,130,176) = rgba(125,130,176,1) = rgb0(0.49,0.51,0.69)
-#    shade 2 = #535993 = rgb( 83, 89,147) = rgba( 83, 89,147,1) = rgb0(0.325,0.349,0.576)
-#    shade 3 = #191F58 = rgb( 25, 31, 88) = rgba( 25, 31, 88,1) = rgb0(0.098,0.122,0.345)
-#    shade 4 = #080D3B = rgb(  8, 13, 59) = rgba(  8, 13, 59,1) = rgb0(0.031,0.051,0.231)
-#
-# *** Secondary color (1):
-#
-#    shade 0 = #9AA637 = rgb(154,166, 55) = rgba(154,166, 55,1) = rgb0(0.604,0.651,0.216)
-#    shade 1 = #F1FAA6 = rgb(241,250,166) = rgba(241,250,166,1) = rgb0(0.945,0.98,0.651)
-#    shade 2 = #C5D068 = rgb(197,208,104) = rgba(197,208,104,1) = rgb0(0.773,0.816,0.408)
-#    shade 3 = #727D15 = rgb(114,125, 21) = rgba(114,125, 21,1) = rgb0(0.447,0.49,0.082)
-#    shade 4 = #4A5300 = rgb( 74, 83,  0) = rgba( 74, 83,  0,1) = rgb0(0.29,0.325,0)
-#
-# *** Secondary color (2):
-#
-#    shade 0 = #AA5639 = rgb(170, 86, 57) = rgba(170, 86, 57,1) = rgb0(0.667,0.337,0.224)
-#    shade 1 = #FFC0AA = rgb(255,192,170) = rgba(255,192,170,1) = rgb0(1,0.753,0.667)
-#    shade 2 = #D4856A = rgb(212,133,106) = rgba(212,133,106,1) = rgb0(0.831,0.522,0.416)
-#    shade 3 = #803015 = rgb(128, 48, 21) = rgba(128, 48, 21,1) = rgb0(0.502,0.188,0.082)
-#    shade 4 = #551600 = rgb( 85, 22,  0) = rgba( 85, 22,  0,1) = rgb0(0.333,0.086,0)
-
 
 
 ## ----prep-raw-penguin, warning = FALSE------------------------------------
@@ -168,8 +137,6 @@ tertiary = c("#277552", "#75B095", "#499371", "#0F5837", "#003B20")
 
 
 ## ----scale, fig.cap="Two scaling methods showing fatty acid compositions of  olive oils from different regions in Italy, areas within each region are colored using similar hues within region (green for Northern Italy, purple for Sardinia, and tans for Southern Italy). The two scaling methods roughly allow the same conclusions. For readability, the y scale shows textual values rather numbers.", fig.height = 8, fig.width = 8, fig.pos='htbp'----
-#crabs <- read.csv("http://ggobi.org/book/data/australian-crabs.csv")
-#prim7 <- read.csv("http://ggobi.org/book/data/prim7.csv")
 data("olive", package="tourr")
 
 oils <- olive %>% mutate(
@@ -238,8 +205,6 @@ oils1/oils2
 
 ## ----alignment, fig.height = 3.5, fig.align="center", fig.cap="Using 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels, ties in categorical levels are broken using different approaches (from left to right): jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. "----
 set.seed(20200924)
-#x1 <- c(rep(1, 5), rep(2, 3), rep(3, 4))
-#x2 <- c(1,2,1,2,1,1,1,1,2,2,2,1)
 
 df <- penguins %>% na.omit() %>%  group_by(species, sex) %>%
   slice_sample(n = 3, replace = FALSE) %>%
@@ -416,7 +381,7 @@ penguins1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap"
   mutate(island=factor(Island, levels=c("Dream", "Torgersen", "Biscoe")))
 
 
-# Fourth pcp
+# Second pcp
 pp2 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
   pcp_select(`study ID`, species, island, `Bill Length`:`Body Weight`) %>%
@@ -445,50 +410,6 @@ penguins1 <- penguins1 %>% mutate(`-Bill Depth`=-`Bill Depth`)
 # Change the order of printing the colours to make Chinstrap stand out better
 # Requires rearranging of dataset case order and using overplot="none"
 penguins1 <- penguins1 %>% arrange(fct_rev(species))
-
-# # Sixth pcp
-# p1 %>% pcp_select(studyName, speciesC, islandC, `-CulmenD`, FlipperL, BodyMass, CulmenL, Sex) %>%
-#   pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
-#   geom_pcp_axes(colour="white") +
-#   geom_pcp(aes(colour=speciesC), overplot="none") +
-#   geom_pcp_boxes(fill="white") +
-#   geom_pcp_labels(fill="white", alpha=1) +
-#   xlab(NULL) + ylab(NULL) +
-#   theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-#         legend.position="none") +
-#   scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
-#
-
-
-
-# # Splitting by sex (not faceting so that NAs are excluded and scales are individual)
-# # Seventh pcp
-# m1 <- penguins1 %>% filter(Sex=="MALE") %>% pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`, Sex) %>%
-# pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
-# geom_pcp_axes() +
-# geom_pcp(aes(colour=interaction(sex,species)), overplot="none", alpha = 0.8) +
-# geom_pcp_boxes(fill="white", alpha = 0.8) +
-# geom_pcp_labels(fill="white", alpha=1) +
-#   theme_bw() +
-# xlab(NULL) + ylab(NULL) +
-# theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-# legend.position="none") +
-# scale_colour_manual(values=c(oranges[c(1,3)], greens[c(1,3)], purples[c(1,3)]))
-#
-# f1 <- penguins1 %>% filter(Sex=="FEMALE") %>% pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`, Sex) %>%
-# pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
-# geom_pcp_axes() +
-# geom_pcp(aes(colour=species), overplot="none", alpha = 0.8) +
-# geom_pcp_boxes(fill="white", alpha =0.8) +
-# geom_pcp_labels(fill="white", alpha=1) +
-#   theme_bw() +
-# xlab(NULL) + ylab(NULL) +
-# theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-# legend.position="none") +
-# scale_colour_manual(values=c(cols[2], cols[1], cols[3]))
-#
-# #library(patchwork)
-# #f1 + m1 + plot_layout(nrow = 2, byrow = FALSE)
 
 penguins1 %>%
   filter(!is.na(Sex)) %>%
@@ -598,19 +519,14 @@ annotate_dframe <- annotate_dframe %>% mutate(
   putative = ifelse(pcp_y > 0.5, labels[2], putative)
 )
 
-#circle <- fontawesome(c('fa-h-square', 'fa-plus-square'))
-
+# unicode characters don't display well, but work
 circle <- c("","")
 
-#e0fd # unicode for b
-# recalculate position by group
-# XXXX pcp_arrange has to also do the tie-breaking by group.
 penguins_pcp %>%
   filter(sex!= "?") %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp_boxes(boxwidth=0.1) +
-#  geom_pcp(aes(colour = sex), alpha = 0.4) +
   geom_ribbon(aes( ymin = lower, ymax=upper, group=interaction(sex,level), fill = sex, alpha=level),
               #alpha = 0.25,
               data = dframe) +
@@ -711,7 +627,6 @@ var_id <- var_id %>% mutate(
 # scatterplot of variances against each other
 ggvars <- var_id %>%
   ggplot(aes(x = var_y, y = var_scores)) +
-#  geom_hex(bins = 20, fill ="grey50", alpha = 0.25) +
   geom_point(aes(colour = `round(Average)`, alpha = var_y)) +
   geom_point(colour="grey90",
              data = var_id %>% filter(var_y < 0.001)) + # fudging a bit to grey out points with high frequencies
@@ -720,8 +635,6 @@ ggvars <- var_id %>%
   theme(legend.position = "none") +
   geom_point(aes(colour = `round(Average)`),
              data = var_id %>% filter(var_y > 0.02))
-#  scale_x_sqrt() +
-#  scale_y_sqrt()
 
 Carcinoma_pcp %>%
   ggplot(aes_pcp()) +
@@ -745,7 +658,6 @@ Carcinoma_pcp %>%
 ## ----carcinoma3, dependson='carcinoma2', fig.cap="Scans with a high variability in line segments are highlighted. While we might initially assume that a high line variability is directly associated with a high variability between pathologists' scores, we see from the scatterplot at the bottom right that the correlation between these two measures is not perfect. The difference lies in the tie-breaking approach: the $y$ values for two scans with the same score on one axis are adjusted based on the scores by the other pathologists. ", fig.height = 6, fig.width = 8----
 Carcinoma_pcp2 <- Carcinoma_pcp %>%
   left_join(var_id %>% select(pcp_id, var_scores, var_y, group), by = "pcp_id")
-
 
 hist <-
   var_id %>%
@@ -837,10 +749,6 @@ penguins_complete <- penguins_complete %>% mutate(
   })
 )
 
-# penguins_complete <- penguins_complete %>% mutate(
-#   species = factor(species, levels = c("Gentoo", "Adelie", "Chinstrap"))
-# )
-
 
 ## ----cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8, include = F----
 penguins_complete %>%
@@ -917,8 +825,7 @@ penguins_complete %>%
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-#  scale_color_brewer(type="qual") +
-    scale_color_manual(values = c(oranges[1], greens[2], oranges[3], purples[2]))  +
+  scale_color_manual(values = c(oranges[1], greens[2], oranges[3], purples[2]))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -984,8 +891,7 @@ penguins_complete_pcp %>%
   geom_pcp_boxes(fill=NA) +
   geom_pcp_labels() +
   theme_bw() +
-#  scale_color_brewer(type="qual") +
-    scale_color_manual(values = c(oranges[1], greens[2], oranges[2], oranges[3], purples[1], purples[3]))  +
+  scale_color_manual(values = c(oranges[1], greens[2], oranges[2], oranges[3], purples[1], purples[3]))  +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
@@ -1037,46 +943,11 @@ penguins_complete %>%
     geom_pcp_boxes(fill=NA, colour = "black", size = .5) +
     geom_pcp_labels(alpha = 0.9) +
   theme_bw() +
-#  scale_color_brewer(type="qual", palette = "Paired") +
-  # scale_color_manual(values = c("#fdbf6f", "#ff7f00",
-  #                               "#cab2d6", "#6a3d9a",
-  #                               "#b2df8a", "#33a02c")) +
   scale_color_manual(values = c(greens[c(1,3)], oranges[c(1,3)], purples[c(1,3)])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  # scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-  #                    breaks=c(0,0.25, .5,.75, 1)) +
   scale_y_continuous(breaks = NULL) +
   scale_x_discrete("",expand = expansion(add=0.5))
 
-
-
-## ----cl-overview, eval=FALSE, fig.cap="Overview of all clusters for $k$=2 to 6.", fig.height = 4, fig.width = 8----
-## penguins_complete %>%
-##     mutate(
-##     across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
-##   ) %>%
-##   select(-c(cl7, cl8)) %>%
-##   pcp_select(starts_with("cl"), species, sex) %>%
-##   pcp_scale() %>%
-##   pcp_arrange(space = 0.1) %>%
-##   ggplot(aes_pcp()) +
-##     geom_pcp(aes(color=interaction(sex, species)), alpha = 0.6, axiswidth = c(0, 0.1)) +
-##     geom_pcp_boxes(fill=NA) +
-##     geom_pcp_labels() +
-##   theme_bw() +
-##   scale_color_manual(values = c(purples[1], purples[3], oranges[1], oranges[3], greens[1], greens[3])) +
-##   theme(legend.position = "none") +
-##   ylab("") +
-##   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-##   # scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-##   #                    breaks=c(0,0.25, .5,.75, 1)) +
-##   scale_y_continuous(breaks = NULL) +
-##   scale_x_discrete("",expand = expansion(add=0.25))
-## 
-## 
-## #FF8C00 "darkorange"
-## #551A8B "purple4"
-## #006400 "darkgreen"
 
