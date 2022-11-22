@@ -1541,8 +1541,25 @@ penguins_complete %>%
 @
 
 \section{\pkg{ggpcp} API Design}\label{sec-api-consequences}
-\svp{XXX need a transition into this section - we want to reflect on the implications of the decisions to use the ggplot2 philosophy and to separate data wrangling and plotting. XXX}
+\svp{Now that we have demonstrated the \pkg{ggpcp} API and several examples of how \pkg{ggpcp} can be used to create plots which allow users to investigate and explore multivariate data in new ways, it is useful to take a moment to reflect on the design of the \pkg{ggpcp} API and how it differs from past implementations of parallel coordinate plots.}
 
+\svp{Using the \pkg{ggplot2} grammar of graphics API as a foundation has several benefits: users can make use of small multiple plots using familiar functions like \texttt{facet\_wrap} and \texttt{facet\_grid}, as in \Cref{fig:penguins-variable-order}.}
+
+% , but there are additional advantages to the use of \pkg{ggplot2}.
+% Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
+
+In addition, \svp{designing} \pkg{ggpcp} \svp{using the} \pkg{ggplot2} \svp{framework} expands the functionality available to users without much additional code, thanks to other packages (\pkg{plotly}~\citep{plotly-book}, \pkg{gridSVG}~\citep{gridsvg}) which extend \pkg{ggplot2} to create interactive graphics for the web.
+
+% \pkg{gridSVG}~\citep{gridsvg} which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements.
+
+\svp{While we make use of the general \pkg{ggplot2} API for plotting the data, \pkg{ggpcp} makes the additional decision to separate the data wrangling from the plotting.}
+\svp{This is a slight deviation from the \pkg{ggplot2} extension approach, as} \hh{data summaries and modifications \svp{in ggplot2} are implemented in \textit{statistics} functions}. \svp{These functions}, \hh{named `stat\_xxx`, where `xxx` is usually the name of the corresponding geom to capture the close relationship between the `geom\_xxx` and the `stat\_xxx` functions.
+For example, `stat\_boxplot` \svp{calculates} the summaries necessary for \svp{drawing a boxplot, such as the mean, quartiles, and IQR}.
+ `stat\_bin` is the default statistics associated with histograms: continuous variables are binned and a frequency count is being visualized.
+A `stat\_pcp` data function would therefore have to deal with the translation from a the user-friendly wide dataset to the technically motivated  long form of the data that allows a direct mapping of one variable to the $x$ axis (implemented as `pcp\_x`) and another variable to the $y$ axis (implemented as `pcp\_y`).}
+
+\hh{
+Obviously, we decided against an implementation of this `stat\_pcp` function, resulting in the need to wrangle the original data into the correct format ahead of the call to ggplot.}
 \au{Splitting data wrangling and plotting provides several benefits.}
 % \hh{While the decision to move the data wrangling ahead of the call to `ggplot` was initially a technical work-around to comply with the grammar based restriction of the one-to-one mapping of one variable to one aesthetic, this split provides us with}
 %a slew of
@@ -1552,16 +1569,7 @@ penguins_complete %>%
 \begin{enumerate}
 \item {\bf Speed: } \hh{moving the data wrangling out of the inner workings of `ggplot2` removes the necessity to repeat this step each layer. This results in a considerable speed up for larger datasets or more intricate plots with multiple layers.
 }
-
-\hh{Generally,
-any data summary or modifications are implemented in \textit{statistics} functions, named `stat\_xxx`, where `xxx` is usually the name of the corresponding geom to capture the close relationship between the `geom\_xxx` and the `stat\_xxx` functions.
-For example, in `stat\_boxplot` the summaries necessary for visualizing the corresponding boxplot are calculated.
- `stat\_bin` is the default statistics associated with histograms: continuous variables are binned and a frequency count is being visualized.
-A `stat\_pcp` data function would therefore have to deal with the translation from a the user-friendly wide dataset to the technically motivated  long form of the data that allows a direct mapping of one variable to the $x$ axis (implemented as `pcp\_x`) and another variable to the $y$ axis (implemented as `pcp\_y`).}
-% \au{XXX Remove the stat\_pcp paragraph.  It is too technical (and negative) for what is in effect the summary of the paper.  If you want to keep it, move it to the body of the paper.  XXX}
-
-\hh{
-Obviously, we decided against an implementation of this `stat\_pcp` function, resulting in the need to wrangle the original data into the correct format ahead of the call to ggplot. However, this leads to a second benefit:}
+% \hh{However, this leads to a second benefit:}
 \item{\bf Transparency and Flexibility: }
 \au{modularizing and exposing the data wrangling pipeline into individual steps creates a better conceptual framework and gives users more flexibility to make changes: users can interact with and modify intermediate results at each step.}
 \item{\bf Reducing the \svp{function} clutter: }\hh{
@@ -1575,15 +1583,7 @@ the lines.}
 \au{Modularizing the code for data wrangling and visualizing means that parameters for parallel coordinate plots can be placed directly in their relevant functions. This helps with interpreting parameters as well as removing the need for calling the same parameters in multiple layers to ensure that all layers are based on the same data.}
 \end{enumerate}
 
-\svp{XXX transition to overall strength of the grammar of graphics XXX}
-% , but there are additional advantages to the use of \pkg{ggplot2}.
-% Users can also augment their parallel coordinate plots with additional information, such as boxplots or violin plots, with standard ggplot2 syntax.
-
-\svp{Another strength} of \pkg{ggplot2} is its handling of small multiple plots with \code{facet\_grid} and \code{facet\_wrap}; these functions are fully supported in \pkg{ggpcp}.
-In addition, \svp{designing} \pkg{ggpcp} \svp{using the} \pkg{ggplot2} \svp{framework} expands the functionality available to users without much additional code, thanks to other packages (\pkg{plotly}~\citep{plotly-book}, \pkg{gridSVG}~\citep{gridsvg}) which extend \pkg{ggplot2} to create interactive graphics for the web.
-% \pkg{gridSVG}~\citep{gridsvg} which exposes vectorized graphics to allow programmable changes, such as elementary interactions with graphical elements.
-
-\svp{XXX Transition to the discussion XXX}
+\svp{The use of data wrangling functions outside of the plotting apparatus allows us to format the data in a consistent way (and complete that operation once). This is somewhat analogous to the way the \pkg{sf} package handles plotting based on different geometries: by customizing the format of the data that is passed into the ggplot extensions, we can write plotting functions that conform to the expected use of ggplot2 layers that use data with a somewhat different underlying structure.}
 
 \section{Discussion}
 
