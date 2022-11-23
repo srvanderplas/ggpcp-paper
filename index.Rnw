@@ -109,8 +109,7 @@
 \if0\blind
 {
   \title{\bf Penguins Go Parallel: a grammar of graphics framework for generalized parallel coordinate plots}
-  \author{Susan Vander Plas\thanks{
-    The authors gratefully acknowledge \textit{please remember to list all relevant funding sources in the unblinded version}}\hspace{.2cm}\\
+  \author{Susan Vander Plas \\
     Department of Statistics, University of Nebraska-Lincoln\\
     and \\
     Yawei Ge \\
