@@ -39,6 +39,8 @@
 \usepackage{graphicx} % better graphics
 \usepackage{float}
 \usepackage[dvipsnames]{xcolor} % colors
+\usepackage{setspace}
+\doublespacing
 
 \usepackage{enumitem} % Customized lists
 \setlist[itemize]{noitemsep} % Make itemize lists more compact
