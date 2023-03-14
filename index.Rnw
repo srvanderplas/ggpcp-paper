@@ -290,7 +290,7 @@ df_pcp %>%
 @
 
 While parallel coordinate plots are a powerful tool, using categorical variables alongside quantitative variables in PCPs is a great challenge.
-Modifications of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, and common angle plots \citep{Hofmann:2013}; unfortunately, these solutions do not accommodate quantitative variables.
+Modifications of parallel coordinate plots have been specifically developed to deal with categorical data: parallel set plots \citep{Kosara:2006}, Hammock plots \citep{Schonlau:2003}, Sankey diagrams \citep{pople01,schmidt08}, Alluvial plots \citep{brunson20}, and common angle plots \citep{Hofmann:2013}; unfortunately, these solutions do not accommodate quantitative variables.
 Instead, they are intended for use with tabular data and show bands of observations from one categorical variable to the next. Hammock plots and common angle plots mitigate effects of the sine-illusion \citep{sine, susan:2015} on parallel sets plots.
 
 An attempt to combine categorical and numeric variables in a parallel coordinate plot is introduced in the categorical parallel coordinate plots of \citet{cpcp} by treating factor variables as numeric.
@@ -549,6 +549,7 @@ The method \code{robust} normalizes values univariately by mapping the median va
 Values outside this range, as in the top plot in \Cref{fig:scale}, indicate a variability in the measurements  larger than that of a normal distribution, as can be seen for several acid measurements.
 
 
+
 \section{Visual Rendering}\label{sec:visual}
 
 
@@ -558,7 +559,7 @@ As discussed previously, one of the primary advantages of \pkg{ggpcp} over previ
 This is accomplished through a tie-breaking algorithm: different categorical levels are grouped along the vertical axis in boxes proportional to the number of cases in each level.
 Within the box for a level, individual observations are arranged so that visual clutter is minimized and individual cases can be followed.
 
-An interesting consequence of this treatment of case ordering with categorical variables is that with large data sets, our approach looks extremely similar to existing solutions for categorical-only parallel set plots. This effect can be seen clearly in the first two vertical axes of \Cref{fig:scale}: similarly colored bands of lines are perceptually grouped using the Gestalt principle of common fate and, when observations are sufficiently dense, become perceptually similar to the parallelograms used in parallel set plots. % This opens up the possibility of using other modifications to handle the line width illusion, if we wanted to...?
+An interesting consequence of this treatment of case ordering with categorical variables is that with large data sets, our approach looks extremely similar to existing solutions for categorical-only parallel set plots. This effect can be seen clearly in the first two vertical axes of \Cref{fig:scale}: similarly colored bands of lines are perceptually grouped using the Gestalt principle of common fate\cite{ware_cognitive_2002} and, when observations are sufficiently dense, become perceptually similar to the parallelograms used in parallel set plots. % This opens up the possibility of using other modifications to handle the line width illusion, if we wanted to...?
 
 \Cref{fig:alignment} shows several approaches of dealing with categorical variables in parallel coordinate plots.
 The left-most panel shows two categorical variables and the typical net of lines that forms between them in an original parallel coordinate plot. The other three panels show three different approaches for breaking the ties resulting from the categorical variables, with our favored solution shown on the right: all observations are spaced out evenly.
@@ -676,7 +677,7 @@ The two implemented methods are \code{"from-left"} and \code{"from-right"}, mean
 While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as ``external cognition" \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the data as displayed in the chart.
 
 % \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol. %HH: sorry.
-\citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical sorting of individual observations minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes. % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
+\citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical sorting of individual observations minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes\cite{ware_cognitive_2002}. % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
 % HH: let's keep that for the next paper and compare it to manual orderings
 
 \subsection{Variable Ordering and Transformations}
