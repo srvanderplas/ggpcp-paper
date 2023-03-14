@@ -59,7 +59,7 @@
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}
 \lstset{
   backgroundcolor=\color{shadecolor},
-  basicstyle=\BeraMonottfamily,
+  basicstyle=\BeraMonottfamily\linespread{0.5},
   frame=single,
 }
 
@@ -675,7 +675,7 @@ grid.arrange(p1, p3, p4, p2, nrow=1)
 
 When extended over multiple axes, the equispaced tie-breaking solution that reduces line crossings requires hierarchical sorting, which is implemented in the \pkg{ggpcp} function \code{pcp\_arrange(data, method, space)}.
 Two implemented methods \svp{for tie-breaking} are \code{"from-left"} and \code{"from-right"}, meaning that tie breaks are determined hierarchically by variables' values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
-While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as ``external cognition'' \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the \hh{lines of} data in the chart\cite{ware_cognitive_2002}.
+While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as "external cognition'' \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the \hh{lines of} data in the chart\cite{ware_cognitive_2002}.
 
 % \hh{XXX hierarchical ordering seems to minimize line crossings - but I don't have a proof. If we have a reference on ordering metrics this might go well here}% This is nerd sniping in the extreme... lol. %HH: sorry.
 \citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical sorting of individual observations minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes \svp{because the lines `move together` through the vertical axes}. % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
@@ -729,7 +729,7 @@ ggplot(pcp_df, aes_pcp()) + # draw the smallest category last
 \captionof{lstlisting}{The \code{overplot} parameter can be used to control the order in which lines are plotted, affecting the visual appearance and emphasis of parallel coordinate plots. Line 2 specifies the order of the dataset; lines 6-8 plot the data using the user-specified ordering while lines 9-11 plot the data using the default `small-on-top' ordering.\label{lst:ggpcp-line-order}}
 
 \includegraphics[keepaspectratio=T,width=\linewidth]{figures/order-fig-print-1.pdf}
-\captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates two parallel coordinate plots. The plot on the left uses the ordering of the dataset to determine line plotting order; as a result, Adelie penguins are plotted last (on top). On the right, we use the  ``small-on-top" default; this ensures that the smallest categories, sex = NA and Chinstrap, are plotted last.\label{fig:order-fig-print}}
+\captionof{figure}{The code in \Cref{lst:ggpcp-line-order} generates two parallel coordinate plots. The plot on the left uses the ordering of the dataset to determine line plotting order; as a result, Adelie penguins are plotted last (on top). On the right, we use the  "small-on-top" default; this ensures that the smallest categories, sex = NA and Chinstrap, are plotted last.\label{fig:order-fig-print}}
 % NA is still plotted last in the plot on the right.  The example is confusing.
 
 %\end{minipage}
