@@ -607,12 +607,16 @@ p1 <- dfnew %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
+#  geom_point(colour="darkgrey", size=3, alpha = .6) +
+  geom_point(colour="grey60", fill="grey60", size=5, alpha = .1, pch=15) +
+  geom_point(colour="grey60", size=5, pch=0) +
   geom_pcp(aes(colour = z), size=1) +
   theme_bw() +
   scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
   xlab("") + ylab("") +
   facet_grid(.~"Original PCP") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("Sex", "Species"))
 
 
@@ -642,6 +646,7 @@ p3 <- dfnew %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
+  geom_point(aes(colour=z), size=2.5, alpha = .6) +
   geom_pcp(size=1, aes(colour = z)) +
   theme_bw() + ylab("") +
   scale_color_manual(values = c(oranges[2], purples[2], greens[2])) + xlab("") +
@@ -655,29 +660,13 @@ p4 <- dfnew %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
+  geom_point(aes(colour=z), size=2.5, alpha = .6) +
   geom_pcp(size=1, aes(colour = z)) +
   theme_bw() + ylab("") +
   scale_color_manual(values = c(oranges[2], purples[2], greens[2])) + xlab("") +
   facet_grid(.~"Equally spaced") +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
   scale_x_discrete(expand = expansion(add=0.15), labels=c("Sex", "Species"))
-
-p5 <- dfnew2 %>%
-  mutate(v1 = v4, v2 = v3) %>%
-  pcp_select(v2, v1) %>%
-  pcp_scale() %>%
-  pcp_arrange() %>%
-  ggplot(aes_pcp()) +
-  geom_pcp_boxes(boxwidth=0.3, fill="grey90", alpha=0.5) +
-  geom_pcp_axes() +
-  geom_pcp(aes(colour = z), size=1) +
-  theme_bw() +
-  scale_color_manual(values = c(purples[2], oranges[2], greens[2])) +
-  xlab("") + ylab("") +
-  facet_grid(.~"GPCP style") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
-  ylim(c(0,1))+
-  scale_x_discrete(expand = expansion(add=0.2), labels=c("Sex", "Species"))
 
 grid.arrange(p1, p3, p4, p2, nrow=1)
 @
