@@ -1,31 +1,9 @@
-# ## ----setup, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE---------
-# library(knitr)
-# knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
-#
-#
-#
-#
-# ## ----setup2, echo=FALSE, cache=FALSE--------------------------------------
-# knit_hooks$set(source = function(x, options) {
-#     paste("\\begin{lstlisting}[numbers=left, firstnumber=last]\n", x,
-#         "\\end{lstlisting}\n", sep = "")
-# })
-# knit_hooks$set(reset = function(before, options, envir){
-# if(before){
-#     return("\\setcounter{lstnumber}{1}")
-# }
-# })
-
-
-## ----packages, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE------
 library(tidyverse)
 library(ggpcp)
 library(gridExtra)
 
 theme_set(theme_bw())
 
-
-## ----penguin-colors, echo = F, include = F--------------------------------
 library(scales)
 
 oranges <- c("#FDBF6F", "#F89D38", "#F37A00")
@@ -34,110 +12,112 @@ greens <- c("#b2df8a", "#73C05B", "#33a02c")
 
 cols <-  c(oranges[2], greens[2], purples[2])
 
-
-## ----prep-raw-penguin, warning = FALSE------------------------------------
 library(palmerpenguins)
 
 penguins1 <- penguins_raw
-penguins1 <- penguins1 %>% separate(col=`Individual ID`, into=c("Nest", "Individ"), remove=FALSE, sep=-2)
+penguins1 <- penguins1 %>%
+  separate(col = `Individual ID`, into = c("Nest", "Individ"),
+           remove = FALSE, sep = -2)
 names(penguins1)[12:15] <- c("CulmenL", "CulmenD", "FlipperL", "BodyMass")
-penguins1 <- penguins1 %>% separate(Species, into=c("species", "foo2", "foo3", "foo4"), sep=" ") %>% select(-starts_with("foo")) # foos make R happy, because it doesn't throw away anything unexpected
+penguins1 <- penguins1 %>%
+  separate(Species, into = c("species", "foo2", "foo3", "foo4"), sep = " ") %>%
+  select(-starts_with("foo"))
+# foos make R happy, because it doesn't throw away anything unexpected
 
-
-## ----sketch, warning=FALSE, results='asis', fig.width = 9, fig.height = 3, fig.cap="Sketch of a parallel coordinate plot of two observations in four dimensions. Each dimension is shown as a vertical axis, observations are connected by poly-lines from one axis to the next. Two penguins from the Palmer Penguin data set (see section 5.1) were sampled for this example."----
-#df <- data.frame(x1 = c(1,2), x2 = c(0, 0.5), x3=c(2,1), x4=c(2,3), id=c(1,2))
 df <- penguins
 df_pcp <- df %>%
   pcp_select(bill_length_mm:body_mass_g) %>%
-#  mutate(value = parse_number(as.character(value))) %>%
   pcp_scale()
 
-df_pcp$Observation = paste0("Penguin #", df_pcp$pcp_id, " (", df_pcp$species,")")
-df_pcp$Observation = paste0("Penguin #", df_pcp$pcp_id)
+df_pcp$Observation <- paste0("Penguin #", df_pcp$pcp_id, " (", df_pcp$species, ")")
+df_pcp$Observation <- paste0("Penguin #", df_pcp$pcp_id)
 
 df_pcp %>%
-  ggplot(aes_pcp())  +
+  ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour = Observation), size=1,
-           data = df_pcp %>% filter(pcp_id %in% c(1,275))) +
-  geom_point(aes(shape=Observation, colour = Observation), size=5,
-             data = df_pcp %>% filter(pcp_id %in% c(1,275))) +
+  geom_pcp(aes(colour = Observation),
+    size = 1,
+    data = df_pcp %>% filter(pcp_id %in% c(1, 275))
+  ) +
+  geom_point(aes(shape = Observation, colour = Observation),
+    size = 5,
+    data = df_pcp %>% filter(pcp_id %in% c(1, 275))
+  ) +
   theme_bw() +
   xlab("") +
-#  scale_shape_discrete("Observation") +
-  scale_colour_manual("Observation", values=c("darkorange", "purple4")) +
+  scale_colour_manual("Observation", values = c("darkorange", "purple4")) +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete(expand = expansion(add=0.2),
-                   labels = c("Bill Length (mm)", "Bill Depth (mm)",
-                              "Flipper Length (mm)", "Body Mass (g)"))
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
+  scale_x_discrete(
+    expand = expansion(add = 0.2),
+    labels = c(
+      "Bill Length (mm)", "Bill Depth (mm)",
+      "Flipper Length (mm)", "Body Mass (g)"
+    )
+  )
 
-
-## ----prep-data, echo=FALSE------------------------------------------------
 penguins <- rbind(
-  penguins %>% filter(species=="Adelie"),
-  penguins %>% filter(species=="Gentoo"),
-  penguins %>% filter(species=="Chinstrap")
+  penguins %>% filter(species == "Adelie"),
+  penguins %>% filter(species == "Gentoo"),
+  penguins %>% filter(species == "Chinstrap")
 )
 
-
-## ----api-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE----
 pcp <- penguins %>%                       # data management:
   filter(!is.na(sex)) %>%                 #   tidy workflow
-  pcp_select(4,3,5:6, sex, species) %>%   #   variable selection (sec 3.1)
+  pcp_select(4,3,5:6, sex, species) %>%   #   var selection (sec 3.1)
   pcp_scale(method="uniminmax") %>%       #   scale values (sec 3.2)
-  pcp_arrange() %>%                       #   arrange categorical data
+  pcp_arrange() %>%                       #   arrange categ. data
   ggplot(aes_pcp()) +                     # create chart layers:
     geom_pcp_axes() +                     #   vertical lines for axes
     geom_pcp(aes(colour = species),       #   line  segments
             alpha = 0.8, overplot="none") +
     geom_pcp_labels()                     #   label categories
 
-
-## ----api-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='api-listing-code'----
 penguins %>%
   filter(!is.na(sex)) %>%
-  pcp_select(4,3,5:6, sex, species) %>%
-  pcp_scale(method="uniminmax") %>%
+  pcp_select(4, 3, 5:6, sex, species) %>%
+  pcp_scale(method = "uniminmax") %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp(aes(colour = species), alpha = 0.8, overplot="none") +
-    geom_pcp_labels() +
+  geom_pcp_axes() +
+  geom_pcp(aes(colour = species), alpha = 0.8, overplot = "none") +
+  geom_pcp_labels() +
   scale_color_manual("Species", values = cols) +
   theme_bw() +
-  scale_x_discrete(expand = expansion(add=0.3),
-                   labels = c("Bill Depth (mm)", "Bill Length (mm)",
-                              "Flipper Length (mm)", "Body Mass (g)",
-                              "Sex", "Species")) +
+  scale_x_discrete(
+    expand = expansion(add = 0.3),
+    labels = c(
+      "Bill Depth (mm)", "Bill Length (mm)",
+      "Flipper Length (mm)", "Body Mass (g)",
+      "Sex", "Species"
+    )
+  ) +
   xlab("") +
   ylab("") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none")
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none")
 
-
-## ----colorscheme----------------------------------------------------------
 #####  Color Palette by Paletton.com
 #####  Palette URL: http://paletton.com/#uid=3140R0kllllaFw0g0qFqFg0w0aF
 
 
 # *** Primary color:
-primary = c("#AA8939", "#FFE7AA", "#D4B66A", "#806115", "#553D00")
+primary <- c("#AA8939", "#FFE7AA", "#D4B66A", "#806115", "#553D00")
 
 # *** Secondary color (1):
 
-secondary = c("#5A2971", "#9974AA", "#784A8E", "#3F1255", "#270339")
+secondary <- c("#5A2971", "#9974AA", "#784A8E", "#3F1255", "#270339")
 
 # *** Secondary color (2):
 
-tertiary = c("#277552", "#75B095", "#499371", "#0F5837", "#003B20")
+tertiary <- c("#277552", "#75B095", "#499371", "#0F5837", "#003B20")
 
 #####  Generated by Paletton.com (c) 2002-2014
 
-
-## ----scale, fig.cap="Two scaling methods showing fatty acid compositions of  olive oils from different regions in Italy, areas within each region are colored using similar hues within region (green for Northern Italy, purple for Sardinia, and tans for Southern Italy). The two scaling methods roughly allow the same conclusions. For readability, the y scale shows textual values rather numbers.", fig.height = 8, fig.width = 8, fig.pos='htbp'----
-data("olive", package="tourr")
+data("olive", package = "tourr")
 
 oils <- olive %>% mutate(
   area = reorder(area, region)
@@ -145,8 +125,8 @@ oils <- olive %>% mutate(
 
 dt1 <- oils %>%
   mutate(
-    region=factor(region)
-    ) %>%
+    region = factor(region)
+  ) %>%
   pcp_select(region, area, palmitic:eicosenoic) %>%
   pcp_scale(method = "uniminmax") %>%
   pcp_arrange(space = 0.2)
@@ -154,8 +134,8 @@ dt1$scaling <- "uniminmax"
 
 dt2 <- oils %>%
   mutate(
-    region=factor(region)
-    ) %>%
+    region = factor(region)
+  ) %>%
   pcp_select(region, area, palmitic:eicosenoic) %>%
   pcp_scale(method = "robust") %>%
   pcp_arrange(space = 0.2)
@@ -168,70 +148,78 @@ oils1 <- dt2 %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp_boxes() +
-  geom_pcp(aes(colour = area), alpha = 0.5, overplot="none") +
-  facet_grid(scaling~., labeller="label_both", scales="free_y") +
-  scale_colour_manual(values = c(primary[c(2,4,3,1)], secondary[1:2], tertiary[1:3])) +
+  geom_pcp(aes(colour = area), alpha = 0.5, overplot = "none") +
+  facet_grid(scaling ~ ., labeller = "label_both", scales = "free_y") +
+  scale_colour_manual(values = c(primary[c(2, 4, 3, 1)], secondary[1:2], tertiary[1:3])) +
   theme_bw() +
   theme(legend.position = "none") +
-  guides(colour=guide_legend(override.aes = list(alpha=1, size = 2), reverse=TRUE)) +
-  scale_x_discrete(expand = expansion(add=0.3)) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2), reverse = TRUE)) +
+  scale_x_discrete(expand = expansion(add = 0.3)) +
   scale_y_continuous(
-    labels=c("-4 MAD", "-2 MAD", "median", "+2 MAD", "+4 MAD"),
-    breaks=seq(-.5, 1.5, by=0.5)) +
+    labels = c("-4 MAD", "-2 MAD", "median", "+2 MAD", "+4 MAD"),
+    breaks = seq(-.5, 1.5, by = 0.5)
+  ) +
   xlab("") +
   ylab("") +
-  theme(axis.text.x = element_blank(),
-        axis.ticks.x = element_blank())
+  theme(
+    axis.text.x = element_blank(),
+    axis.ticks.x = element_blank()
+  )
 
 oils2 <- dt1 %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
   geom_pcp_boxes() +
-  geom_pcp(aes(colour = area), alpha = 0.5, overplot="none") +
-  facet_grid(scaling~., labeller="label_both", scales="free_y") +
-  scale_colour_manual(values = c(primary[c(2,4,3,1)], secondary[1:2], tertiary[1:3])) +
+  geom_pcp(aes(colour = area), alpha = 0.5, overplot = "none") +
+  facet_grid(scaling ~ ., labeller = "label_both", scales = "free_y") +
+  scale_colour_manual(values = c(primary[c(2, 4, 3, 1)], secondary[1:2], tertiary[1:3])) +
   theme_bw() +
   theme(legend.position = "bottom") +
-  guides(colour=guide_legend(override.aes = list(alpha=1, size = 2), reverse=TRUE)) +
-  scale_x_discrete(expand = expansion(add=0.3)) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
+  guides(colour = guide_legend(override.aes = list(alpha = 1, size = 2), reverse = TRUE)) +
+  scale_x_discrete(expand = expansion(add = 0.3)) +
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
   xlab("") +
   ylab("")
 
 library(patchwork)
-oils1/oils2
+oils1 / oils2
 
-
-## ----alignment, fig.height = 3.5, fig.align="center", fig.cap="Using 12 randomly sampled penguins from the Palmer penguin data, we show four different approaches of dealing with categorical variables: the panel on the left shows the typical net of lines resulting from categorical variables in regular parallel coordinate plots. In the other three panels, ties in categorical levels are broken using different approaches (from left to right): jittering, equi-spaced line segments and ordered equi-spaced line segments are shown. "----
 set.seed(20200924)
 
-df <- penguins %>% na.omit() %>%  group_by(species, sex) %>%
+df <- penguins %>%
+  na.omit() %>%
+  group_by(species, sex) %>%
   slice_sample(n = 3, replace = FALSE) %>%
   mutate(id = 1:n())
 
-df <- df %>% filter(!(species=="Chinstrap" & sex=="male"),
-                    !(species=="Adelie" & sex=="male" & id ==3) &
-                    !(species=="Gentoo" & sex=="female" & id != 1))
+df <- df %>% filter(
+  !(species == "Chinstrap" & sex == "male"),
+  !(species == "Adelie" & sex == "male" & id == 3) &
+    !(species == "Gentoo" & sex == "female" & id != 1)
+)
 
 x1 <- as.numeric(df$sex)
 x2 <- as.numeric(df$species)
 jitter1 <- runif(n = 12, min = -0.1, max = 0.1)
 jitter2 <- runif(n = 12, min = -0.1, max = 0.1)
 y <- as.factor(df$species)
-dfnew <- tibble(#v1 = x2, v2 = x1,
+dfnew <- tibble(
   v1 = x1, v2 = x2,
   v3 = as.factor(x1),
   v4 = as.factor(x2),
   z = y,
   v5 = x2 + jitter1,
   v6 = x1 + jitter2,
-  v7 = c(sample(5), 5+10+sample(3), 18+10+sample(4)))
+  v7 = c(sample(5), 5 + 10 + sample(3), 18 + 10 + sample(4))
+)
 dfnew <- dfnew %>% arrange(v1, v7)
-dfnew$v8 <- c(sample(7), 20+sample(5))
+dfnew$v8 <- c(sample(7), 20 + sample(5))
 
 dfnew2 <- dfnew %>%
-  mutate(z = factor(z, levels = c( "Chinstrap", "Adelie","Gentoo"))) %>%
+  mutate(z = factor(z, levels = c("Chinstrap", "Adelie", "Gentoo"))) %>%
   mutate(v4 = factor(as.numeric(z)))
 
 p1 <- dfnew %>%
@@ -239,13 +227,20 @@ p1 <- dfnew %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour = z), size=1) +
+  #  geom_point(colour="darkgrey", size=3, alpha = .6) +
+  geom_point(colour = "grey60", fill = "grey60", size = 5, alpha = .1, pch = 15) +
+  geom_point(colour = "grey60", size = 5, pch = 0) +
+  geom_pcp(aes(colour = z), size = 1) +
   theme_bw() +
   scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
-  xlab("") + ylab("") +
-  facet_grid(.~"Original PCP") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
-  scale_x_discrete(expand = expansion(add=0.15), labels=c("Sex", "Species"))
+  xlab("") +
+  ylab("") +
+  facet_grid(. ~ "Original PCP") +
+  theme(
+    axis.title.y = element_blank(), axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(), legend.position = "none"
+  ) +
+  scale_x_discrete(expand = expansion(add = 0.15), labels = c("Sex", "Species"))
 
 
 
@@ -255,16 +250,17 @@ p2 <- dfnew %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp_boxes(boxwidth=0.3, fill="grey90", alpha=0.5) +
+  geom_pcp_boxes(boxwidth = 0.3, fill = "grey90", alpha = 0.5) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour = z), size=1) +
+  geom_pcp(aes(colour = z), size = 1) +
   theme_bw() +
   scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
-  xlab("") + ylab("") +
-  facet_grid(.~"GPCP style") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
-  ylim(c(0,1))+
-  scale_x_discrete(expand = expansion(add=0.2), labels=c("Sex", "Species"))
+  xlab("") +
+  ylab("") +
+  facet_grid(. ~ "GPCP style") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none") +
+  ylim(c(0, 1)) +
+  scale_x_discrete(expand = expansion(add = 0.2), labels = c("Sex", "Species"))
 
 
 
@@ -274,137 +270,130 @@ p3 <- dfnew %>%
   pcp_scale() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(size=1, aes(colour = z)) +
-  theme_bw() + ylab("") +
-  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) + xlab("") +
-  facet_grid(.~"Jittering") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
-  scale_x_discrete(expand = expansion(add=0.15), labels=c("Sex", "Species"))
+  geom_point(aes(colour = z), size = 2.5, alpha = .6) +
+  geom_pcp(size = 1, aes(colour = z)) +
+  theme_bw() +
+  ylab("") +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
+  xlab("") +
+  facet_grid(. ~ "Jittering") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none") +
+  scale_x_discrete(expand = expansion(add = 0.15), labels = c("Sex", "Species"))
 
 p4 <- dfnew %>%
-  pcp_select(v8,v7) %>%
+  pcp_select(v8, v7) %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(size=1, aes(colour = z)) +
-  theme_bw() + ylab("") +
-  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) + xlab("") +
-  facet_grid(.~"Equally spaced") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
-  scale_x_discrete(expand = expansion(add=0.15), labels=c("Sex", "Species"))
-
-p5 <- dfnew2 %>%
-  mutate(v1 = v4, v2 = v3) %>%
-  pcp_select(v2, v1) %>%
-  pcp_scale() %>%
-  pcp_arrange() %>%
-  ggplot(aes_pcp()) +
-  geom_pcp_boxes(boxwidth=0.3, fill="grey90", alpha=0.5) +
-  geom_pcp_axes() +
-  geom_pcp(aes(colour = z), size=1) +
+  geom_point(aes(colour = z), size = 2.5, alpha = .6) +
+  geom_pcp(size = 1, aes(colour = z)) +
   theme_bw() +
-  scale_color_manual(values = c(purples[2], oranges[2], greens[2])) +
-  xlab("") + ylab("") +
-  facet_grid(.~"GPCP style") +
-  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position="none") +
-  ylim(c(0,1))+
-  scale_x_discrete(expand = expansion(add=0.2), labels=c("Sex", "Species"))
+  ylab("") +
+  scale_color_manual(values = c(oranges[2], purples[2], greens[2])) +
+  xlab("") +
+  facet_grid(. ~ "Equally spaced") +
+  theme(axis.title.y = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank(), legend.position = "none") +
+  scale_x_discrete(expand = expansion(add = 0.15), labels = c("Sex", "Species"))
 
-grid.arrange(p1, p3, p4, p2, nrow=1)
+grid.arrange(p1, p3, p4, p2, nrow = 1)
 
-
-## ----order-listing-code, echo=TRUE, reset=TRUE, error=FALSE, warning=FALSE, fig.show ='hide'----
 pcp_df <- penguins %>%
   arrange(sex) %>% # NA last = top of PCP axis
   pcp_select(sex, species) %>%
-  pcp_scale(method="uniminmax") %>%
+  pcp_scale(method = "uniminmax") %>%
   pcp_arrange()
-ggplot(pcp_df, aes_pcp()) + # draw lines in the provided order
-  geom_pcp_axes() +
+ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
   geom_pcp(aes(colour = species), overplot = "none") +
-  geom_pcp_labels() +
-  theme_pcp()
+  geom_pcp_labels() + theme_pcp()
 
-ggplot(pcp_df, aes_pcp()) + # draw the smallest category last
-  geom_pcp_axes() +
+ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
   geom_pcp(aes(colour = species), overplot = "small-on-top") +
-  geom_pcp_labels() +
-  theme_pcp()
+  geom_pcp_labels() + theme_pcp()
 
 
-## ----order-fig-print, echo = F, include = F, fig.width = 8, fig.height = 3, dependson='order-listing-code'----
-
-pp1 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
+pp1 <- ggplot(pcp_df, aes_pcp()) +
+  geom_pcp_axes() +
   # plot the dataset in the provided order
   geom_pcp(aes(colour = species), overplot = "none") +
   geom_pcp_labels() +
-  scale_color_manual("Species", values = cols, guide = 'none') +
+  scale_color_manual("Species", values = cols, guide = "none") +
   ggtitle("Overplot = 'none'") +
   theme_pcp()
 
-pp2 <- ggplot(pcp_df, aes_pcp()) + geom_pcp_axes() +
+pp2 <- ggplot(pcp_df, aes_pcp()) +
+  geom_pcp_axes() +
   # plot the smallest category (chinstrap) on top
   geom_pcp(aes(colour = species), overplot = "small-on-top") +
   geom_pcp_labels() +
-  scale_color_manual("Species", values = cols, guide = 'none') +
+  scale_color_manual("Species", values = cols, guide = "none") +
   ggtitle("Overplot = 'small-on-top'") +
   theme_pcp()
 
 library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 1, byrow = FALSE) + theme_pcp()
 
-
-## ----ordering, fig.cap="Both of the levels of the island and the species variable re-ordered to reflect that two of the species are each only found on one island. ", fig.height=6, fig.width=8----
 penguins1 <- penguins1 %>%
-  rename(`study ID` = studyName, `Bill Length` = CulmenL,
-             `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
-             `Body Weight` = BodyMass)
+  rename(
+    `study ID` = studyName, `Bill Length` = CulmenL,
+    `Bill Depth` = CulmenD, `Flipper Length` = FlipperL,
+    `Body Weight` = BodyMass
+  )
 
 # First pcp
 pp1 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
   pcp_select(`study ID`, species, Island, `Bill Length`:`Body Weight`) %>%
-  pcp_scale() %>% pcp_arrange() %>% ggplot(aes_pcp()) +
-  geom_pcp_axes(colour="white") +
-  geom_pcp(aes(colour=species), alpha=0.6, overplot="none") +
-  geom_pcp_boxes(fill="white", alpha = 0.5) +
+  pcp_scale() %>%
+  pcp_arrange() %>%
+  ggplot(aes_pcp()) +
+  geom_pcp_axes(colour = "white") +
+  geom_pcp(aes(colour = species), alpha = 0.6, overplot = "none") +
+  geom_pcp_boxes(fill = "white", alpha = 0.5) +
   geom_pcp_labels() +
   theme_bw() +
-  xlab(NULL) + ylab(NULL) +
-  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-        legend.position="none") +
+  xlab(NULL) +
+  ylab(NULL) +
+  theme(
+    axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+    legend.position = "none"
+  ) +
   ggtitle("Original order of levels and variables") +
-  scale_colour_manual(values=cols)
+  scale_colour_manual(values = cols)
 
-penguins1 <- penguins1 %>%   mutate(species=factor(species, levels=c("Chinstrap", "Adelie", "Gentoo"))) %>%
-  mutate(island=factor(Island, levels=c("Dream", "Torgersen", "Biscoe")))
+penguins1 <- penguins1 %>%
+  mutate(species = factor(species, levels = c("Chinstrap", "Adelie", "Gentoo"))) %>%
+  mutate(island = factor(Island, levels = c("Dream", "Torgersen", "Biscoe")))
 
 
-# Second pcp
+# Fourth pcp
 pp2 <- penguins1 %>%
   filter(!is.na(Sex)) %>%
   pcp_select(`study ID`, species, island, `Bill Length`:`Body Weight`) %>%
-  pcp_scale() %>% pcp_arrange(method="from-left") %>% ggplot(aes_pcp()) +
+  pcp_scale() %>%
+  pcp_arrange(method = "from-left") %>%
+  ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour=species), alpha=0.6, overplot="none") +
-  geom_pcp_boxes(fill="white", alpha = 0.5) +
+  geom_pcp(aes(colour = species), alpha = 0.6, overplot = "none") +
+  geom_pcp_boxes(fill = "white", alpha = 0.5) +
   geom_pcp_labels() +
   theme_bw() +
-  xlab(NULL) + ylab(NULL) +
-  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-        legend.position="none") +
-  scale_colour_manual(values=c(cols[2], cols[1], cols[3])) +
+  xlab(NULL) +
+  ylab(NULL) +
+  theme(
+    axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+    legend.position = "none"
+  ) +
+  scale_colour_manual(values = c(cols[2], cols[1], cols[3])) +
   ggtitle("Levels reordered to emphasize relationship between islands and species")
 
 library(patchwork)
 pp1 + pp2 + plot_layout(nrow = 2, byrow = FALSE)
 
 
-## ----penguins-variable-order, fig.cap="Changing the order of the variables along the x-axis emphasizes the differences in body measurements between the species.", fig.height=6, fig.width=8----
 # Reorder the variables, moving CulmenL to the right, and do case ordering from the left
 # Invert the CulmenD variable (and use the minus notation :-))
-penguins1 <- penguins1 %>% mutate(`-Bill Depth`=-`Bill Depth`)
+penguins1 <- penguins1 %>% mutate(`-Bill Depth` = -`Bill Depth`)
 
 
 # Change the order of printing the colours to make Chinstrap stand out better
@@ -414,104 +403,108 @@ penguins1 <- penguins1 %>% arrange(fct_rev(species))
 penguins1 %>%
   filter(!is.na(Sex)) %>%
   pcp_select(`study ID`, species, island, `-Bill Depth`, `Flipper Length`, `Body Weight`, `Bill Length`) %>%
-#  pcp_select(studyName, species, island, `-CulmenD`, FlipperL, BodyMass, CulmenL) %>%
   group_by(Sex) %>%
   pcp_scale(.by_group = TRUE) %>%
-  pcp_arrange(method="from-left", .by_group = TRUE) %>%
+  pcp_arrange(method = "from-left", .by_group = TRUE) %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp(aes(colour=interaction(Sex,species)), overplot="none", alpha = 0.8) +
-  geom_pcp_boxes(fill="white", alpha =0.6) +
-  geom_pcp_labels(fill="white", alpha=0.6) +
+  geom_pcp(aes(colour = interaction(Sex, species)), overplot = "none", alpha = 0.8) +
+  geom_pcp_boxes(fill = "white", alpha = 0.6) +
+  geom_pcp_labels(fill = "white", alpha = 0.6) +
   theme_bw() +
-  xlab(NULL) + ylab(NULL) +
-  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank(),
-        legend.position="none") +
-  scale_colour_manual(values=c(greens[c(1,3)], oranges[c(1,3)], purples[c(1,3)])) +
-  facet_grid(Sex~.)
+  xlab(NULL) +
+  ylab(NULL) +
+  theme(
+    axis.text.y = element_blank(), axis.ticks.y = element_blank(),
+    legend.position = "none"
+  ) +
+  scale_colour_manual(values = c(greens[c(1, 3)], oranges[c(1, 3)], purples[c(1, 3)])) +
+  facet_grid(Sex ~ .)
 
-
-## ----penguins, fig.cap="Generalized Parallel Coordinate Plot of the Palmer penguins data with sex of penguin mapped to color. Dark lines represent penguins for which sex could not be determined.  We see that researchers were able to sex all of the Chinstrap penguins. Note that species is included twice (with different order of the levels). ", fig.height=4, fig.width=8----
  penguins <- penguins %>%
    mutate(
      species = factor(species, c("Chinstrap", "Adelie", "Gentoo")),
-     species2 = factor(species, c( "Adelie", "Gentoo","Chinstrap")),
-     `-bill_length_mm`=-bill_length_mm,
-     `-bill_depth_mm`=-bill_depth_mm
+     species2 = factor(species, c("Adelie", "Gentoo", "Chinstrap")),
+     `-bill_length_mm` = -bill_length_mm,
+     `-bill_depth_mm` = -bill_depth_mm
+   )
+
+ penguins_pcp <- penguins %>%
+   mutate(
+     sex = ifelse(is.na(sex), "?", as.character(sex)),
+     sex = factor(sex, levels = c("female", "?", "male"))
+   ) %>%
+   filter(!is.na(body_mass_g)) %>%
+   pcp_select(
+     species2, `bill_length_mm`,
+     flipper_length_mm, body_mass_g, `-bill_depth_mm`, species, sex
+   ) %>%
+   pcp_scale() %>%
+   pcp_arrange()
+
+ penguins_pcp %>%
+   ggplot(aes_pcp()) +
+   geom_pcp_axes() +
+   geom_pcp_boxes(boxwidth = 0.1) +
+   geom_pcp(aes(colour = sex), alpha = 0.8) +
+   geom_pcp(aes(colour = sex),
+     size = 1,
+     data = penguins_pcp %>% filter(sex == "?")
+   ) +
+   geom_pcp_labels(aes(label = pcp_level), alpha = .75) +
+   scale_colour_manual("Sex", values = c("#FFCD70", "#8b4950", "#008080")) +
+   theme_pcp() +
+   theme(legend.position = "none") +
+   scale_x_discrete(
+     labels = c(
+       "Species", "Bill Length (mm)", "Flipper Length (mm)",
+       "Body Mass (g)", "- Bill Depth(mm)", "Species",
+       "Sex"
+     )
    )
 
 penguins_pcp <- penguins %>%
-    mutate(
-        sex = ifelse(is.na(sex),"?", as.character(sex)),
-        sex = factor(sex, levels = c("female", "?", "male"))
-    ) %>%
-  filter(!is.na(body_mass_g)) %>%
-  pcp_select(species2,`bill_length_mm`,
-             flipper_length_mm, body_mass_g, `-bill_depth_mm`, species,  sex) %>%
-  pcp_scale() %>%
-  pcp_arrange()
-
-penguins_pcp %>%
-  ggplot(aes_pcp()) +
-  geom_pcp_axes() +
-  geom_pcp_boxes(boxwidth=0.1) +
-  geom_pcp(aes(colour = sex), alpha = 0.8) +
-  geom_pcp(aes(colour = sex), size =1,
-           data = penguins_pcp %>% filter(sex=="?")) +
-  geom_pcp_labels(aes(label = pcp_level), alpha = .75) +
-  scale_colour_manual("Sex", values=c("#FFCD70", "#8b4950", "#008080")) +
-#    scale_colour_manual(values=c("#ff595e", "#573e79", "#1982c4")) +
-  theme_pcp() +
-  theme(legend.position="none") +
-  scale_x_discrete(
-    labels=c("Species", "Bill Length (mm)", "Flipper Length (mm)",
-             "Body Mass (g)", "- Bill Depth(mm)", "Species",
-             "Sex"))
-#  facet_wrap(~sex)
-
-
-## ----penguins2a, echo=TRUE, reset=TRUE------------------------------------
-penguins_pcp <- penguins %>%
-  filter(species != "Chinstrap") %>%                  # no unsexed animals in Chinstrap
-  mutate(
-    sex = ifelse(is.na(sex),"?", as.character(sex)),  # make assignment more readable
+  filter(species != "Chinstrap") %>% # no unsexed animals in Chinstrap
+  mutate(                            # make assignment more readable
+    sex = ifelse(is.na(sex),"?", as.character(sex)),
     sex = factor(sex, levels = c("female", "?", "male"))
   ) %>%
   filter(!is.na(body_mass_g)) %>%
   pcp_select(6:5, 3:4) %>%
-  group_by(species) %>%                               # re-scale by species
+  group_by(species) %>%              # re-scale by species
   pcp_scale() %>%
   pcp_arrange()
 
 
-## ----penguins2b, dependson="penguins2a", fig.cap="Closer investigation of non-sexed Adelie and Gentoo penguins. The group\\_by call before pcp\\_scale is responsible for scaling by species while the same scale is kept across sex within species. Penguins without assigned sex (based on blood markers) are drawn on top of both sexes. The labels to the left of the ribbons are our best guess at a penguin's sex based on body measurements of other penguins of the same species. The letters on the right indicate nests -- two penguins with the same letter share the same nest. ", fig.height = 6, fig.width = 8----
-
 # making ribbons
-# probs <- seq(0,1,by=0.1)
 probs <- c(0.025, 0.25, 0.75, 0.975)
 
 dframe <-
-  penguins_pcp %>% filter(sex!="?") %>% group_by(species, sex, pcp_x) %>%
-  summarise(value = quantile(pcp_y, prob=probs),
-            quantile=probs,
-            lower = probs<0.5,
-            level = round(10*abs(quantile-0.5), digits = 1))  %>%
+  penguins_pcp %>%
+  filter(sex != "?") %>%
+  group_by(species, sex, pcp_x) %>%
+  summarise(
+    value = quantile(pcp_y, prob = probs),
+    quantile = probs,
+    lower = probs < 0.5,
+    level = round(10 * abs(quantile - 0.5), digits = 1)
+  ) %>%
   select(-quantile) %>%
-  mutate(lower = factor(lower, labels=c("upper", "lower"))) %>%
-  pivot_wider(names_from="lower", values_from="value") %>%
+  mutate(lower = factor(lower, labels = c("upper", "lower"))) %>%
+  pivot_wider(names_from = "lower", values_from = "value") %>%
   ungroup() %>%
   mutate(
     level = ifelse(level > 2.5, "Inner 95%", "Inner 50%"),
-    level = factor(level, levels=c("Inner 50%", "Inner 95%"))
-  ) # %>% filter(level <= 4)
+    level = factor(level, levels = c("Inner 50%", "Inner 95%"))
+  )
 
 # for annotations
 annotate_dframe <- penguins_pcp %>%
-  filter(sex=="?", !is.na(body_mass_g), pcp_x == "body_mass_g")
+  filter(sex == "?", !is.na(body_mass_g), pcp_x == "body_mass_g")
 
 library(emojifont)
 load.fontawesome()
-labels <- fontawesome(c('fa-venus','fa-mars', "fa-question"))
+labels <- fontawesome(c("fa-venus", "fa-mars", "fa-question"))
 
 annotate_dframe$putative <- labels[1]
 annotate_dframe <- annotate_dframe %>% mutate(
@@ -519,91 +512,105 @@ annotate_dframe <- annotate_dframe %>% mutate(
   putative = ifelse(pcp_y > 0.5, labels[2], putative)
 )
 
-# unicode characters don't display well, but work
-circle <- c("","")
+circle <- c("", "")
 
+# recalculate position by group
 penguins_pcp %>%
-  filter(sex!= "?") %>%
+  filter(sex != "?") %>%
   ggplot(aes_pcp()) +
   geom_pcp_axes() +
-  geom_pcp_boxes(boxwidth=0.1) +
-  geom_ribbon(aes( ymin = lower, ymax=upper, group=interaction(sex,level), fill = sex, alpha=level),
-              #alpha = 0.25,
-              data = dframe) +
-  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
-           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "female")) +
-  geom_pcp(aes(colour = sex, fill = "?"), colour = "#8b4950dd", size = 0.9,
-           data = penguins_pcp %>% filter(sex=="?") %>% mutate(sex = "male")) +
+  geom_pcp_boxes(boxwidth = 0.1) +
+  geom_ribbon(aes(ymin = lower, ymax = upper, group = interaction(sex, level), fill = sex, alpha = level),
+    data = dframe
+  ) +
+  geom_pcp(aes(colour = sex, fill = "?"),
+    colour = "#8b4950dd", size = 0.9,
+    data = penguins_pcp %>% filter(sex == "?") %>% mutate(sex = "female")
+  ) +
+  geom_pcp(aes(colour = sex, fill = "?"),
+    colour = "#8b4950dd", size = 0.9,
+    data = penguins_pcp %>% filter(sex == "?") %>% mutate(sex = "male")
+  ) +
   geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
   theme_bw() +
-  scale_fill_manual(values=c( "#8b4950", "#FAA404", "#008080")) + # lighter yellow "#FFCD70"
-  theme(legend.position="bottom") +
-    facet_grid(species~sex) +
-  scale_x_discrete(expand = expansion(add=0.25)) +
-  xlab("") + ylab("") +
+  scale_fill_manual(values = c("#8b4950", "#FAA404", "#008080")) +
+  theme(legend.position = "bottom") +
+  facet_grid(species ~ sex) +
+  scale_x_discrete(expand = expansion(add = 0.25)) +
+  xlab("") +
+  ylab("") +
   scale_alpha_manual("Inter-quantile Range", values = c(0.25, 0.25)) +
   guides(
     fill = guide_legend(override.aes = list(alpha = 0.5)),
-    alpha = guide_legend(override.aes = list(alpha =  c(0.5, 0.25)))
+    alpha = guide_legend(override.aes = list(alpha = c(0.5, 0.25)))
   ) +
-  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
-           data = annotate_dframe %>% mutate(sex = "male"), nudge_x = -0.125,
-           family='fontawesome-webfont', size=5) +
-  geom_text(aes(colour = sex, label=putative), colour = "#8b4950",
-           data = annotate_dframe %>% mutate(sex = "female"), nudge_x = -0.125,
-           family='fontawesome-webfont', size=5) +
-  geom_text(aes(label=marker),
-            data = data.frame(
-                 species="Adelie",
-                 marker = c("A", "A", "B", "B"),
-                              pcp_y = c(0.783, 0.433, 0.3, 0.267),
-                              pcp_x = "bill_depth_mm",
-                 nest = c("N5", "N5", "N6", "N6")),
-            colour = "#8b4950",
-           nudge_x = 0.1, size = 3) +
+  geom_text(aes(colour = sex, label = putative),
+    colour = "#8b4950",
+    data = annotate_dframe %>% mutate(sex = "male"), nudge_x = -0.125,
+    family = "fontawesome-webfont", size = 5
+  ) +
+  geom_text(aes(colour = sex, label = putative),
+    colour = "#8b4950",
+    data = annotate_dframe %>% mutate(sex = "female"), nudge_x = -0.125,
+    family = "fontawesome-webfont", size = 5
+  ) +
+  geom_text(aes(label = marker),
+    data = data.frame(
+      species = "Adelie",
+      marker = c("A", "A", "B", "B"),
+      pcp_y = c(0.783, 0.433, 0.3, 0.267),
+      pcp_x = "bill_depth_mm",
+      nest = c("N5", "N5", "N6", "N6")
+    ),
+    colour = "#8b4950",
+    nudge_x = 0.1, size = 3
+  ) +
   theme_pcp() +
-  scale_x_discrete(expand = expansion(add=0.2),
-                   labels = c("Body Mass (g)", "Flipper Length (mm)",
-                   "Bill Length (mm)", "Bill Depth (mm)"))
+  scale_x_discrete(
+    expand = expansion(add = 0.2),
+    labels = c(
+      "Body Mass (g)", "Flipper Length (mm)",
+      "Bill Length (mm)", "Bill Depth (mm)"
+    )
+  )
 
-
-## ----carcinoma, fig.cap="Pathologists' diagnoses of absence (no) or presence (yes) of carcinoma in the uterine cervix based on 118 slides. Each slide is shown by a poly-line.", fig.height = 4, fig.width = 8----
 data("carcinoma", package = "poLCA")
 carcinoma$numdiag <- rowSums(carcinoma) - 7
 carcinoma$any <- carcinoma$numdiag > 0
 
-carcinoma[,1:7] <- carcinoma[,1:7] %>%
-  purrr::map(.f = function(x) factor(x, labels =c("no", "yes"))) %>%
+carcinoma[, 1:7] <- carcinoma[, 1:7] %>%
+  purrr::map(.f = function(x) factor(x, labels = c("no", "yes"))) %>%
   data.frame()
 
 carcinoma %>%
-  pcp_select(6,4,3,1,7,5,2) %>%
-  pcp_scale(method="raw") %>%
+  pcp_select(6, 4, 3, 1, 7, 5, 2) %>%
+  pcp_scale(method = "raw") %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp_boxes() +
-    geom_pcp(aes(colour = factor(numdiag))) +
-    geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
-    scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette ="Dark2") +
-    theme_bw() +
-    guides(color = guide_legend(reverse=TRUE, override.aes = list(size = 3))) +
-  scale_x_discrete(expand = expansion(add=0.25)) +
-  xlab("Pathologist") + ylab(NULL) +
-  theme(axis.text.y=element_blank(), axis.ticks.y=element_blank())
+  geom_pcp_axes() +
+  geom_pcp_boxes() +
+  geom_pcp(aes(colour = factor(numdiag))) +
+  geom_pcp_labels(aes(label = pcp_level), alpha = .5) +
+  scale_colour_brewer("Number of\ncarcinoma\ndiagnoses", palette = "Dark2") +
+  theme_bw() +
+  guides(color = guide_legend(reverse = TRUE, override.aes = list(size = 3))) +
+  scale_x_discrete(expand = expansion(add = 0.25)) +
+  xlab("Pathologist") +
+  ylab(NULL) +
+  theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 
-
-## ----carcinoma2, fig.cap="Closer look at pathologists' evaluations on a more detailed scale from 1 (Negative) to 5 (Invasive Carcinoma). Rounded average scores are mapped to color to help distinguish severity of scan evaluations.", fig.height = 4.25, fig.width = 7, out.width='0.9\\textwidth', fig.align='center'----
-data(Carcinoma, package="ggpcp")
-Carcinoma_pcp <- Carcinoma %>% mutate(
-  `round(Average)` = factor(round(Average))
-  ) %>% arrange(`round(Average)`) %>%
+data(Carcinoma, package = "ggpcp")
+Carcinoma_pcp <- Carcinoma %>%
+  mutate(
+    `round(Average)` = factor(round(Average))
+  ) %>%
+  arrange(`round(Average)`) %>%
   pcp_select(F, D, C, A, G, E, B, `round(Average)`) %>%
-  pcp_scale(method="uniminmax") %>%
+  pcp_scale(method = "uniminmax") %>%
   pcp_arrange()
 
 var_id <- Carcinoma_pcp %>%
-  filter(pcp_x != 'round(Average)') %>%
+  filter(pcp_x != "round(Average)") %>%
   group_by(pcp_id) %>%
   summarize(
     var_y = var(pcp_y),
@@ -612,7 +619,9 @@ var_id <- Carcinoma_pcp %>%
 
 var_id <- var_id %>% left_join(
   Carcinoma_pcp %>% ungroup() %>%
-    select(pcp_id, `round(Average)`)  %>% unique(), by = "pcp_id")
+    select(pcp_id, `round(Average)`) %>% unique(),
+  by = "pcp_id"
+)
 
 var_id <- var_id %>% mutate(
   group = 4,
@@ -621,114 +630,134 @@ var_id <- var_id %>% mutate(
   group = ifelse(between(var_scores, 0.75, 1.25) & (var_y < 0.02), 3, group)
 )
 
-
-# https://coolors.co/0680c6-a4c7e0-fedfc3-f47966-ff0a3b
 # https://coolors.co/045a8d-74a9cf-fdbe85-f03b20-bd0026
 # scatterplot of variances against each other
 ggvars <- var_id %>%
   ggplot(aes(x = var_y, y = var_scores)) +
   geom_point(aes(colour = `round(Average)`, alpha = var_y)) +
-  geom_point(colour="grey90",
-             data = var_id %>% filter(var_y < 0.001)) + # fudging a bit to grey out points with high frequencies
-  xlab("Var(pcp_y)") + ylab("Var(scores)") +
-  scale_color_manual(values=c("#045a8d", "#74a9cf",  "#fdbe85", "#f03b20", "#bd0026")) +
+  geom_point(
+    colour = "grey90",
+    data = var_id %>% filter(var_y < 0.001)
+  ) + # fudging a bit to grey out points with high frequencies
+  xlab("Var(pcp_y)") +
+  ylab("Var(scores)") +
+  scale_color_manual(values = c("#045a8d", "#74a9cf", "#fdbe85", "#f03b20", "#bd0026")) +
   theme(legend.position = "none") +
   geom_point(aes(colour = `round(Average)`),
-             data = var_id %>% filter(var_y > 0.02))
+    data = var_id %>% filter(var_y > 0.02)
+  )
 
 Carcinoma_pcp %>%
   ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp_boxes() +
-    geom_pcp(aes(colour = `round(Average)`), overplot = "none") +
-    geom_pcp(aes(colour = `round(Average)`),
-             data = Carcinoma_pcp %>% filter(pcp_id %in% rev(c(115, 50, 53, 99, 96, 104, 97, 102, 114)))) +
-    geom_pcp_labels() +
-    theme_bw() +
-    scale_x_discrete(expand = expansion(add=c(0.2, 0.4))) +
-    xlab("Pathologist") + ylab("Carcinoma score") +
-    theme(axis.text.y=element_blank(),
-          axis.ticks.y=element_blank()) +
-    theme(legend.position="none") +
-  scale_colour_manual("Average carcinoma score",values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20",
-"#bd0026")) + theme(legend.position = "bottom") +
+  geom_pcp_axes() +
+  geom_pcp_boxes() +
+  geom_pcp(aes(colour = `round(Average)`), overplot = "none") +
+  geom_pcp(aes(colour = `round(Average)`),
+    data = Carcinoma_pcp %>% filter(pcp_id %in% rev(c(115, 50, 53, 99, 96, 104, 97, 102, 114)))
+  ) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_x_discrete(expand = expansion(add = c(0.2, 0.4))) +
+  xlab("Pathologist") +
+  ylab("Carcinoma score") +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  theme(legend.position = "none") +
+  scale_colour_manual("Average carcinoma score", values = c("#045a8d", "#74a9cf", "#fdbe85", "#f03b20", "#bd0026")) +
+  theme(legend.position = "bottom") +
   guides(color = guide_legend(override.aes = list(size = 2)))
 
-
-## ----carcinoma3, dependson='carcinoma2', fig.cap="Scans with a high variability in line segments are highlighted. While we might initially assume that a high line variability is directly associated with a high variability between pathologists' scores, we see from the scatterplot at the bottom right that the correlation between these two measures is not perfect. The difference lies in the tie-breaking approach: the $y$ values for two scans with the same score on one axis are adjusted based on the scores by the other pathologists. ", fig.height = 6, fig.width = 8----
 Carcinoma_pcp2 <- Carcinoma_pcp %>%
   left_join(var_id %>% select(pcp_id, var_scores, var_y, group), by = "pcp_id")
+
 
 hist <-
   var_id %>%
   mutate(
     var_low = var_y < 0.02,
     var_disc = ifelse(var_low, "Low", "High"),
-    var_disc = factor(var_disc, levels = c("Low", "High"))) %>%
-  ggplot(aes(x = var_y, fill = `round(Average)`,
-             alpha = var_disc)) +
-  geom_histogram(binwidth = 0.01, colour="grey50", size=0.1) +
-  scale_fill_manual("Average carcinoma score",values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20",
-"#bd0026")) +
+    var_disc = factor(var_disc, levels = c("Low", "High"))
+  ) %>%
+  ggplot(aes(
+    x = var_y, fill = `round(Average)`,
+    alpha = var_disc
+  )) +
+  geom_histogram(binwidth = 0.01, colour = "grey50", size = 0.1) +
+  scale_fill_manual("Average carcinoma score", values = c(
+    "#045a8d", "#74a9cf", "#fdbe85", "#f03b20",
+    "#bd0026"
+  )) +
   xlab("Var(pcp_y)") +
   ylab("Number of scans") +
   scale_alpha_manual("Var(pcp_y)",
-                     values = c(0.25, 1)) +
-  theme(legend.position = "right",
-        legend.direction = "horizontal") +
-  guides(fill =
-           guide_legend(title.position="top",
-                           title.hjust = 0),
-         alpha = guide_legend(title.position="top", title.hjust = 0))
+    values = c(0.25, 1)
+  ) +
+  theme(
+    legend.position = "right",
+    legend.direction = "horizontal"
+  ) +
+  guides(
+    fill =
+      guide_legend(
+        title.position = "top",
+        title.hjust = 0
+      ),
+    alpha = guide_legend(title.position = "top", title.hjust = 0)
+  )
 
 
 gpcp <- Carcinoma_pcp2 %>%
   ggplot(aes_pcp()) +
-    geom_pcp_axes() +
-    geom_pcp_boxes() +
-    geom_pcp(aes(colour = `round(Average)`),
-             overplot = "none",
-             alpha = 0.15) +
-    geom_pcp(aes(colour = `round(Average)`),
-             data = Carcinoma_pcp2 %>% filter(var_y > 0.02)) +
-    geom_pcp_labels() +
-    theme_bw() +
-    scale_x_discrete(expand = expansion(add=c(0.2, 0.4))) +
-    xlab("Pathologist") + ylab("Carcinoma score") +
-    theme(axis.text.y=element_blank(),
-          axis.ticks.y=element_blank()) +
-    theme(legend.position="none") +
+  geom_pcp_axes() +
+  geom_pcp_boxes() +
+  geom_pcp(aes(colour = `round(Average)`),
+    overplot = "none",
+    alpha = 0.15
+  ) +
+  geom_pcp(aes(colour = `round(Average)`),
+    data = Carcinoma_pcp2 %>% filter(var_y > 0.02)
+  ) +
+  geom_pcp_labels() +
+  theme_bw() +
+  scale_x_discrete(expand = expansion(add = c(0.2, 0.4))) +
+  xlab("Pathologist") +
+  ylab("Carcinoma score") +
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank()
+  ) +
+  theme(legend.position = "none") +
   scale_colour_manual(
     "Average carcinoma score",
-    values=c( "#045a8d", "#74a9cf",  "#fdbe85", "#f03b20",
-"#bd0026")) + #theme(legend.position = "bottom") +
+    values = c("#045a8d", "#74a9cf", "#fdbe85", "#f03b20", "#bd0026")
+  ) + # theme(legend.position = "bottom") +
   guides(color = guide_legend(override.aes = list(size = 2)))
 
 layout <- "
 AAAAAAAAA
 BBBBBCCCC
 "
-gpcp + hist +  ggvars +
-  plot_layout(design = layout, heights = c(1.5,1))
+gpcp + hist + ggvars +
+  plot_layout(design = layout, heights = c(1.5, 1))
 
 
 
-
-## ----cluster-setup--------------------------------------------------------
 penguins_complete <- penguins %>% na.omit()
 
 # run kmeans for k from 2 to 8, sort clusters by body weight,
 # then label clusters from lightest to heaviest
 set.seed(20220901)
-# set.seed(20220902)
+
 clusters <- tibble(k = 2:8)
 clusters <- clusters %>% mutate(
   kmeans_cl = k %>% purrr::map(.f = function(cl) {
     kmeans(penguins_complete %>%
-             dplyr::select(bill_length_mm:body_mass_g) %>%
-             mutate(
-               across(.fns = scale)
-             ), centers=cl)
+      dplyr::select(bill_length_mm:body_mass_g) %>%
+      mutate(
+        across(.fns = scale)
+      ), centers = cl)
   })
 )
 
@@ -749,8 +778,6 @@ penguins_complete <- penguins_complete %>% mutate(
   })
 )
 
-
-## ----cl2, fig.cap="Parallel coordinate plot of penguins' body measurements (left), a separation into two clusters, and penguins' species (right). There is a strong pattern between bill depth and flipper length that separates Gentoo penguins from the perfectly from the other two species.", fig.height = 4, fig.width = 8, include = F----
 penguins_complete %>%
   mutate(
     cl2 = reorder(cl2, body_mass_g, mean)
@@ -759,26 +786,29 @@ penguins_complete %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl2), alpha = 0.6) +
-  geom_pcp_boxes(fill=NA) +
+  geom_pcp(aes(color = cl2), alpha = 0.6) +
+  geom_pcp_boxes(fill = NA) +
   geom_pcp_labels() +
   theme_bw() +
-#  scale_color_brewer(type="qual") +
   scale_color_manual(values = c(oranges[2], purples[2])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete("",expand = expansion(add=0.25),
-                   labels=c("Bill length", "Bill depth",
-                            "Flipper length", "Body mass",
-                            "k=2 Clusters", "Species")) +
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
+  scale_x_discrete("",
+    expand = expansion(add = 0.25),
+    labels = c(
+      "Bill length", "Bill depth",
+      "Flipper length", "Body mass",
+      "k=2 Clusters", "Species"
+    )
+  ) +
   ggtitle("Clustering into 2 groups")
 
 
-
-## ----cl3, fig.cap="The third cluster splits the former second cluster into two based on the length of the bill. The three species are almost perfectly separated in using three clusters.", fig.height = 4, fig.width = 8, include = F----
 penguins_complete_pcp <- penguins_complete %>%
   mutate(
     cl3 = reorder(cl3, body_mass_g, mean)
@@ -789,30 +819,37 @@ penguins_complete_pcp <- penguins_complete %>%
 
 penguins_complete_pcp %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl3), alpha = 0.6,
-           data = filter(penguins_complete_pcp, cl3!="2")) +
-  geom_pcp(aes(color=cl3), alpha = 0.6,
-           data = filter(penguins_complete_pcp, cl3=="2")) +
-  geom_pcp_boxes(fill=NA) +
+  geom_pcp(aes(color = cl3),
+    alpha = 0.6,
+    data = filter(penguins_complete_pcp, cl3 != "2")
+  ) +
+  geom_pcp(aes(color = cl3),
+    alpha = 0.6,
+    data = filter(penguins_complete_pcp, cl3 == "2")
+  ) +
+  geom_pcp_boxes(fill = NA) +
   geom_pcp_labels() +
   theme_bw() +
-#  scale_color_brewer(type="qual") +
-  scale_color_manual(values = c(oranges[2], greens[2], purples[2]))  +
+  scale_color_manual(values = c(oranges[2], greens[2], purples[2])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete("",expand = expansion(add=0.25),
-                   labels=c("Bill length", "Bill depth",
-                            "Flipper length", "Body mass",
-                            "k=3 Clusters", "Species")) +
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
+  scale_x_discrete("",
+    expand = expansion(add = 0.25),
+    labels = c(
+      "Bill length", "Bill depth",
+      "Flipper length", "Body mass",
+      "k=3 Clusters", "Species"
+    )
+  ) +
   ggtitle("Clustering into 3 groups")
 
 
 
-
-## ----cl4, fig.cap="The fourth cluster splits Adelie penguins (mostly) into males and females of the species.", fig.height = 4, fig.width = 8, include = F----
 penguins_complete %>%
   mutate(
     cl4 = reorder(cl4, body_mass_g, mean)
@@ -821,25 +858,29 @@ penguins_complete %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl4), alpha = 0.6) +
-  geom_pcp_boxes(fill=NA) +
+  geom_pcp(aes(color = cl4), alpha = 0.6) +
+  geom_pcp_boxes(fill = NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_manual(values = c(oranges[1], greens[2], oranges[3], purples[2]))  +
+  scale_color_manual(values = c(oranges[1], greens[2], oranges[3], purples[2])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete("",expand = expansion(add=0.25),
-                   labels=c("Bill length", "Bill depth",
-                            "Flipper length", "Body mass",
-                            "k=4 Clusters", "Species")) +
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
+  scale_x_discrete("",
+    expand = expansion(add = 0.25),
+    labels = c(
+      "Bill length", "Bill depth",
+      "Flipper length", "Body mass",
+      "k=4 Clusters", "Species"
+    )
+  ) +
   ggtitle("Clustering into 4 groups")
 
 
-
-## ----cl5, fig.cap="The fifth cluster splits the group of Chinstrap penguins (mostly) into females and males. Only a handful of individual penguins are grouped with the wrong species or tge wrong sex. One Chinstrap male from cluster 2 is grouped with females. This might  be an example of a 'femboy' (males that appear phenotypically like females) known in the penguin research literature \\hh{XXX cite!}", fig.height = 4, fig.width = 8, include = F----
 penguins_complete_pcp <- penguins_complete %>%
   mutate(
     cl5 = reorder(cl5, body_mass_g, mean)
@@ -850,30 +891,43 @@ penguins_complete_pcp <- penguins_complete %>%
 
 penguins_complete_pcp %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl5), alpha = 0.6,
-           data = filter(penguins_complete_pcp,
-                         species != "Chinstrap")) +
-  geom_pcp(aes(color=cl5), alpha = 0.6,
-           data = filter(penguins_complete_pcp,
-                         species == "Chinstrap")) +
-  geom_pcp_boxes(fill=NA) +
+  geom_pcp(aes(color = cl5),
+    alpha = 0.6,
+    data = filter(
+      penguins_complete_pcp,
+      species != "Chinstrap"
+    )
+  ) +
+  geom_pcp(aes(color = cl5),
+    alpha = 0.6,
+    data = filter(
+      penguins_complete_pcp,
+      species == "Chinstrap"
+    )
+  ) +
+  geom_pcp_boxes(fill = NA) +
   geom_pcp_labels() +
   theme_bw() +
-    scale_color_manual(
-      values = c(oranges[1], greens[1], greens[3], oranges[3], purples[2])) +
+  scale_color_manual(
+    values = c(oranges[1], greens[1], greens[3], oranges[3], purples[2])
+  ) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete("",expand = expansion(add=0.25),
-                   labels=c("Bill length", "Bill depth",
-                            "Flipper length", "Body mass",
-                            "k=5 Clusters", "Species")) +
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
+  scale_x_discrete("",
+    expand = expansion(add = 0.25),
+    labels = c(
+      "Bill length", "Bill depth",
+      "Flipper length", "Body mass",
+      "k=5 Clusters", "Species"
+    )
+  ) +
   ggtitle("Clustering into 5 groups")
 
-
-## ----cl6, fig.cap="The sixth cluster does...", fig.height = 4, fig.width = 8, include = F----
 penguins_complete_pcp <- penguins_complete %>%
   mutate(
     cl6 = reorder(cl6, body_mass_g, mean)
@@ -884,36 +938,45 @@ penguins_complete_pcp <- penguins_complete %>%
 
 penguins_complete_pcp %>%
   ggplot(aes_pcp()) +
-  geom_pcp(aes(color=cl6), alpha = 0.6,
-           data = filter(penguins_complete_pcp, species != "Gentoo")) +
-  geom_pcp(aes(color=cl6), alpha = 0.6,
-           data = filter(penguins_complete_pcp, species == "Gentoo")) +
-  geom_pcp_boxes(fill=NA) +
+  geom_pcp(aes(color = cl6),
+    alpha = 0.6,
+    data = filter(penguins_complete_pcp, species != "Gentoo")
+  ) +
+  geom_pcp(aes(color = cl6),
+    alpha = 0.6,
+    data = filter(penguins_complete_pcp, species == "Gentoo")
+  ) +
+  geom_pcp_boxes(fill = NA) +
   geom_pcp_labels() +
   theme_bw() +
-  scale_color_manual(values = c(oranges[1], greens[2], oranges[2], oranges[3], purples[1], purples[3]))  +
+  #  scale_color_brewer(type="qual") +
+  scale_color_manual(values = c(oranges[1], greens[2], oranges[2], oranges[3], purples[1], purples[3])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
-  scale_y_continuous(labels=c("low", "", "medium", "", "high"),
-                     breaks=c(0,0.25, .5,.75, 1)) +
-  scale_x_discrete("",expand = expansion(add=0.25),
-                   labels=c("Bill length", "Bill depth",
-                            "Flipper length", "Body mass",
-                            "k=6 Clusters", "Species")) +
+  scale_y_continuous(
+    labels = c("low", "", "medium", "", "high"),
+    breaks = c(0, 0.25, .5, .75, 1)
+  ) +
+  scale_x_discrete("",
+    expand = expansion(add = 0.25),
+    labels = c(
+      "Bill length", "Bill depth",
+      "Flipper length", "Body mass",
+      "k=6 Clusters", "Species"
+    )
+  ) +
   ggtitle("Clustering into 6 groups")
 
-
-## ----cl-overview-2, fig.cap="Comparison of eight $k$-means runs for $k=6$. Color of lines is given by species and sex. The differences between the clusters are introduced by the different random seeds in the inital cluster centers.", fig.height = 4, fig.width = 8----
 set.seed(20220901)
 clusters6 <- tibble(k = rep(6, 7))
 clusters6 <- clusters6 %>% mutate(
   kmeans_cl = k %>% purrr::map(.f = function(cl) {
     kmeans(penguins_complete %>%
-             select(bill_length_mm:body_mass_g) %>%
-             mutate(
-               across(.fns = scale)
-             ), centers=cl)
+      select(bill_length_mm:body_mass_g) %>%
+      mutate(
+        across(.fns = scale)
+      ), centers = cl)
   })
 )
 
@@ -939,15 +1002,35 @@ penguins_complete %>%
   pcp_scale() %>%
   pcp_arrange() %>%
   ggplot(aes_pcp()) +
-    geom_pcp(aes(color=interaction(sex, species)), alpha = 0.6) +
-    geom_pcp_boxes(fill=NA, colour = "black", size = .5) +
-    geom_pcp_labels(alpha = 0.9) +
+  geom_pcp(aes(color = interaction(sex, species)), alpha = 0.6) +
+  geom_pcp_boxes(fill = NA, colour = "black", size = .5) +
+  geom_pcp_labels(alpha = 0.9) +
   theme_bw() +
-  scale_color_manual(values = c(greens[c(1,3)], oranges[c(1,3)], purples[c(1,3)])) +
+  scale_color_manual(values = c(greens[c(1, 3)], oranges[c(1, 3)], purples[c(1, 3)])) +
   theme(legend.position = "none") +
   ylab("") +
   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
   scale_y_continuous(breaks = NULL) +
-  scale_x_discrete("",expand = expansion(add=0.5))
+  scale_x_discrete("", expand = expansion(add = 0.5))
 
 
+## penguins_complete %>%
+##   mutate(
+##     across(starts_with("cl"), .fns = function(x) reorder(x, body_mass_g, mean))
+##   ) %>%
+##   select(-c(cl7, cl8)) %>%
+##   pcp_select(starts_with("cl"), species, sex) %>%
+##   pcp_scale() %>%
+##   pcp_arrange(space = 0.1) %>%
+##   ggplot(aes_pcp()) +
+##   geom_pcp(aes(color = interaction(sex, species)), alpha = 0.6, axiswidth = c(0, 0.1)) +
+##   geom_pcp_boxes(fill = NA) +
+##   geom_pcp_labels() +
+##   theme_bw() +
+##   scale_color_manual(values = c(purples[1], purples[3], oranges[1], oranges[3], greens[1], greens[3])) +
+##   theme(legend.position = "none") +
+##   ylab("") +
+##   theme(axis.title.y = NULL, axis.text.y = NULL, axis.ticks.y = NULL) +
+##   scale_y_continuous(breaks = NULL) +
+##   scale_x_discrete("", expand = expansion(add = 0.25))
+## 
