@@ -419,7 +419,7 @@ a one-to-one mapping to a now discrete $x$ axis consisting of the (names of the)
 \begin{figure}
 %\includegraphics[width=\linewidth]{sketches/data-wrangling.pdf}
 \includegraphics[width=\linewidth]{sketches/data-wrangling-plus.pdf}
-\caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step before a parallel coordinate plot is drawn (bottom left). The original data is duplicated once each time a variable is included using `pcp_select` during the transition from wide to long form. Note that the order in which variables are selected is reflected in the order in which variables are shown in the parallel coordinate plot. }%\\au{Ordering in RH graphic should be the same as explanations below - start w/ pcp\_id, then pcp\_x, ...}}
+\caption{\label{sketch:wrangling}The user selects a set of three variables (top left). On the right, an overview of the data wrangling step before a parallel coordinate plot is drawn (bottom left). The original data is duplicated once each time a variable is included using \texttt{pcp\_select} during the transition from wide to long form. Note that the order in which variables are selected is reflected in the order in which variables are shown in the parallel coordinate plot. }%\\au{Ordering in RH graphic should be the same as explanations below - start w/ pcp\_id, then pcp\_x, ...}}
 \end{figure}
 
 From the user's perspective, this data reshaping is data selection; the data wrangling takes place behind the scenes in \code{pcp\_select(data, ...)}, which selects the variables to be included in the parallel coordinate plot.
