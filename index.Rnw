@@ -119,7 +119,7 @@
     Department of Statistics, Iowa State University \\
     and \\
     Antony Unwin \\
-    Mathematisch-naturwissenschaftliche Fakult\"at, Universit\"at Augsburg\\
+    Institut für Mathematik der Universität Augsburg\\
     and \\
     Heike Hofmann \\
     Department of Statistics, Iowa State University}
@@ -524,7 +524,7 @@ Values outside this range, as in the top plot in \Cref{fig:scale}, indicate a va
 As discussed previously, one of the primary advantages of \pkg{ggpcp} over previous parallel coordinate plot software packages is that \pkg{ggpcp} handles categorical and continuous data in a way that allows users to trace a single observation through the projective space.
 This is accomplished through a tie-breaking algorithm: different categorical levels are grouped along the vertical axis in boxes proportional to the number of cases in each level.
 Within the box for a level, individual observations are arranged so that visual clutter is minimized and individual cases can be followed.
-This approach is similar to other approaches \citep{graham_kennedy03, holten_vanwijk10} that also attempt to make it possible to follow an observation through a sequence of ties on a vertical axis, however, instead of modifying the line slope and curvature, we instead opt to apply the same transformation to each axis, ensuring that lines do not intersect at the vertical axis at all.
+This approach is similar to others \citep{graham_kennedy03, holten_vanwijk10} that support following an observation through a sequence of ties on the vertical axes. Instead of modifying the line slope and curvature, we apply the same transformation to each axis, ensuring that lines do not intersect.
 
 An interesting consequence of our treatment of case ordering with categorical variables is that with large data sets, our approach is visually similar to existing solutions for categorical-only parallel set plots, Sankey diagrams, and alluvial plots. This effect can be seen clearly in the first two vertical axes of \Cref{fig:scale}: similarly colored bands of lines are visually grouped and when observations are sufficiently dense, become perceptually similar to the parallelograms used in parallel set plots. % This opens up the possibility of using other modifications to handle the line width illusion, if we wanted to...?
 
@@ -652,7 +652,7 @@ grid.arrange(p1, p3, p4, p2, nrow = 1)
 
 When extended over multiple axes, the equispaced tie-breaking solution that reduces line crossings requires hierarchical sorting, which is implemented in the \pkg{ggpcp} function \code{pcp\_arrange(data, method, space)}.
 Two implemented methods for tie-breaking are \code{"from-left"} and \code{"from-right"}, meaning that tie breaks are determined hierarchically by variables' values from the left or the right, respectively. The parameter \code{space} specifies the amount of the $y$ axis to use for space between levels of categorical variables. By default, 5\% of the axis is used for spacing.
-While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as "external cognition'' \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the lines of data in the chart\cite{ware_cognitive_2002}.
+While hierarchical sorting requires additional computations relative to the jittering or equally spaced solutions in \Cref{fig:alignment}, this extra processing serves as "external cognition'' \citep{scaifeExternalCognitionHow1996} - the additional computer time reduces the cognitive load required to untangle the lines of data in the chart\citep{ware_cognitive_2002}.
 
 \citet{martiHeuristicsMetaheuristics2layer2003} discusses the NP hard problem of ordering categories to minimize line crossing. In PCPs, the category order is determined by the factor order (or the numerical scale in the continuous case); these line crossings are not avoidable through within-category sorting and are a function of the data itself. Hierarchical sorting of individual observations minimizes extraneous crossings within these categories in cases where there are multiple similar observations, contributing to the Gestalt of `common fate' among individuals with similar values across a number of PCP axes because the lines `move together` through the vertical axes.
 % Sketch of the idea of how the proof would take form, even if I don't have the actual proof set up...
