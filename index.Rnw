@@ -157,7 +157,7 @@
 
 <<setup, echo=FALSE, cache=FALSE, warning=FALSE, message=FALSE, purl = F>>=
 library(knitr)
-knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE)
+knitr::opts_chunk$set(fig.path="figures/", echo=FALSE, out.width = '\\linewidth', warning=FALSE, message=FALSE, cache = TRUE, dpi = 300)
 
 
 @
